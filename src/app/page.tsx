@@ -1,65 +1,158 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Link from 'next/link';
+import { Calendar, User2, ClipboardCheck, Sparkles, ArrowRight, Layers, ChevronRight } from 'lucide-react';
+
+const MODES = [
+  {
+    id: 'A',
+    href: '/mode-a',
+    icon: Calendar,
+    accentIcon: Sparkles,
+    title: '출생 설계 모드',
+    subtitle: '날짜 · 시간 · 이름을 함께 추천',
+    description:
+      '출산 가능 기간 내 모든 날짜·시간·이름 조합을 분석합니다. 최적의 출생 설계 조합 TOP 20을 추천합니다.',
+    inputs: ['출산 가능 기간', '성씨', '성별', '돌림자', '원하는 이미지'],
+    outputs: ['추천 이름 + 출생일 + 출생시 TOP 20', '오행 분석', '사주·성명학 종합 리포트'],
+    from: 'from-indigo-600',
+    to: 'to-violet-700',
+    lightBg: 'bg-indigo-50',
+    border: 'border-indigo-200',
+    iconColor: 'text-indigo-500',
+    badge: 'bg-indigo-600',
+  },
+  {
+    id: 'B',
+    href: '/mode-b',
+    icon: User2,
+    accentIcon: Layers,
+    title: '이름 설계 모드',
+    subtitle: '출생일·시간이 이미 확정된 경우',
+    description:
+      '확정된 출생일·시간의 사주에 가장 잘 어울리는 이름 후보를 AI가 자동 생성하고 TOP 50으로 추천합니다.',
+    inputs: ['출생일 (확정)', '출생시간 (확정)', '성씨', '성별', '돌림자'],
+    outputs: ['추천 이름 TOP 50', '이름별 사주 조화도', '한자 의미 + 오행 분석'],
+    from: 'from-violet-600',
+    to: 'to-purple-700',
+    lightBg: 'bg-violet-50',
+    border: 'border-violet-200',
+    iconColor: 'text-violet-500',
+    badge: 'bg-violet-600',
+  },
+  {
+    id: 'C',
+    href: '/mode-c',
+    icon: ClipboardCheck,
+    accentIcon: ClipboardCheck,
+    title: '이름 평가 모드',
+    subtitle: '준비한 이름 후보를 비교 평가',
+    description:
+      '이미 생각해둔 이름 후보들을 입력하면 확정된 사주와의 조화도를 분석하여 순위를 제공합니다.',
+    inputs: ['출생일 (확정)', '출생시간 (확정)', '이름 후보 목록'],
+    outputs: ['후보 이름 조화도 순위', '이름별 등급 + 추천 사유', '성명학 + 오행 상세 분석'],
+    from: 'from-teal-500',
+    to: 'to-emerald-600',
+    lightBg: 'bg-teal-50',
+    border: 'border-teal-200',
+    iconColor: 'text-teal-500',
+    badge: 'bg-teal-600',
+  },
+] as const;
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-[#F4F6F9]">
+      {/* 헤더 */}
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 pb-12 pt-10">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 bg-indigo-500/15 border border-indigo-400/25 rounded-full px-3 py-1 text-xs text-indigo-300 mb-5">
+            <Sparkles className="w-3 h-3" />
+            전통 명리학 · 성명학 기반 AI 분석 플랫폼
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+            Destiny Lab
+            <br />
+            <span className="text-indigo-400">Birth Designer</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
+            AI가 수천 가지 이름·날짜·시간 조합을 전통 명리학과 성명학으로 분석하여 최적의 조합을 추천합니다.
           </p>
+          <div className="flex justify-center gap-3 mt-5 flex-wrap text-xs text-slate-500">
+            <span className="flex items-center gap-1"><ArrowRight className="w-3 h-3 text-indigo-400" />이름 자동 생성</span>
+            <span className="flex items-center gap-1"><ArrowRight className="w-3 h-3 indigo-400" />사주·성명학 분석</span>
+            <span className="flex items-center gap-1"><ArrowRight className="w-3 h-3 text-indigo-400" />PDF 리포트</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      {/* 모드 선택 */}
+      <div className="max-w-4xl mx-auto px-4 -mt-6 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {MODES.map((mode) => {
+            const Icon = mode.icon;
+            return (
+              <Link key={mode.id} href={mode.href}
+                className={`group block bg-white rounded-2xl border-2 ${mode.border} shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden`}>
+
+                {/* 상단 컬러 헤더 */}
+                <div className={`bg-gradient-to-br ${mode.from} ${mode.to} px-5 pt-5 pb-4`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-white/60 tracking-widest">MODE {mode.id}</span>
+                    <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                      <Icon className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <h2 className="text-xl font-black text-white leading-tight">{mode.title}</h2>
+                  <p className="text-xs text-white/70 mt-1">{mode.subtitle}</p>
+                </div>
+
+                {/* 본문 */}
+                <div className="p-5">
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">{mode.description}</p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">입력</p>
+                      <ul className="space-y-1">
+                        {mode.inputs.map((inp, i) => (
+                          <li key={i} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                            <span className={`w-1 h-1 rounded-full flex-shrink-0 ${mode.iconColor.replace('text-', 'bg-')}`} />
+                            {inp}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">결과</p>
+                      <ul className="space-y-1">
+                        {mode.outputs.map((out, i) => (
+                          <li key={i} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                            <span className="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0" />
+                            {out}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className={`mx-5 mb-5 flex items-center justify-between ${mode.lightBg} rounded-xl px-4 py-2.5 group-hover:opacity-90 transition-opacity`}>
+                  <span className={`text-xs font-bold ${mode.iconColor}`}>분석 시작하기</span>
+                  <ChevronRight className={`w-4 h-4 ${mode.iconColor}`} />
+                </div>
+              </Link>
+            );
+          })}
         </div>
-      </main>
+
+        {/* 하단 안내 */}
+        <p className="text-xs text-center text-slate-400 mt-8">
+          본 서비스는 전통 명리학·성명학 기반 참고 분석 자료입니다 · 의료진 판단이 최우선입니다
+        </p>
+        <p className="text-center text-xs text-indigo-500 font-bold mt-2">Powered by Destiny Lab</p>
+      </div>
     </div>
   );
 }

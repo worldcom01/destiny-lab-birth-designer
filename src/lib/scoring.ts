@@ -1,0 +1,274 @@
+import { FourPillars, OhaengBalance, OhaengType, NameAnalysis, Grade, Scores, ImageType, GeneratedName, NameStyle } from '@/types';
+import { getYinYangCounts } from './saju';
+
+// ─── 오행 균형 점수 ─────────────────────────────────────────────────────────
+export function calcOhaengBalanceScore(bal: OhaengBalance): number {
+  const vals = Object.values(bal) as number[];
+  const total = vals.reduce((a, b) => a + b, 0);
+  if (total === 0) return 0;
+
+  const present = vals.filter(v => v > 0).length;
+  const maxRatio = Math.max(...vals) / total;
+  const mean = total / 5;
+  const variance = vals.reduce((acc, v) => acc + (v - mean) ** 2, 0) / 5;
+  const stdNorm = Math.sqrt(variance) / mean;
+
+  let score = present * 10;
+  if (maxRatio <= 0.25) score += 30;
+  else if (maxRatio <= 0.35) score += 20;
+  else if (maxRatio <= 0.45) score += 10;
+  if (stdNorm < 0.3) score += 20;
+  else if (stdNorm < 0.6) score += 10;
+  else if (stdNorm < 0.9) score += 5;
+  return Math.min(score, 100);
+}
+
+// ─── 음양 조화 점수 ─────────────────────────────────────────────────────────
+export function calcYinYangScore(pillars: FourPillars): number {
+  const { yang, yin } = getYinYangCounts(pillars);
+  const map: Record<number, number> = { 0: 100, 1: 85, 2: 60, 3: 35, 4: 10, 5: 0, 6: 0, 7: 0, 8: 0 };
+  return map[Math.abs(yang - yin)] ?? 0;
+}
+
+// ─── 이름-사주 오행 조화 점수 ───────────────────────────────────────────────
+export function calcNameHarmonyScore(sajuBal: OhaengBalance, nameBal: OhaengBalance): number {
+  const total = Object.values(sajuBal).reduce((a, b) => a + b, 0);
+  if (total === 0) return 50;
+  let score = 50;
+  for (const k of Object.keys(sajuBal) as OhaengType[]) {
+    const ratio = sajuBal[k] / total;
+    const nameCount = nameBal[k];
+    if (ratio < 0.1 && nameCount > 0) score += 18;
+    else if (ratio < 0.2 && nameCount > 0) score += 10;
+    else if (ratio > 0.4 && nameCount > 0) score -= 12;
+    else score += 3;
+  }
+  return Math.max(0, Math.min(score, 100));
+}
+
+// ─── 한자 품질 점수 ─────────────────────────────────────────────────────────
+export function calcHanjaScore(nameAnalysis: NameAnalysis): number {
+  return Math.round((nameAnalysis.readabilityScore + nameAnalysis.modernityScore) / 2);
+}
+
+// ─── 현대 이름 선호도 (20%) ─────────────────────────────────────────────────
+// 2020-2024 실제 출생신고 빈도 + 스타일 매칭 기반
+export function calcModernPreference(
+  name: GeneratedName,
+  nameStyles: NameStyle[],
+): number {
+  // 글자별 현대성 점수 (뒷 글자가 이름 인상을 더 많이 결정)
+  const charModernity = name.char1.modernity * 0.40 + name.char2.modernity * 0.60;
+
+  // 스타일 부합 보너스
+  let styleBonus = 0;
+  if (nameStyles.length > 0) {
+    for (const style of nameStyles) {
+      if (name.char1.nameStyleFit?.includes(style)) styleBonus += 12;
+      if (name.char2.nameStyleFit?.includes(style)) styleBonus += 12;
+    }
+    styleBonus = Math.min(styleBonus, 24);
+  }
+
+  return Math.min(Math.round(charModernity + styleBonus * 0.5), 100);
+}
+
+// ─── 발음 자연스러움 (10%) ──────────────────────────────────────────────────
+// 초성 다양성, 모음 개방성, 받침 패턴 분석
+
+function decomposeHangul(char: string) {
+  const code = char.charCodeAt(0);
+  if (code < 0xAC00 || code > 0xD7A3) return null;
+  const offset = code - 0xAC00;
+  return { cho: Math.floor(offset / 28 / 21), jung: Math.floor(offset / 28) % 21, jong: offset % 28 };
+}
+
+// 초성 → 발음 계열 (비슷한 것끼리 묶음)
+const CHO_FAMILY: Record<number, number> = {
+  0: 0, 1: 0,             // ㄱ,ㄲ → 아음
+  2: 1, 3: 1, 4: 1, 5: 1, 16: 1, // ㄴ,ㄷ,ㄸ,ㄹ,ㅌ → 설음
+  6: 2, 7: 2, 8: 2, 17: 2,       // ㅁ,ㅂ,ㅃ,ㅍ → 순음
+  9: 3, 10: 3, 12: 3, 13: 3, 14: 3, 15: 3, // ㅅ,ㅆ,ㅈ,ㅉ,ㅊ,ㅋ → 치음
+  11: 4, 18: 4,           // ㅇ,ㅎ → 후음
+};
+
+// 개방 모음 (아,야,어,여,오,요,우,유,에,예 계열)
+const OPEN_VOWEL = new Set([0, 2, 4, 6, 8, 10, 12, 13, 18, 19]);
+
+export function calcPronunciationNaturalness(given: string): number {
+  const chars = given.split('');
+  const decomposed = chars.map(decomposeHangul).filter(Boolean);
+  if (decomposed.length < 2) return 75;
+
+  let score = 80;
+
+  const [d1, d2] = decomposed as NonNullable<ReturnType<typeof decomposeHangul>>[];
+
+  // 서로 다른 초성 계열이면 유창성 향상
+  const fam1 = CHO_FAMILY[d1.cho] ?? 9;
+  const fam2 = CHO_FAMILY[d2.cho] ?? 9;
+  if (fam1 !== fam2) score += 12;
+  else score -= 8; // 같은 계열: 어색
+
+  // 개방 모음으로 끝나면 발음이 밝고 현대적
+  if (OPEN_VOWEL.has(d2.jung)) score += 8;
+
+  // 끝 글자에 받침 없으면 현대적 느낌 (서아, 시우, 지호 등)
+  if (d2.jong === 0) score += 8;
+  else if (d2.jong <= 4) score += 2; // 가벼운 받침 (ㄴ,ㄱ 등)
+
+  // 후음(ㅇ,ㅎ)으로 시작하는 글자가 있으면 부드러운 느낌
+  if (fam1 === 4 || fam2 === 4) score += 4;
+
+  return Math.max(0, Math.min(score, 100));
+}
+
+// ─── 종합 점수 계산 (새 가중치) ─────────────────────────────────────────────
+//
+// 사주 적합도  40% = 오행균형(40%) + 음양(25%) + 이름-사주 조화(35%)
+// 성명학       20% = 발음안정성(50%) + 한자품질(50%)
+// 오행 균형    10%
+// 현대 선호도  20%  ← 대폭 상향
+// 발음 자연스러움 10%  ← 신규
+//
+export function calcAllScores(
+  pillars: FourPillars,
+  sajuBal: OhaengBalance,
+  nameAnalysis: NameAnalysis,
+  name: GeneratedName,
+  nameStyles: NameStyle[] = [],
+): Scores {
+  // 사주 적합도 하위 점수
+  const sajuOhaengBalance = calcOhaengBalanceScore(sajuBal);
+  const yinYangHarmony = calcYinYangScore(pillars);
+  const nameHarmony = calcNameHarmonyScore(sajuBal, nameAnalysis.nameOhaengBalance);
+  const sajuScore = sajuOhaengBalance * 0.40 + yinYangHarmony * 0.25 + nameHarmony * 0.35;
+
+  // 성명학 하위 점수
+  const pronunciationStability = nameAnalysis.pronunciationScore;
+  const hanjaQuality = calcHanjaScore(nameAnalysis);
+  const sungmyungScore = pronunciationStability * 0.50 + hanjaQuality * 0.50;
+
+  // 오행 균형 (통합)
+  const ohaengBalance = calcOhaengBalanceScore(sajuBal);
+
+  // 현대 선호도 (20%)
+  const modernPreference = calcModernPreference(name, nameStyles);
+
+  // 발음 자연스러움 (10%)
+  const pronunciationNaturalness = calcPronunciationNaturalness(name.given);
+
+  // 이미지 부합
+  const imageMatch = nameAnalysis.imageMatchScore;
+
+  const overall = Math.round(
+    sajuScore             * 0.40 +
+    sungmyungScore        * 0.20 +
+    ohaengBalance         * 0.10 +
+    modernPreference      * 0.20 +
+    pronunciationNaturalness * 0.10
+  );
+
+  return {
+    sajuOhaengBalance,
+    yinYangHarmony,
+    nameHarmony,
+    pronunciationStability,
+    hanjaQuality,
+    modernPreference,
+    pronunciationNaturalness,
+    modernUsability: modernPreference,  // legacy alias
+    imageMatch,
+    overall,
+  };
+}
+
+export function getGrade(overall: number): Grade {
+  if (overall >= 87) return 'SS';
+  if (overall >= 75) return 'S';
+  if (overall >= 60) return 'A';
+  if (overall >= 45) return 'B';
+  return 'C';
+}
+
+// ─── 특징 태그 ──────────────────────────────────────────────────────────────
+export function getCharacteristics(
+  pillars: FourPillars,
+  sajuBal: OhaengBalance,
+  nameAnalysis: NameAnalysis,
+  imageMatches: ImageType[],
+  nameStyles: NameStyle[] = [],
+): string[] {
+  const tags: string[] = [];
+  const total = Object.values(sajuBal).reduce((a, b) => a + b, 0) || 1;
+  const sorted = (Object.entries(sajuBal) as [OhaengType, number][]).sort((a, b) => b[1] - a[1]);
+  const dominant = sorted[0][0];
+  const dominantRatio = sorted[0][1] / total;
+  const present = Object.values(sajuBal).filter(v => v > 0).length;
+
+  const ohaengTraits: Record<OhaengType, string> = {
+    목: '성장·창의 성향', 화: '리더십·열정 성향',
+    토: '안정·신뢰 기질', 금: '분석·결단 성향', 수: '학습·지혜 적성',
+  };
+
+  if (dominantRatio > 0.3) tags.push(ohaengTraits[dominant]);
+  if (present === 5) tags.push('오행 균형 우수');
+  else if (present === 4) tags.push('오행 조화 양호');
+
+  const { yang, yin } = getYinYangCounts(pillars);
+  if (Math.abs(yang - yin) <= 2) tags.push('음양 조화');
+
+  // 스타일 태그 우선 표시
+  for (const style of nameStyles.slice(0, 2)) tags.push(`${style} 적합`);
+  if (nameStyles.length === 0) {
+    for (const img of imageMatches.slice(0, 2)) tags.push(`${img}에 적합`);
+  }
+
+  const nameOhaengLabel: Record<OhaengType, string> = {
+    목: '성장 기운 이름', 화: '열정 기운 이름',
+    토: '안정 기운 이름', 금: '결단 기운 이름', 수: '지혜 기운 이름',
+  };
+  const firstOhaeng = nameAnalysis.pronunciationOhaeng[0];
+  if (firstOhaeng) tags.push(nameOhaengLabel[firstOhaeng]);
+
+  return tags.slice(0, 5);
+}
+
+// ─── AI 설명 생성 ────────────────────────────────────────────────────────────
+export function generateDescription(
+  pillars: FourPillars,
+  sajuBal: OhaengBalance,
+  nameAnalysis: NameAnalysis,
+  imageMatches: ImageType[],
+  nameStyles: NameStyle[] = [],
+): string {
+  const sorted = (Object.entries(sajuBal) as [OhaengType, number][]).sort((a, b) => b[1] - a[1]);
+  const dominant = sorted[0][0];
+  const present = Object.values(sajuBal).filter(v => v > 0).length;
+
+  const descs: Record<OhaengType, string> = {
+    목: '성장과 창의적 사고를 즐기는 성향이 나타납니다',
+    화: '활발하고 표현력 있는 리더십 기질이 보입니다',
+    토: '안정적이고 신뢰를 중시하는 기질이 형성됩니다',
+    금: '논리적 사고와 결단력 있는 성향이 두드러집니다',
+    수: '깊은 학습 적성과 지적 호기심이 강한 성향입니다',
+  };
+
+  const balanceText = present >= 4
+    ? '오행이 고르게 분포하여 균형 있는 발달 가능성이 높습니다. '
+    : '사주의 주요 오행이 뚜렷한 방향성을 제시합니다. ';
+
+  const styleText = nameStyles.length > 0
+    ? `${nameStyles[0]} 스타일에 어울리는 이름입니다. `
+    : imageMatches.length > 0
+      ? `이름과 사주의 조합이 ${imageMatches[0]} 성향과 잘 어우러집니다. `
+      : '';
+
+  const hanjaText = `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})은 `;
+  const meaningText = nameAnalysis.meanings
+    .map(m => m.split(' — ')[1] ?? m)
+    .join('·')
+    .substring(0, 20) + '의 의미를 담고 있습니다. ';
+
+  return `${balanceText}${styleText}${hanjaText}${meaningText}${descs[dominant] ?? '균형 잡힌 사주 구조입니다'}. 전통 명리학·현대 선호도를 함께 고려한 참고 분석입니다.`;
+}
