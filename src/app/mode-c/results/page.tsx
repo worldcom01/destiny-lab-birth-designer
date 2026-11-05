@@ -1,34 +1,48 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Sparkles, Trophy } from 'lucide-react';
 import { AnalysisResult, ModeCInput, GRADE_CONFIG } from '@/types';
-import { runModeCAnalysis, formatKoreanDate } from '@/lib/analysis';
+import { analyzeModeCNames, applyHanjaSelections, formatKoreanDate, ModeCAnalysis } from '@/lib/analysis';
+import { validateModeCInput } from '@/lib/inputValidation';
+import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
+import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
+import {
+  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, saveHanjaSelections, withSelection,
+} from '@/lib/hanjaModel';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
 import SajuSummary from '@/components/SajuSummary';
 import PDFButton from '@/components/PDFButton';
 
+interface ModeCData { results: AnalysisResult[]; rejected: ModeCAnalysis['rejected']; selections: HanjaSelections; scope: string }
+
+function runModeC(input: ModeCInput): ModeCData {
+  const scope = analysisScope(input);
+  const selections = loadHanjaSelections(HANJA_SELECTION_KEYS.modeC, scope);
+  const analysis = analyzeModeCNames(input);
+  return { results: applyHanjaSelections(analysis.results, selections), rejected: analysis.rejected, selections, scope };
+}
+
+const EMPTY: AnalysisResult[] = [];
+
 export default function ModeCResults() {
   const router = useRouter();
-  const [results, setResults] = useState<AnalysisResult[]>([]);
-  const [input, setInput] = useState<ModeCInput | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const state = useStoredAnalysis('dlbd_mode_c', validateModeCInput, runModeC, 40);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [edited, setEdited] = useState<ModeCData | null>(null);
+  const current = edited ?? (state.status === 'ready' ? state.data : null);
+  const results = current?.results ?? EMPTY;
+  const rejected = current?.rejected ?? [];
+  const input = state.status === 'ready' ? state.input : null;
 
-  useEffect(() => {
-    const raw = localStorage.getItem('dlbd_mode_c');
-    if (!raw) { setError('입력 데이터가 없습니다.'); setLoading(false); return; }
-    try {
-      const parsed: ModeCInput = JSON.parse(raw);
-      setInput(parsed);
-      setTimeout(() => {
-        setResults(runModeCAnalysis(parsed));
-        setLoading(false);
-      }, 40);
-    } catch { setError('데이터 오류'); setLoading(false); }
-  }, []);
+  const handleHanjaSelect = (fullName: string, index: number, hanja: string) => {
+    if (!current) return;
+    const next = withSelection(current.selections, fullName, index, hanja);
+    setSaveFailed(!saveHanjaSelections(HANJA_SELECTION_KEYS.modeC, current.scope, next));
+    setEdited({ ...current, results: applyHanjaSelections(current.results, next), selections: next });
+  };
 
   const sajuData = useMemo(() => {
     if (!input) return null;
@@ -37,18 +51,15 @@ export default function ModeCResults() {
     return { fourPillars: fp, sajuBalance: getSajuOhaengBalance(fp) };
   }, [input]);
 
-  if (loading) return (
+  if (state.status === 'loading') return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <Loader2 className="w-10 h-10 animate-spin text-teal-500" />
       <p className="font-bold text-slate-700">이름 평가 분석 중...</p>
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3">
-      <p className="text-red-600">{error}</p>
-      <button onClick={() => router.push('/mode-c')} className="text-sm text-teal-600 underline">입력으로</button>
-    </div>
+  if (state.status === 'error') return (
+    <AnalysisErrorPanel error={state.error} onBack={() => router.push('/mode-c')} />
   );
 
   const best = results[0];
@@ -114,6 +125,11 @@ export default function ModeCResults() {
           </div>
         )}
 
+        {saveFailed && (
+          <p role="status" className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            선택한 한자를 브라우저에 저장하지 못했습니다. 이 화면에서는 반영되지만 새로고침하면 사라질 수 있습니다.
+          </p>
+        )}
         {/* 이름 순위 */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -124,13 +140,21 @@ export default function ModeCResults() {
             <span className="text-xs text-slate-400">조화도 높은 순</span>
           </div>
 
+          {rejected.length > 0 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3 text-xs text-amber-800 space-y-0.5">
+              {rejected.map((r, i) => (
+                <p key={i}>‘{r.input}’ 은(는) 분석하지 않았습니다: {r.message}</p>
+              ))}
+            </div>
+          )}
+
           {results.length === 0 ? (
             <div className="bg-white rounded-2xl p-10 text-center text-slate-400">유효한 이름이 없습니다</div>
           ) : (
             <div className="space-y-3">
               {results.map((r, i) => (
                 <div key={r.id} className="fade-up">
-                  <NameRankCard result={r} rank={i + 1} />
+                  <NameRankCard result={r} rank={i + 1} onHanjaSelect={handleHanjaSelect} />
                 </div>
               ))}
             </div>

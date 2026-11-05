@@ -1,4 +1,5 @@
 import { Pillar, FourPillars, OhaengBalance, OhaengType, YinYangType } from '@/types';
+import { toCivilDate, kstToUtcMs, getDayGanjiIndex, getSolarMonthAt, type SolarMonth } from './calendar';
 
 const STEMS_HANJA = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const STEMS_KR    = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
@@ -9,21 +10,6 @@ const BRANCHES_HANJA  = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未',
 const BRANCHES_KR     = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
 const BRANCHES_OHAENG: OhaengType[]   = ['수', '토', '목', '목', '토', '화', '화', '토', '금', '금', '토', '수'];
 const BRANCHES_YINYANG: YinYangType[] = ['양', '음', '양', '음', '양', '음', '양', '음', '양', '음', '양', '음'];
-
-const SOLAR_TERMS = [
-  { month: 1,  day: 6,  branchIdx: 1,  order: 11 },
-  { month: 2,  day: 4,  branchIdx: 2,  order: 0  },
-  { month: 3,  day: 6,  branchIdx: 3,  order: 1  },
-  { month: 4,  day: 5,  branchIdx: 4,  order: 2  },
-  { month: 5,  day: 6,  branchIdx: 5,  order: 3  },
-  { month: 6,  day: 6,  branchIdx: 6,  order: 4  },
-  { month: 7,  day: 7,  branchIdx: 7,  order: 5  },
-  { month: 8,  day: 7,  branchIdx: 8,  order: 6  },
-  { month: 9,  day: 8,  branchIdx: 9,  order: 7  },
-  { month: 10, day: 8,  branchIdx: 10, order: 8  },
-  { month: 11, day: 7,  branchIdx: 11, order: 9  },
-  { month: 12, day: 7,  branchIdx: 0,  order: 10 },
-];
 
 const MONTH_STEM_BASES = [2, 4, 6, 8, 0];
 const HOUR_STEM_BASES  = [0, 2, 4, 6, 8];
@@ -46,41 +32,50 @@ export function getYearPillar(year: number): Pillar {
   return makePillar(((year - 4) % 10 + 10) % 10, ((year - 4) % 12 + 12) % 12);
 }
 
-export function getMonthPillar(date: Date): Pillar {
-  const m = date.getMonth() + 1;
-  const d = date.getDate();
-  const md = m * 100 + d;
+// The Date argument only carries the civil date (host-local Y/M/D fields);
+// hour/minute are KST wall-clock time. See src/lib/calendar.ts for conventions.
+function getSolarMonth(date: Date, hour: number, minute: number): SolarMonth {
+  return getSolarMonthAt(kstToUtcMs(toCivilDate(date), hour, minute));
+}
 
-  const sorted = [...SOLAR_TERMS].sort((a, b) => a.month * 100 + a.day - (b.month * 100 + b.day));
-  let term = sorted[sorted.length - 1];
-  for (let i = sorted.length - 1; i >= 0; i--) {
-    if (md >= sorted[i].month * 100 + sorted[i].day) { term = sorted[i]; break; }
-  }
+function monthPillarFrom(sm: SolarMonth): Pillar {
+  const yStem = ((sm.solarYear - 4) % 10 + 10) % 10;
+  const stemIdx = (MONTH_STEM_BASES[yStem % 5] + sm.monthOrder) % 10;
+  return makePillar(stemIdx, sm.branchIndex);
+}
 
-  let solarYear = date.getFullYear();
-  if (m === 1 || (m === 2 && d < 4)) solarYear -= 1;
-
-  const yStem = ((solarYear - 4) % 10 + 10) % 10;
-  const stemIdx = (MONTH_STEM_BASES[yStem % 5] + term.order) % 10;
-  return makePillar(stemIdx, term.branchIdx);
+export function getMonthPillar(date: Date, hour = 0, minute = 0): Pillar {
+  return monthPillarFrom(getSolarMonth(date, hour, minute));
 }
 
 export function getDayPillar(date: Date): Pillar {
-  const ref = new Date(1900, 0, 1).getTime();
-  const diff = Math.floor((date.getTime() - ref) / 86400000);
-  const pos = ((diff + 10) % 60 + 60) % 60;
+  const pos = getDayGanjiIndex(toCivilDate(date));
   return makePillar(pos % 10, pos % 12);
 }
 
+// Existing convention (preserved): 23:00-00:59 is 子. The hour stem is derived
+// from the stem of the same civil date, so 23:00 and 00:00 of one date share
+// the same 子 pillar and the day does not roll over at 23:00.
 export function getHourPillar(hour: number, dayStemIdx: number): Pillar {
   const branchIdx = hour === 23 ? 0 : Math.floor((hour + 1) / 2);
   const stemIdx = (HOUR_STEM_BASES[dayStemIdx % 5] + branchIdx) % 10;
   return makePillar(stemIdx, branchIdx);
 }
 
-export function calculateFourPillars(date: Date, hour: number): FourPillars {
-  const year = getYearPillar(date.getFullYear());
-  const month = getMonthPillar(date);
+function assertTimeOfDay(hour: number, minute: number): void {
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23) throw new RangeError(`Invalid hour: ${hour}`);
+  if (!Number.isInteger(minute) || minute < 0 || minute > 59) throw new RangeError(`Invalid minute: ${minute}`);
+}
+
+/**
+ * Four pillars for a KST civil date and time. Year/month pillars switch at the
+ * exact Ipchun / jie instants; throws CalendarRangeError outside the supported range.
+ */
+export function calculateFourPillars(date: Date, hour: number, minute = 0): FourPillars {
+  assertTimeOfDay(hour, minute);
+  const sm = getSolarMonth(date, hour, minute);
+  const year = getYearPillar(sm.solarYear);
+  const month = monthPillarFrom(sm);
   const day = getDayPillar(date);
   const hourP = getHourPillar(hour, day.stemIndex);
   return { year, month, day, hour: hourP };

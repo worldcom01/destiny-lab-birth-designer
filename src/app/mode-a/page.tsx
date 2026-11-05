@@ -3,10 +3,13 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, User, ChevronRight, Sparkles, Info, Layers, ArrowLeft } from 'lucide-react';
-import { DesignerInput, Gender, AnalysisLevel, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS } from '@/types';
+import { DesignerInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS, TimeRange } from '@/types';
 import { COMMON_SURNAMES } from '@/data/nameChars';
 import type { HanjaOption } from '@/data/hanjaDB';
 import { HanjaInputRow } from '@/components/HanjaInputRow';
+import { SUPPORTED_KST_DATE_RANGE } from '@/lib/calendar';
+import { dolrimNotice, validateDesignerInput } from '@/lib/inputValidation';
+import { writeStoredInput } from '@/lib/storage';
 
 const ALL_IMAGES: ImageType[] = [
   '리더형', '학자형', '예술형', '사업가형', '창의형',
@@ -34,8 +37,20 @@ export default function ModeAPage() {
   const [dolrimHanja, setDolrimHanja] = useState<HanjaOption | null>(null);
   const [nameStyles, setNameStyles] = useState<NameStyle[]>([]);
   const [images, setImages] = useState<ImageType[]>([]);
-  const [analysisLevel, setAnalysisLevel] = useState<AnalysisLevel>('간단');
+  const [providerConfirmed, setProviderConfirmed] = useState(false);
+  // No default availability: every permitted time must come from the user.
+  const [timeRanges, setTimeRanges] = useState<TimeRange[]>([{ start: '', end: '' }]);
+  const [exactTimes, setExactTimes] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const updateRange = (i: number, key: keyof TimeRange, v: string) => {
+    setTimeRanges(p => p.map((r, j) => j === i ? { ...r, [key]: v } : r));
+    setErrors(p => ({ ...p, time: '' }));
+  };
+  const updateExact = (i: number, v: string) => {
+    setExactTimes(p => p.map((t, j) => j === i ? v : t));
+    setErrors(p => ({ ...p, time: '' }));
+  };
 
   const toggleNameStyle = useCallback((s: NameStyle) => {
     setNameStyles(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]);
@@ -45,24 +60,29 @@ export default function ModeAPage() {
     setImages(p => p.includes(img) ? p.filter(i => i !== img) : [...p, img]);
   }, []);
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!startDate || !endDate) e.date = '날짜를 선택해주세요';
-    if (startDate && endDate && startDate > endDate) e.date = '종료일은 시작일 이후여야 합니다';
-    if (getDays(startDate, endDate) > 30) e.date = '최대 30일 범위까지 가능합니다';
-    if (!surname.trim()) e.surname = '성씨를 입력해주세요';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
   const handleStart = () => {
-    if (!validate()) return;
     const input: DesignerInput = {
       startDate, endDate, surname: surname.trim(), gender,
       dolrimChar: dolrimChar.trim(), dolrimPosition,
-      nameStyles, images, analysisLevel,
+      dolrimHanja: dolrimHanja?.hanja,
+      nameStyles, images,
+      schedule: {
+        providerConfirmed,
+        // Blank rows are ignored; partially filled rows are reported by validation.
+        timeRanges: timeRanges.filter(r => r.start || r.end),
+        exactTimes: exactTimes.filter(t => t),
+      },
     };
-    localStorage.setItem('dlbd_mode_a', JSON.stringify(input));
+    const result = validateDesignerInput(input);
+    if (!result.ok) {
+      const e: Record<string, string> = {};
+      for (const issue of result.issues) e[issue.field] = e[issue.field] ? `${e[issue.field]} / ${issue.message}` : issue.message;
+      setErrors(e);
+      return;
+    }
+    setErrors({});
+    const saved = writeStoredInput('dlbd_mode_a', result.value);
+    if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-a/results');
   };
 
@@ -88,8 +108,15 @@ export default function ModeAPage() {
         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
           <h2 className="flex items-center gap-2 font-bold text-slate-800 text-sm mb-4">
             <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-black">1</span>
-            <Calendar className="w-4 h-4 text-slate-400" /> 출산 가능 기간
+            <Calendar className="w-4 h-4 text-slate-400" /> 의료진이 허용한 출산 기간
           </h2>
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+            <Info className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-amber-800 leading-relaxed">
+              담당 의료진이 허용한 날짜·시간만 입력해주세요. 이 앱은 의료적 안전성을 판단할 수 없으며,
+              입력한 범위 밖의 날짜·시간은 계산하거나 추천하지 않습니다. 전통 사주 점수는 건강·발달·의학적 결과를 예측하지 않습니다.
+            </p>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-slate-500 font-medium block mb-1.5">시작일</label>
@@ -104,6 +131,53 @@ export default function ModeAPage() {
           </div>
           {errors.date && <p className="text-xs text-red-500 mt-2">{errors.date}</p>}
           {days > 0 && <p className="text-xs text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 mt-3">총 <strong>{days}일</strong> 범위 선택됨</p>}
+
+          {/* 허용 시간대 */}
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <p className="text-xs font-bold text-slate-700 mb-1">허용 시간대 <span className="font-normal text-slate-400">(매일 동일하게 적용)</span></p>
+            <p className="text-[11px] text-slate-400 mb-2.5">시작 시각 포함, 종료 시각 제외 · 종료 00:00은 자정(24:00) · 자정을 넘기는 구간은 두 개로 나눠 입력</p>
+            <div className="space-y-2">
+              {timeRanges.map((r, i) => (
+                <div key={`r${i}`} className="flex items-center gap-2">
+                  <input type="time" aria-label={`허용 구간 ${i + 1} 시작`} value={r.start} onChange={e => updateRange(i, 'start', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                  <span className="text-xs text-slate-400">~</span>
+                  <input type="time" aria-label={`허용 구간 ${i + 1} 종료`} value={r.end} onChange={e => updateRange(i, 'end', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                  <button type="button" onClick={() => setTimeRanges(p => p.filter((_, j) => j !== i))}
+                    className="text-[11px] text-slate-400 hover:text-red-400 px-1.5">삭제</button>
+                </div>
+              ))}
+              {exactTimes.map((t, i) => (
+                <div key={`t${i}`} className="flex items-center gap-2">
+                  <span className="text-[11px] text-slate-500 w-16">특정 시각</span>
+                  <input type="time" aria-label={`특정 시각 ${i + 1}`} value={t} onChange={e => updateExact(i, e.target.value)}
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                  <button type="button" onClick={() => setExactTimes(p => p.filter((_, j) => j !== i))}
+                    className="text-[11px] text-slate-400 hover:text-red-400 px-1.5">삭제</button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2.5">
+              <button type="button" onClick={() => setTimeRanges(p => [...p, { start: '', end: '' }])}
+                className="text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg">+ 시간 구간</button>
+              <button type="button" onClick={() => setExactTimes(p => [...p, ''])}
+                className="text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg">+ 특정 시각</button>
+            </div>
+            {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}
+            <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
+              시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 23:00~23:59는 같은 날짜의 자시로 계산 ·
+              분석 가능 기간 {SUPPORTED_KST_DATE_RANGE.first} ~ {SUPPORTED_KST_DATE_RANGE.last}
+            </p>
+          </div>
+
+          <label className="flex items-start gap-2 mt-4 cursor-pointer">
+            <input type="checkbox" checked={providerConfirmed}
+              onChange={e => { setProviderConfirmed(e.target.checked); setErrors(p => ({ ...p, confirm: '' })); }}
+              className="mt-0.5 w-4 h-4 accent-indigo-600" />
+            <span className="text-xs text-slate-700">위 날짜·시간 범위는 담당 의료진이 허용한 범위임을 확인합니다</span>
+          </label>
+          {errors.confirm && <p className="text-xs text-red-500 mt-1.5">{errors.confirm}</p>}
         </section>
 
         {/* 2. 성씨 */}
@@ -163,7 +237,7 @@ export default function ModeAPage() {
             <Layers className="w-4 h-4 text-slate-400" /> 돌림자 <span className="text-slate-400 font-normal">(선택)</span>
           </h2>
           <div className="flex items-center gap-3">
-            <input type="text" value={dolrimChar} onChange={e => setDolrimChar(e.target.value.slice(0, 1))}
+            <input type="text" value={dolrimChar} onChange={e => { setDolrimChar(e.target.value.slice(0, 1)); setDolrimHanja(null); setErrors(p => ({ ...p, dolrim: '' })); }}
               placeholder="예) 민" maxLength={1}
               className="w-16 px-3 py-2.5 border border-slate-200 rounded-xl text-lg font-black bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center" />
             {dolrimChar && (
@@ -188,6 +262,10 @@ export default function ModeAPage() {
                 onClear={() => setDolrimHanja(null)}
               />
             </div>
+          )}
+          {errors.dolrim && <p className="text-xs text-red-500 mt-2">{errors.dolrim}</p>}
+          {!errors.dolrim && dolrimNotice(dolrimChar) && (
+            <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 mt-2">{dolrimNotice(dolrimChar)}</p>
           )}
         </section>
 
@@ -253,26 +331,16 @@ export default function ModeAPage() {
           )}
         </section>
 
-        {/* 6. 분석 수준 */}
-        <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-          <h2 className="flex items-center gap-2 font-bold text-slate-800 text-sm mb-4">
-            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-black">6</span>
-            분석 수준
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {([
-              { l: '간단' as AnalysisLevel, title: '간단 분석', desc: '12시진 · 빠른 결과' },
-              { l: '정밀' as AnalysisLevel, title: '정밀 분석', desc: '24시간 · 정밀 분석' },
-            ]).map(({ l, title, desc }) => (
-              <button key={l} onClick={() => setAnalysisLevel(l)}
-                className={`text-left p-4 rounded-xl border-2 transition-all ${analysisLevel === l ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'}`}>
-                <div className={`font-bold text-sm ${analysisLevel === l ? 'text-indigo-800' : 'text-slate-700'}`}>{title}</div>
-                <div className="text-xs text-slate-500 mt-1">{desc}</div>
-              </button>
-            ))}
-          </div>
-        </section>
+        {errors.other && (
+          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.other}</p>
+        )}
+        {Object.values(errors).some(Boolean) && (
+          <p className="text-xs text-red-500 text-center">입력 내용을 확인해주세요. 오류가 있으면 분석을 시작하지 않습니다.</p>
+        )}
 
+        {errors.storage && (
+          <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.storage}</p>
+        )}
         <button onClick={handleStart}
           className="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/20 active:scale-[0.99] transition-all">
           <Sparkles className="w-5 h-5" /> 출생 설계 분석 시작 <ChevronRight className="w-5 h-5" />

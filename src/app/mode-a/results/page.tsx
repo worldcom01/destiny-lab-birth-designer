@@ -1,38 +1,29 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Filter, Sparkles, TrendingUp } from 'lucide-react';
-import { AnalysisResult, DesignerInput, Grade, GRADE_CONFIG, ImageType, IMAGE_LABELS } from '@/types';
+import { AnalysisResult, Grade, GRADE_CONFIG, ImageType, IMAGE_LABELS } from '@/types';
 import { runModeAAnalysis } from '@/lib/analysis';
+import { validateDesignerInput } from '@/lib/inputValidation';
+import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
+import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
 import ResultCard from '@/components/ResultCard';
 import PDFButton from '@/components/PDFButton';
 import OhaengChart from '@/components/OhaengChart';
 
 type FG = Grade | 'ALL';
 
+const EMPTY: AnalysisResult[] = [];
+
 export default function ModeAResults() {
   const router = useRouter();
-  const [results, setResults] = useState<AnalysisResult[]>([]);
-  const [input, setInput] = useState<DesignerInput | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const state = useStoredAnalysis('dlbd_mode_a', validateDesignerInput, runModeAAnalysis);
+  const results = state.status === 'ready' ? state.data : EMPTY;
+  const input = state.status === 'ready' ? state.input : null;
   const [filterGrade, setFilterGrade] = useState<FG>('ALL');
   const [filterImage, setFilterImage] = useState<ImageType | ''>('');
   const [showCount, setShowCount] = useState(20);
-
-  useEffect(() => {
-    const raw = localStorage.getItem('dlbd_mode_a');
-    if (!raw) { setError('입력 데이터가 없습니다.'); setLoading(false); return; }
-    try {
-      const parsed: DesignerInput = JSON.parse(raw);
-      setInput(parsed);
-      setTimeout(() => {
-        setResults(runModeAAnalysis(parsed));
-        setLoading(false);
-      }, 60);
-    } catch { setError('데이터 오류'); setLoading(false); }
-  }, []);
 
   const gc = useMemo(() => {
     const c: Record<FG, number> = { ALL: results.length, SS: 0, S: 0, A: 0, B: 0, C: 0 };
@@ -54,18 +45,15 @@ export default function ModeAResults() {
     return acc;
   }, [results]);
 
-  if (loading) return (
+  if (state.status === 'loading') return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
       <p className="font-bold text-slate-700">출생 설계 분석 중...</p>
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3">
-      <p className="text-red-600">{error}</p>
-      <button onClick={() => router.push('/mode-a')} className="text-sm text-indigo-600 underline">입력으로</button>
-    </div>
+  if (state.status === 'error') return (
+    <AnalysisErrorPanel error={state.error} onBack={() => router.push('/mode-a')} />
   );
 
   return (
@@ -168,6 +156,7 @@ export default function ModeAResults() {
         <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 text-xs text-indigo-800 leading-relaxed">
           <p className="font-bold mb-1">분석 기준</p>
           <p>사주 오행 균형·음양 조화·이름-사주 조화·발음 안정성·한자 의미·현대적 사용성·이미지 부합도 기준으로 종합 분석합니다. 높은 등급이 더 나은 삶을 보장하지 않습니다.</p>
+          <p className="mt-1.5">입력하신 의료진 허용 날짜·시간대 안의 시각만 계산했으며, 허용 여부는 점수에 반영하지 않습니다. 이 앱은 의료적 안전성을 판단할 수 없고, 전통 사주 점수는 건강·발달·의학적 결과를 예측하지 않습니다.</p>
         </div>
         <p className="text-center text-xs text-indigo-500 font-bold pb-4">Powered by Destiny Lab</p>
       </div>

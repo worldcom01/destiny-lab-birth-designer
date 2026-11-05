@@ -8,6 +8,8 @@ import { COMMON_SURNAMES } from '@/data/nameChars';
 import type { HanjaOption } from '@/data/hanjaDB';
 import TimeSelector from '@/components/TimeSelector';
 import { HanjaInputRow } from '@/components/HanjaInputRow';
+import { dolrimNotice, validateModeBInput } from '@/lib/inputValidation';
+import { writeStoredInput } from '@/lib/storage';
 
 const ALL_IMAGES: ImageType[] = [
   '리더형', '학자형', '예술형', '사업가형', '창의형',
@@ -40,22 +42,23 @@ export default function ModeBPage() {
     setImages(p => p.includes(img) ? p.filter(i => i !== img) : [...p, img]);
   }, []);
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!birthDate) e.date = '출생일을 선택해주세요';
-    if (!surname.trim()) e.surname = '성씨를 입력해주세요';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
   const handleStart = () => {
-    if (!validate()) return;
     const input: ModeBInput = {
       birthDate, birthHour, surname: surname.trim(), gender,
       dolrimChar: dolrimChar.trim(), dolrimPosition,
+      dolrimHanja: dolrimHanja?.hanja,
       nameStyles, images,
     };
-    localStorage.setItem('dlbd_mode_b', JSON.stringify(input));
+    const result = validateModeBInput(input);
+    if (!result.ok) {
+      const e: Record<string, string> = {};
+      for (const issue of result.issues) e[issue.field] = e[issue.field] ? `${e[issue.field]} / ${issue.message}` : issue.message;
+      setErrors(e);
+      return;
+    }
+    setErrors({});
+    const saved = writeStoredInput('dlbd_mode_b', result.value);
+    if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-b/results');
   };
 
@@ -93,7 +96,12 @@ export default function ModeBPage() {
             <span className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-black">2</span>
             출생 시간 (확정)
           </h2>
-          <TimeSelector value={birthHour} onChange={setBirthHour} />
+          <TimeSelector value={birthHour} onChange={h => { setBirthHour(h); setErrors(p => ({ ...p, time: '' })); }} />
+          <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
+            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 자시(23:00~01:00)는 선택한 날짜의 일주로 계산 ·
+            선택한 시진 안에 절기 전환이 있으면 정확한 시각이 필요해 분석하지 않습니다
+          </p>
+          {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}
         </section>
 
         {/* 3. 성씨 */}
@@ -151,7 +159,7 @@ export default function ModeBPage() {
             <Layers className="w-4 h-4 text-slate-400" /> 돌림자 <span className="text-slate-400 font-normal">(선택)</span>
           </h2>
           <div className="flex items-center gap-3">
-            <input type="text" value={dolrimChar} onChange={e => setDolrimChar(e.target.value.slice(0, 1))}
+            <input type="text" value={dolrimChar} onChange={e => { setDolrimChar(e.target.value.slice(0, 1)); setDolrimHanja(null); setErrors(p => ({ ...p, dolrim: '' })); }}
               placeholder="예) 민" maxLength={1}
               className="w-16 px-3 py-2.5 border border-slate-200 rounded-xl text-lg font-black bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-center" />
             {dolrimChar && (
@@ -175,6 +183,10 @@ export default function ModeBPage() {
                 onClear={() => setDolrimHanja(null)}
               />
             </div>
+          )}
+          {errors.dolrim && <p className="text-xs text-red-500 mt-2">{errors.dolrim}</p>}
+          {!errors.dolrim && dolrimNotice(dolrimChar) && (
+            <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 mt-2">{dolrimNotice(dolrimChar)}</p>
           )}
         </section>
 
@@ -200,6 +212,12 @@ export default function ModeBPage() {
           </div>
         </section>
 
+        {errors.other && (
+          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.other}</p>
+        )}
+        {errors.storage && (
+          <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.storage}</p>
+        )}
         <button onClick={handleStart}
           className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.99] transition-all">
           <Sparkles className="w-5 h-5" /> 이름 설계 시작 <ChevronRight className="w-5 h-5" />

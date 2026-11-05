@@ -1,10 +1,16 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Filter, Sparkles } from 'lucide-react';
 import { AnalysisResult, ModeBInput, Grade, GRADE_CONFIG } from '@/types';
-import { runModeBAnalysis, formatKoreanDate } from '@/lib/analysis';
+import { runModeBAnalysis, formatKoreanDate, applyHanjaSelections } from '@/lib/analysis';
+import { validateModeBInput } from '@/lib/inputValidation';
+import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
+import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
+import {
+  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, saveHanjaSelections, withSelection,
+} from '@/lib/hanjaModel';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
 import SajuSummary from '@/components/SajuSummary';
@@ -12,27 +18,33 @@ import PDFButton from '@/components/PDFButton';
 
 type FG = Grade | 'ALL';
 
+interface ModeBData { results: AnalysisResult[]; selections: HanjaSelections; scope: string }
+
+function runModeB(input: ModeBInput): ModeBData {
+  const scope = analysisScope(input);
+  const selections = loadHanjaSelections(HANJA_SELECTION_KEYS.modeB, scope);
+  return { results: applyHanjaSelections(runModeBAnalysis(input), selections), selections, scope };
+}
+
+const EMPTY: AnalysisResult[] = [];
+
 export default function ModeBResults() {
   const router = useRouter();
-  const [results, setResults] = useState<AnalysisResult[]>([]);
-  const [input, setInput] = useState<ModeBInput | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const state = useStoredAnalysis('dlbd_mode_b', validateModeBInput, runModeB);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [edited, setEdited] = useState<ModeBData | null>(null);
+  const current = edited ?? (state.status === 'ready' ? state.data : null);
+  const results = current?.results ?? EMPTY;
+  const input = state.status === 'ready' ? state.input : null;
   const [filterGrade, setFilterGrade] = useState<FG>('ALL');
   const [showCount, setShowCount] = useState(20);
 
-  useEffect(() => {
-    const raw = localStorage.getItem('dlbd_mode_b');
-    if (!raw) { setError('입력 데이터가 없습니다.'); setLoading(false); return; }
-    try {
-      const parsed: ModeBInput = JSON.parse(raw);
-      setInput(parsed);
-      setTimeout(() => {
-        setResults(runModeBAnalysis(parsed));
-        setLoading(false);
-      }, 60);
-    } catch { setError('데이터 오류'); setLoading(false); }
-  }, []);
+  const handleHanjaSelect = (fullName: string, index: number, hanja: string) => {
+    if (!current) return;
+    const next = withSelection(current.selections, fullName, index, hanja);
+    setSaveFailed(!saveHanjaSelections(HANJA_SELECTION_KEYS.modeB, current.scope, next));
+    setEdited({ ...current, results: applyHanjaSelections(current.results, next), selections: next });
+  };
 
   const gc = useMemo(() => {
     const c: Record<FG, number> = { ALL: results.length, SS: 0, S: 0, A: 0, B: 0, C: 0 };
@@ -52,7 +64,7 @@ export default function ModeBResults() {
     return { fourPillars: fp, sajuBalance: getSajuOhaengBalance(fp) };
   }, [input, results]);
 
-  if (loading) return (
+  if (state.status === 'loading') return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <Loader2 className="w-10 h-10 animate-spin text-violet-500" />
       <p className="font-bold text-slate-700">이름 설계 분석 중...</p>
@@ -60,11 +72,8 @@ export default function ModeBResults() {
     </div>
   );
 
-  if (error) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-3">
-      <p className="text-red-600">{error}</p>
-      <button onClick={() => router.push('/mode-b')} className="text-sm text-violet-600 underline">입력으로</button>
-    </div>
+  if (state.status === 'error') return (
+    <AnalysisErrorPanel error={state.error} onBack={() => router.push('/mode-b')} />
   );
 
   return (
@@ -134,6 +143,11 @@ export default function ModeBResults() {
           </div>
         </div>
 
+        {saveFailed && (
+          <p role="status" className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            선택한 한자를 브라우저에 저장하지 못했습니다. 이 화면에서는 반영되지만 새로고침하면 사라질 수 있습니다.
+          </p>
+        )}
         {/* 이름 목록 */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -146,7 +160,7 @@ export default function ModeBResults() {
           <div className="space-y-3">
             {filtered.slice(0, showCount).map((r, i) => (
               <div key={r.id} className="fade-up">
-                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} />
+                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} onHanjaSelect={handleHanjaSelect} />
               </div>
             ))}
             {showCount < filtered.length && (

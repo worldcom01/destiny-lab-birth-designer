@@ -53,7 +53,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
         <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-800">'{hangul}' 한자 정보</h3>
+            <h3 className="font-bold text-slate-800">{`'${hangul}' 한자 정보`}</h3>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>

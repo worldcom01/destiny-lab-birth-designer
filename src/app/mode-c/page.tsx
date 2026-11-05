@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { ClipboardCheck, ChevronRight, Sparkles, ArrowLeft, Calendar, Plus, Trash2, Info } from 'lucide-react';
 import { ModeCInput, Gender } from '@/types';
 import TimeSelector from '@/components/TimeSelector';
+import { validateModeCInput } from '@/lib/inputValidation';
+import { writeStoredInput } from '@/lib/storage';
+import { parseKoreanName } from '@/lib/nameParser';
 
 export default function ModeCPage() {
   const router = useRouter();
@@ -27,9 +30,20 @@ export default function ModeCPage() {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!birthDate) e.date = '출생일을 선택해주세요';
-    const validNames = names.filter(n => n.trim().length >= 2);
-    if (validNames.length === 0) e.names = '이름을 최소 1개 입력해주세요 (성+이름 2자 이상)';
+    // Date/time rules are shared with the engine boundary (validateModeCInput).
+    const structural = validateModeCInput({ birthDate, birthHour, gender, names: ['-'] });
+    if (!structural.ok) {
+      for (const issue of structural.issues) e[issue.field] = e[issue.field] ? `${e[issue.field]} / ${issue.message}` : issue.message;
+    }
+    const entered = names.filter(n => n.trim());
+    const problems = entered
+      .map(n => ({ n, p: parseKoreanName(n) }))
+      .filter(({ p }) => !p.ok)
+      .map(({ n, p }) => `‘${n.trim()}’: ${p.ok ? '' : p.message}`);
+    const fullNames = entered.map(parseKoreanName).flatMap(p => p.ok ? [p.surname + p.given] : []);
+    if (new Set(fullNames).size !== fullNames.length) problems.push('같은 이름이 두 번 이상 입력되었습니다');
+    if (entered.length === 0) e.names = '이름을 최소 1개 입력해주세요 (성+이름 2자 이상)';
+    else if (problems.length > 0) e.names = problems.join(' / ');
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -38,13 +52,14 @@ export default function ModeCPage() {
     if (!validate()) return;
     const input: ModeCInput = {
       birthDate, birthHour, gender,
-      names: names.filter(n => n.trim().length >= 2),
+      names: names.filter(n => n.trim()).map(n => n.trim()),
     };
-    localStorage.setItem('dlbd_mode_c', JSON.stringify(input));
+    const saved = writeStoredInput('dlbd_mode_c', input);
+    if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-c/results');
   };
 
-  const validCount = names.filter(n => n.trim().length >= 2).length;
+  const validCount = names.filter(n => parseKoreanName(n).ok).length;
 
   return (
     <div className="min-h-screen bg-[#F4F6F9]">
@@ -80,7 +95,12 @@ export default function ModeCPage() {
             <span className="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-black">2</span>
             출생 시간 (확정)
           </h2>
-          <TimeSelector value={birthHour} onChange={setBirthHour} />
+          <TimeSelector value={birthHour} onChange={h => { setBirthHour(h); setErrors(p => ({ ...p, time: '' })); }} />
+          <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
+            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 자시(23:00~01:00)는 선택한 날짜의 일주로 계산 ·
+            선택한 시진 안에 절기 전환이 있으면 정확한 시각이 필요해 분석하지 않습니다
+          </p>
+          {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}
         </section>
 
         {/* 3. 성별 */}
@@ -140,6 +160,8 @@ export default function ModeCPage() {
             <Info className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
             <div className="text-xs text-slate-500 space-y-0.5">
               <p>성씨 포함 전체 이름을 입력해주세요 (예: 김민준, 이서아)</p>
+              <p>복성이거나 성·이름 구분이 애매하면 띄어 써 주세요 (예: 남궁 민)</p>
+              <p>한자는 결과 화면에서 직접 선택하며, 선택하기 전에는 미지정으로 표시됩니다</p>
               <p>이름 데이터베이스에 없는 글자는 발음오행으로 기본 분석합니다</p>
             </div>
           </div>
@@ -154,6 +176,9 @@ export default function ModeCPage() {
           </div>
         )}
 
+        {errors.storage && (
+          <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.storage}</p>
+        )}
         <button onClick={handleStart}
           className="w-full py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.99] transition-all">
           <Sparkles className="w-5 h-5" /> 이름 평가 시작 <ChevronRight className="w-5 h-5" />

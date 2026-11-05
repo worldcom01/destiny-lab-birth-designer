@@ -1,5 +1,6 @@
 import { DesignerInput, GeneratedName, ImageType, OhaengType, NameCharData, NameStyle } from '@/types';
 import { getCharsByGender, findDolrimChar } from '@/data/nameChars';
+import { buildSurnameHanja, confirmedChar, suggestedCharFromProfile, syncProfile } from './hanjaModel';
 
 // ─── 이름 스타일 → 오행 선호 매핑 ───────────────────────────────────────────
 const STYLE_OHAENG_WEIGHTS: Record<NameStyle, Record<OhaengType, number>> = {
@@ -111,7 +112,7 @@ const HANGUL_ONLY_WORDS = new Set([
   '새벽', '노을', '무지개', '미소', '행복', '사랑', '기쁨', '보람', '슬기',
 ]);
 
-function isValidNameChar(hangul: string): boolean {
+export function isValidNameChar(hangul: string): boolean {
   // 2자 이상 순 우리말 단어 차단
   if (HANGUL_ONLY_WORDS.has(hangul)) return false;
   // 한 글자이고 완성형 한글이면 허용 (DB에 있는 글자)
@@ -127,8 +128,12 @@ export function generateCandidateNames(input: DesignerInput): GeneratedName[] {
   const results: GeneratedName[] = [];
 
   // 돌림자 검증: 순 우리말 단어(훈)는 이름에 사용 불가
+  // Invalid constraints are rejected, never silently dropped (see classifyDolrim).
   const rawDolrim = input.dolrimChar?.trim() ?? '';
-  const dolrimData = rawDolrim && isValidNameChar(rawDolrim)
+  if (rawDolrim && !isValidNameChar(rawDolrim)) {
+    throw new RangeError(`Invalid generational character: ${rawDolrim}`);
+  }
+  const dolrimData = rawDolrim
     ? findDolrimChar(rawDolrim) ?? {
         hangul: rawDolrim,
         hanja: '?',
@@ -142,6 +147,16 @@ export function generateCandidateNames(input: DesignerInput): GeneratedName[] {
         images: [] as ImageType[],
       }
     : null;
+
+  // Canonical Hanja of the generational character: the user's confirmed choice,
+  // otherwise the profile's suggestion. An incompatible confirmed choice is an error.
+  let dolrimHanja = dolrimData ? suggestedCharFromProfile(dolrimData) : null;
+  if (input.dolrimHanja) {
+    const confirmed = dolrimData ? confirmedChar(dolrimData.hangul, input.dolrimHanja) : null;
+    if (!confirmed) throw new RangeError(`Generational Hanja ${input.dolrimHanja} does not match ${rawDolrim || '(none)'}`);
+    dolrimHanja = confirmed;
+  }
+  const surnameHanja = buildSurnameHanja(input.surname);
 
   const seen = new Set<string>();
 
@@ -157,7 +172,14 @@ export function generateCandidateNames(input: DesignerInput): GeneratedName[] {
 
     seen.add(given);
     const quality = calcNameQuality(char1, char2, input.images, nameStyles);
-    results.push({ full, surname: input.surname, given, gender: input.gender, char1, char2, nameQualityScore: quality });
+    const h1 = char1 === dolrimData && dolrimHanja ? dolrimHanja : suggestedCharFromProfile(char1);
+    const h2 = char2 === dolrimData && dolrimHanja ? dolrimHanja : suggestedCharFromProfile(char2);
+    results.push({
+      full, surname: input.surname, given, gender: input.gender,
+      char1: syncProfile(char1, h1), char2: syncProfile(char2, h2),
+      nameQualityScore: quality,
+      hanja: { surname: surnameHanja, given: [h1, h2] },
+    });
   };
 
   if (dolrimData) {

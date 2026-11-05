@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/types';
 import OhaengChart from './OhaengChart';
 import HanjaDisplay from './HanjaDisplay';
+import { hanjaStatusLabel } from '@/lib/hanjaModel';
 
 const GRADE_RING: Record<string, string> = {
   SS: 'ring-2 ring-amber-400 shadow-amber-100 shadow-md',
@@ -24,7 +25,12 @@ const SCORE_KEYS: { key: keyof AnalysisResult['scores']; label: string }[] = [
   { key: 'yinYangHarmony',       label: '음양 조화' },
 ];
 
-export default function NameRankCard({ result, rank }: { result: AnalysisResult; rank?: number }) {
+export default function NameRankCard({ result, rank, onHanjaSelect }: {
+  result: AnalysisResult;
+  rank?: number;
+  /** Lifts a Hanja choice to the page-level selection state (persisted there). */
+  onHanjaSelect?: (fullName: string, index: number, hanja: string) => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const g = result.grade;
   const gc = GRADE_CONFIG[g];
@@ -54,6 +60,7 @@ export default function NameRankCard({ result, rank }: { result: AnalysisResult;
               <span className="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
                 {result.nameAnalysis.hanja}
               </span>
+              <span className="text-[10px] text-slate-400">{hanjaStatusLabel(result.name.hanja)}</span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full border ${
                 result.name.gender === '남'
                   ? 'bg-blue-50 text-blue-600 border-blue-200'
@@ -132,9 +139,8 @@ export default function NameRankCard({ result, rank }: { result: AnalysisResult;
           {/* 한자 분석 */}
           <div className="mb-5">
             <HanjaDisplay
-              surname={result.name.surname}
-              char1={{ hangul: result.name.char1.hangul, defaultHanja: result.name.char1.hanja, defaultMeaning: result.name.char1.meaning }}
-              char2={{ hangul: result.name.char2.hangul, defaultHanja: result.name.char2.hanja, defaultMeaning: result.name.char2.meaning }}
+              model={result.name.hanja}
+              onSelect={onHanjaSelect ? (index, opt) => onHanjaSelect(result.name.full, index, opt.hanja) : undefined}
               weakestOhaeng={(() => {
                 const b = result.sajuOhaengBalance;
                 const min = Math.min(b.목, b.화, b.토, b.금, b.수);

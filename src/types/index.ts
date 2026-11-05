@@ -92,14 +92,38 @@ export interface NameCharData {
   images: ImageType[];
 }
 
+// ─── Canonical Hanja model ────────────────────────────────────────────────────
+// 'confirmed'  : explicitly chosen by the user
+// 'suggested'  : assigned by the system as a recommendation (must be labelled)
+// 'unassigned' : no Hanja (not selected, or no data for the syllable)
+export type HanjaStatus = 'confirmed' | 'suggested' | 'unassigned';
+
+export interface NameCharHanja {
+  hangul: string;               // one syllable
+  hanja: string | null;         // null when unassigned
+  status: HanjaStatus;
+  meaning: string | null;       // meaning of exactly this hanja (null if unknown)
+  strokes: number | null;       // strokes of exactly this hanja (null if unknown)
+  jaWonOhaeng: OhaengType | null;
+  inDatabase: boolean;          // exact hanja found in the bundled hanja tables
+}
+
+export interface NameHanjaModel {
+  surname: NameCharHanja[];     // one entry per surname syllable (compound surnames keep all)
+  given: NameCharHanja[];       // one entry per given-name syllable (1-3)
+}
+
 export interface GeneratedName {
   full: string;     // 성 + 이름 (e.g., 김민준)
-  surname: string;  // 성 (e.g., 김)
+  surname: string;  // 성 (e.g., 김, 남궁)
   given: string;    // 이름 (e.g., 민준)
   gender: Gender;
+  // Syllable scoring profiles (modernity, style fit, images). Their hanja/meaning
+  // fields mirror `hanja.given[0..1]` ('?' when unassigned) and must not be used for display.
   char1: NameCharData;
-  char2: NameCharData;
+  char2: NameCharData;  // same as char1 for one-syllable given names
   nameQualityScore: number;
+  hanja: NameHanjaModel; // canonical Hanja for every syllable: the single source for UI, text and PDF
 }
 
 export interface NameAnalysis {
@@ -135,6 +159,8 @@ export interface AnalysisResult {
   name: GeneratedName;
   date: Date;
   hour: number;
+  minute: number;
+  timeSlot?: TimeSlot;     // Mode A: the permitted slot this result represents
   fourPillars: FourPillars;
   sajuOhaengBalance: OhaengBalance;
   combinedOhaengBalance: OhaengBalance;
@@ -144,19 +170,42 @@ export interface AnalysisResult {
   characteristics: string[];
   description: string;
   imageMatches: ImageType[];
+  context: { images: ImageType[]; nameStyles: NameStyle[] }; // inputs needed to re-derive this result
   rank?: number;
+}
+
+// ─── Medically permitted scheduling window (Mode A) ──────────────────────────
+// Supplied by the user from their medical provider. A hard filter only: it is
+// never scored. Times are KST wall clock "HH:mm".
+export interface TimeRange {
+  start: string; // inclusive
+  end: string;   // exclusive; "00:00" means the end of the day (24:00)
+}
+
+export interface MedicalSchedule {
+  providerConfirmed: boolean; // user confirmed the window comes from their medical provider
+  timeRanges: TimeRange[];    // permitted daily ranges, applied to every date in the range
+  exactTimes: string[];       // permitted specific times "HH:mm"
+}
+
+/** Permitted time a Mode A result was evaluated for. end null = an exact time. */
+export interface TimeSlot {
+  start: string;
+  end: string | null;
 }
 
 export interface DesignerInput {
   startDate: string;
   endDate: string;
+  schedule?: MedicalSchedule; // required by Mode A; absent in legacy stored inputs
   surname: string;
   gender: Gender;
   dolrimChar: string;
   dolrimPosition: 'first' | 'second' | 'auto';
+  dolrimHanja?: string;      // user-confirmed hanja of the generational character
   images: ImageType[];
   nameStyles: NameStyle[];   // NEW: 이름 스타일 선호도
-  analysisLevel: AnalysisLevel;
+  analysisLevel?: AnalysisLevel; // legacy; Mode A now evaluates the permitted time slots only
 }
 
 // ─── Mode B Input ────────────────────────────────────────────────────────────
@@ -167,6 +216,7 @@ export interface ModeBInput {
   gender: Gender;
   dolrimChar: string;
   dolrimPosition: 'first' | 'second' | 'auto';
+  dolrimHanja?: string;      // user-confirmed hanja of the generational character
   images: ImageType[];
   nameStyles: NameStyle[];   // NEW
 }
@@ -176,7 +226,7 @@ export interface ModeCInput {
   birthDate: string;
   birthHour: number;
   gender: Gender;
-  names: string[];         // user-provided full names e.g. ["김민준", "김도윤"]
+  names: string[];         // user-provided full names e.g. ["김민준", "남궁 민"] (a space separates surname/given)
 }
 
 // 시진 선택지

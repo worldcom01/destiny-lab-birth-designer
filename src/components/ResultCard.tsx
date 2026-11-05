@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/types';
 import { getDisplayHour, getHourLabel } from '@/lib/saju';
 import { formatKoreanDate } from '@/lib/analysis';
+import { formatTimeSlot } from '@/lib/schedule';
 import OhaengChart from './OhaengChart';
 
 const SCORE_LABELS: { key: keyof AnalysisResult['scores']; label: string }[] = [
@@ -61,8 +62,8 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
             </div>
             <p className="text-sm text-slate-600 mt-0.5">{formatKoreanDate(result.date)}</p>
             <p className="text-sm font-medium text-slate-700 mt-0.5">
-              {getDisplayHour(result.hour)}
-              <span className="text-xs text-slate-400 ml-2">{getHourLabel(result.hour)}</span>
+              {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)}
+              <span className="text-xs text-slate-400 ml-2">{result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getHourLabel(result.hour)}</span>
             </p>
             {/* 한자 의미 */}
             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">

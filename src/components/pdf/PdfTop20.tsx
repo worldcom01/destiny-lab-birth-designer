@@ -3,6 +3,7 @@ import { PdfPage, SectionLabel, GoldDivider } from './PdfPage';
 import { AnalysisResult, OHAENG_COLORS, OhaengType, Grade } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
 import { getDisplayHour } from '@/lib/saju';
+import { formatTimeSlot } from '@/lib/schedule';
 
 interface Props {
   results: AnalysisResult[];  // TOP 10 per page
@@ -98,7 +99,7 @@ export default function PdfTop20({ results, startRank, pageNum, totalPages, titl
             </div>
             {/* Time */}
             <div style={{ fontSize: '9px', color: '#475569' }}>
-              {getDisplayHour(r.hour)}
+              {r.timeSlot ? formatTimeSlot(r.timeSlot) : getDisplayHour(r.hour)}
             </div>
             {/* Overall */}
             <div style={{ fontSize: '12px', fontWeight: 800, color: GRADE_COLOR[r.grade], textAlign: 'center' }}>

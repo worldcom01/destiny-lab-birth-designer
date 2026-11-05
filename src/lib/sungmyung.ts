@@ -1,5 +1,6 @@
 import { OhaengType, OhaengBalance, NameAnalysis, ImageType } from '@/types';
 import { GeneratedName } from '@/types';
+import { formatGivenHanja, givenMeanings } from './hanjaModel';
 
 const CHOSUNG_OHAENG: Record<number, OhaengType> = {
   0: '목', 1: '목',           // ㄱ, ㄲ
@@ -83,9 +84,9 @@ export function analyzeNameFromGenerated(
     imageMatchScore = Math.min(50 + count * 15, 100);
   }
 
-  // 한자 및 의미 조합
-  const hanja = `${name.char1.hanja}${name.char2.hanja}`;
-  const meanings = [name.char1.meaning, name.char2.meaning];
+  // 한자 및 의미 조합 (canonical Hanja model)
+  const hanja = formatGivenHanja(name.hanja);
+  const meanings = givenMeanings(name.hanja);
 
   return {
     name: name.full,

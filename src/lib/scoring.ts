@@ -1,5 +1,6 @@
 import { FourPillars, OhaengBalance, OhaengType, NameAnalysis, Grade, Scores, ImageType, GeneratedName, NameStyle } from '@/types';
 import { getYinYangCounts } from './saju';
+import { UNASSIGNED_MEANING } from './hanjaModel';
 
 // ─── 오행 균형 점수 ─────────────────────────────────────────────────────────
 export function calcOhaengBalanceScore(bal: OhaengBalance): number {
@@ -207,8 +208,8 @@ export function getCharacteristics(
   const present = Object.values(sajuBal).filter(v => v > 0).length;
 
   const ohaengTraits: Record<OhaengType, string> = {
-    목: '성장·창의 성향', 화: '리더십·열정 성향',
-    토: '안정·신뢰 기질', 금: '분석·결단 성향', 수: '학습·지혜 적성',
+    목: '목 기운 중심(생장 상징)', 화: '화 기운 중심(표현 상징)',
+    토: '토 기운 중심(조화 상징)', 금: '금 기운 중심(결실 상징)', 수: '수 기운 중심(지혜 상징)',
   };
 
   if (dominantRatio > 0.3) tags.push(ohaengTraits[dominant]);
@@ -247,28 +248,31 @@ export function generateDescription(
   const present = Object.values(sajuBal).filter(v => v > 0).length;
 
   const descs: Record<OhaengType, string> = {
-    목: '성장과 창의적 사고를 즐기는 성향이 나타납니다',
-    화: '활발하고 표현력 있는 리더십 기질이 보입니다',
-    토: '안정적이고 신뢰를 중시하는 기질이 형성됩니다',
-    금: '논리적 사고와 결단력 있는 성향이 두드러집니다',
-    수: '깊은 학습 적성과 지적 호기심이 강한 성향입니다',
+    목: '전통 해석에서 이 사주의 중심 기운인 목(木)은 생장과 어짊을 상징합니다',
+    화: '전통 해석에서 이 사주의 중심 기운인 화(火)는 밝음과 표현을 상징합니다',
+    토: '전통 해석에서 이 사주의 중심 기운인 토(土)는 중심과 믿음을 상징합니다',
+    금: '전통 해석에서 이 사주의 중심 기운인 금(金)은 결실과 의로움을 상징합니다',
+    수: '전통 해석에서 이 사주의 중심 기운인 수(水)는 저장과 지혜를 상징합니다',
   };
 
   const balanceText = present >= 4
-    ? '오행이 고르게 분포하여 균형 있는 발달 가능성이 높습니다. '
-    : '사주의 주요 오행이 뚜렷한 방향성을 제시합니다. ';
+    ? '전통적 오행 해석에서는 이러한 분포를 균형 있는 구성으로 봅니다. '
+    : '전통적 오행 해석에서는 특정 오행이 두드러진 구성으로 봅니다. ';
 
   const styleText = nameStyles.length > 0
     ? `${nameStyles[0]} 스타일에 어울리는 이름입니다. `
     : imageMatches.length > 0
-      ? `이름과 사주의 조합이 ${imageMatches[0]} 성향과 잘 어우러집니다. `
+      ? `이름 글자가 선택하신 '${imageMatches[0]}' 이미지 분류와 연결됩니다. `
       : '';
 
-  const hanjaText = `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})은 `;
-  const meaningText = nameAnalysis.meanings
-    .map(m => m.split(' — ')[1] ?? m)
-    .join('·')
-    .substring(0, 20) + '의 의미를 담고 있습니다. ';
+  // Only Hanja that are actually assigned contribute a meaning sentence.
+  const assignedMeanings = nameAnalysis.meanings.filter(m => m !== UNASSIGNED_MEANING);
+  const hanjaSentence = assignedMeanings.length === 0
+    ? ''
+    : `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})은 ` + assignedMeanings
+      .map(m => m.split(' — ')[1] ?? m)
+      .join('·')
+      .substring(0, 20) + '의 의미를 담고 있습니다. ';
 
-  return `${balanceText}${styleText}${hanjaText}${meaningText}${descs[dominant] ?? '균형 잡힌 사주 구조입니다'}. 전통 명리학·현대 선호도를 함께 고려한 참고 분석입니다.`;
+  return `${balanceText}${styleText}${hanjaSentence}${descs[dominant] ?? '균형 잡힌 사주 구조입니다'}. 전통 명리학·현대 선호도를 함께 고려한 참고 분석입니다.`;
 }

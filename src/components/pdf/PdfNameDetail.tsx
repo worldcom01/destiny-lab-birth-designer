@@ -1,9 +1,11 @@
 import React from 'react';
 import { PdfPage, SectionLabel, GoldDivider, OhaengBar, ScoreMeter } from './PdfPage';
-import { AnalysisResult, OHAENG_COLORS, GRADE_CONFIG, OhaengType } from '@/types';
+import { AnalysisResult, OHAENG_COLORS, GRADE_CONFIG, OhaengType, NameCharHanja } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
 import { getDisplayHour, getHourLabel } from '@/lib/saju';
-import { findSurnameHanja, getHanjaOptions, getSuriOhaeng } from '@/data/hanjaDB';
+import { formatTimeSlot } from '@/lib/schedule';
+import { getSuriOhaeng } from '@/data/hanjaDB';
+import { STATUS_LABEL, UNASSIGNED_MARK, formatFullHanja, hanjaStatusLabel, totalStrokes } from '@/lib/hanjaModel';
 
 interface Props {
   result: AnalysisResult;
@@ -41,22 +43,27 @@ function PillarCard({ label, pillar }: {
   );
 }
 
-function HanjaCharCard({ hangul, hanja, meaning, strokes, jaWon, suri }: {
-  hangul: string; hanja: string; meaning: string; strokes?: number; jaWon?: OhaengType; suri?: OhaengType;
-}) {
+function HanjaCharCard({ caption, char }: { caption: string; char: NameCharHanja }) {
+  const jaWon = char.jaWonOhaeng;
+  const suri = char.strokes != null ? getSuriOhaeng(char.strokes) : null;
   return (
-    <div style={{
+    <div data-hanja-char={char.hanja ?? ''} data-hanja-status={char.status} style={{
       flex: 1, textAlign: 'center',
       backgroundColor: '#FAFBFC', borderRadius: '10px',
       border: '1px solid #E2E8F0', padding: '16px 8px',
     }}>
-      <div style={{ fontSize: '36px', fontWeight: 900, color: '#0D1B2A', lineHeight: 1, marginBottom: '6px' }}>{hanja}</div>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>{hangul}</div>
-      <div style={{ fontSize: '10px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>
-        {meaning.split(' — ').map((m, i) => <div key={i}>{m}</div>)}
+      <div style={{ fontSize: '36px', fontWeight: 900, color: char.hanja ? '#0D1B2A' : '#CBD5E1', lineHeight: 1, marginBottom: '6px' }}>
+        {char.hanja ?? UNASSIGNED_MARK}
       </div>
-      {strokes != null && (
-        <div style={{ fontSize: '10px', color: '#94A3B8' }}>{strokes}획</div>
+      <div style={{ fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>{caption}</div>
+      <div style={{ fontSize: '9px', fontWeight: 700, color: char.status === 'confirmed' ? '#4F46E5' : '#94A3B8', marginBottom: '4px' }}>
+        {STATUS_LABEL[char.status]}
+      </div>
+      <div style={{ fontSize: '10px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>
+        {char.hanja ? (char.meaning ?? '뜻 정보 없음') : '한자 미지정'}
+      </div>
+      {char.hanja && (
+        <div style={{ fontSize: '10px', color: '#94A3B8' }}>{char.strokes != null ? `${char.strokes}획` : '획수 미확인'}</div>
       )}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
         {jaWon && (
@@ -80,20 +87,10 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
   const ohaengTotal = Object.values(ohaeng).reduce((a, b) => a + b, 0);
   const gc = GRADE_CONFIG[result.grade];
 
-  // Hanja data
-  const surnameHanja = findSurnameHanja(result.name.surname);
-  const char1Opts = getHanjaOptions(result.name.char1.hangul);
-  const char2Opts = getHanjaOptions(result.name.char2.hangul);
-  const char1H = char1Opts[0];
-  const char2H = char2Opts[0];
-
-  const hanjaNameDisplay = [
-    surnameHanja?.hanja ?? result.name.surname,
-    char1H?.hanja ?? result.name.char1.hanja,
-    char2H?.hanja ?? result.name.char2.hanja,
-  ].join('');
-
-  const totalStrokes = (surnameHanja?.strokes ?? 0) + (char1H?.strokes ?? 0) + (char2H?.strokes ?? 0);
+  // Hanja data: canonical model only (no independent lookup or fallback)
+  const model = result.name.hanja;
+  const hanjaNameDisplay = formatFullHanja(model);
+  const strokesSum = totalStrokes([...model.surname, ...model.given]);
 
   return (
     <PdfPage pageNum={pageNum} totalPages={totalPages}>
@@ -123,13 +120,14 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
             <span style={{ fontSize: '18px', color: '#C9A84C', fontFamily: 'monospace', fontWeight: 700 }}>{hanjaNameDisplay}</span>
           </div>
           <div style={{ fontSize: '12px', color: '#64748B' }}>
-            {formatKoreanDate(result.date)} · {getDisplayHour(result.hour)} · {getHourLabel(result.hour)}
+            {formatKoreanDate(result.date)} · {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)} · {result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getHourLabel(result.hour)}
           </div>
-          {totalStrokes > 0 && (
-            <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>
-              총 획수 {totalStrokes}획 · 수리오행 {getSuriOhaeng(totalStrokes)}
-            </div>
-          )}
+          <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>
+            {hanjaStatusLabel(model)}
+            {strokesSum != null
+              ? ` · 총 획수 ${strokesSum}획 · 수리오행 ${getSuriOhaeng(strokesSum)}`
+              : ' · 획수 합계 미산출 (미지정·미확인 글자 포함)'}
+          </div>
         </div>
       </div>
 
@@ -141,36 +139,12 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
           한자 분석
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          {surnameHanja && (
-            <HanjaCharCard
-              hangul={result.name.surname + '씨'}
-              hanja={surnameHanja.hanja}
-              meaning={surnameHanja.meaning}
-              strokes={surnameHanja.strokes}
-              jaWon={surnameHanja.jaWonOhaeng}
-              suri={getSuriOhaeng(surnameHanja.strokes)}
-            />
-          )}
-          {char1H && (
-            <HanjaCharCard
-              hangul={result.name.char1.hangul}
-              hanja={char1H.hanja}
-              meaning={char1H.meaning}
-              strokes={char1H.strokes}
-              jaWon={char1H.jaWonOhaeng}
-              suri={getSuriOhaeng(char1H.strokes)}
-            />
-          )}
-          {char2H && (
-            <HanjaCharCard
-              hangul={result.name.char2.hangul}
-              hanja={char2H.hanja}
-              meaning={char2H.meaning}
-              strokes={char2H.strokes}
-              jaWon={char2H.jaWonOhaeng}
-              suri={getSuriOhaeng(char2H.strokes)}
-            />
-          )}
+          {model.surname.map((c, i) => (
+            <HanjaCharCard key={`s${i}`} caption={model.surname.length === 1 ? `${c.hangul}씨` : c.hangul} char={c} />
+          ))}
+          {model.given.map((c, i) => (
+            <HanjaCharCard key={`g${i}`} caption={c.hangul} char={c} />
+          ))}
         </div>
       </div>
 
