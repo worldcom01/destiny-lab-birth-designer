@@ -174,11 +174,20 @@ function checkSchedule(v: unknown, issues: InputIssue[]): v is MedicalSchedule {
   if (v.providerConfirmed !== true) {
     issues.push({ field: 'confirm', message: '날짜·시간 범위가 담당 의료진이 허용한 범위인지 확인해주세요' });
   }
-  const ranges = v.timeRanges;
-  const exact = v.exactTimes;
+  const timeIssues = validateScheduleTimes(v.timeRanges, v.exactTimes);
+  issues.push(...timeIssues);
+  return timeIssues.length === 0;
+}
+
+/**
+ * Permitted-time rules shared by the engine (via checkSchedule) and the Mode A
+ * form's selection-state display, so both always agree.
+ */
+export function validateScheduleTimes(ranges: unknown, exact: unknown): InputIssue[] {
+  const issues: InputIssue[] = [];
   if (!Array.isArray(ranges) || !Array.isArray(exact)) {
     issues.push({ field: 'time', message: '허용 시간대 정보가 올바르지 않습니다' });
-    return false;
+    return issues;
   }
   if (ranges.length > MAX_TIME_RANGES || exact.length > MAX_EXACT_TIMES) {
     issues.push({ field: 'time', message: `허용 시간대는 구간 ${MAX_TIME_RANGES}개, 특정 시각 ${MAX_EXACT_TIMES}개까지 입력할 수 있습니다` });
@@ -201,11 +210,10 @@ function checkSchedule(v: unknown, issues: InputIssue[]): v is MedicalSchedule {
       valid = false;
     }
   });
-  if (valid && isScheduleEmpty(normalizeSchedule(v as unknown as MedicalSchedule))) {
+  if (valid && isScheduleEmpty(normalizeSchedule({ providerConfirmed: true, timeRanges: ranges, exactTimes: exact }))) {
     issues.push({ field: 'time', message: '의료진이 허용한 시간대를 1개 이상 입력해주세요. 허용 시간이 없으면 분석할 수 없습니다' });
-    valid = false;
   }
-  return valid;
+  return issues;
 }
 
 export function validateDesignerInput(raw: unknown): Validation<ValidDesignerInput> {

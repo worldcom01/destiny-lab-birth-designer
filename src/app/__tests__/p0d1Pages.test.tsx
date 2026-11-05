@@ -110,6 +110,8 @@ describe('H04 page-level: input persistence failures', () => {
 
   it('Mode A: SecurityError blocks navigation with a settings message', () => {
     render(<ModeAPage />);
+    // New inputs start with no permitted time; open a custom range explicitly.
+    fireEvent.click(screen.getByRole('button', { name: /직접 지정/ }));
     fireEvent.change(screen.getByLabelText('허용 구간 1 시작'), { target: { value: '09:00' } });
     fireEvent.change(screen.getByLabelText('허용 구간 1 종료'), { target: { value: '10:00' } });
     fireEvent.click(screen.getByLabelText(/담당 의료진이 허용한 범위임을 확인합니다/));

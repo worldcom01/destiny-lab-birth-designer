@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, User, ChevronRight, Sparkles, Info, Layers, ArrowLeft } from 'lucide-react';
 import { DesignerInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS, TimeRange } from '@/types';
 import { COMMON_SURNAMES } from '@/data/nameChars';
-import type { HanjaOption } from '@/data/hanjaDB';
+import { getHanjaOptions, type HanjaOption } from '@/data/hanjaDB';
 import { HanjaInputRow } from '@/components/HanjaInputRow';
 import { SUPPORTED_KST_DATE_RANGE } from '@/lib/calendar';
 import { dolrimNotice, validateDesignerInput } from '@/lib/inputValidation';
 import { writeStoredInput } from '@/lib/storage';
+import { MODE_A_STORAGE_KEY, TIME_PRESETS, hasRange, loadModeAFormInit, scheduleSelectionState, type SelectionStatus } from '@/lib/modeAForm';
 
 const ALL_IMAGES: ImageType[] = [
   '리더형', '학자형', '예술형', '사업가형', '창의형',
@@ -21,27 +22,62 @@ function getDays(s: string, e: string) {
   return Math.max(0, Math.floor((new Date(e).getTime() - new Date(s).getTime()) / 86400000) + 1);
 }
 
-export default function ModeAPage() {
-  const router = useRouter();
-  const base = new Date();
-  base.setFullYear(base.getFullYear() + 1);
-  const defStart = base.toISOString().split('T')[0];
-  const defEnd = new Date(base.getTime() + 6 * 86400000).toISOString().split('T')[0];
+const subscribeNoop = () => () => {};
 
-  const [startDate, setStartDate] = useState(defStart);
-  const [endDate, setEndDate] = useState(defEnd);
-  const [surname, setSurname] = useState('김');
-  const [gender, setGender] = useState<Gender>('남');
-  const [dolrimChar, setDolrimChar] = useState('');
-  const [dolrimPosition, setDolrimPosition] = useState<'first' | 'second' | 'auto'>('auto');
-  const [dolrimHanja, setDolrimHanja] = useState<HanjaOption | null>(null);
-  const [nameStyles, setNameStyles] = useState<NameStyle[]>([]);
-  const [images, setImages] = useState<ImageType[]>([]);
+const STATUS_CHIP: Record<SelectionStatus, { label: string; className: string }> = {
+  none: { label: '미선택', className: 'bg-slate-100 text-slate-600 border-slate-200' },
+  complete: { label: '선택 완료', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  error: { label: '입력 오류', className: 'bg-red-50 text-red-600 border-red-200' },
+};
+
+function RequiredBadge() {
+  return <span className="text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 rounded px-1.5 py-0.5">필수 입력</span>;
+}
+
+export default function ModeAPage() {
+  // Defaults depend on today's date (Asia/Seoul) and a previous input in
+  // localStorage, so the form renders on the client only: no build-time date
+  // and no hydration mismatch.
+  const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  return isClient
+    ? <ModeAForm />
+    : <div className="min-h-screen bg-[#F4F6F9] flex items-center justify-center text-sm text-slate-400" aria-busy="true">입력 화면을 준비하는 중…</div>;
+}
+
+function ModeAForm() {
+  const router = useRouter();
+  const [init] = useState(() => loadModeAFormInit(new Date()));
+
+  const [startDate, setStartDate] = useState(init.startDate);
+  const [endDate, setEndDate] = useState(init.endDate);
+  const [surname, setSurname] = useState(init.surname);
+  const [gender, setGender] = useState<Gender>(init.gender);
+  const [dolrimChar, setDolrimChar] = useState(init.dolrimChar);
+  const [dolrimPosition, setDolrimPosition] = useState<'first' | 'second' | 'auto'>(init.dolrimPosition);
+  const [dolrimHanja, setDolrimHanja] = useState<HanjaOption | null>(
+    () => (init.dolrimHanja && getHanjaOptions(init.dolrimChar).find(o => o.hanja === init.dolrimHanja)) || null,
+  );
+  const [nameStyles, setNameStyles] = useState<NameStyle[]>(init.nameStyles);
+  const [images, setImages] = useState<ImageType[]>(init.images);
   const [providerConfirmed, setProviderConfirmed] = useState(false);
-  // No default availability: every permitted time must come from the user.
-  const [timeRanges, setTimeRanges] = useState<TimeRange[]>([{ start: '', end: '' }]);
-  const [exactTimes, setExactTimes] = useState<string[]>([]);
+  // No default availability: a new input starts with zero permitted times.
+  const [timeRanges, setTimeRanges] = useState<TimeRange[]>(init.timeRanges);
+  const [exactTimes, setExactTimes] = useState<string[]>(init.exactTimes);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const selection = scheduleSelectionState(timeRanges, exactTimes);
+  const customRangeCount = timeRanges.filter(r => !TIME_PRESETS.some(p => p.range.start === r.start && p.range.end === r.end)).length;
+
+  const togglePreset = (range: TimeRange) => {
+    setTimeRanges(p => hasRange(p, range)
+      ? p.filter(r => !(r.start === range.start && r.end === range.end))
+      : [...p, { ...range }]);
+    setErrors(p => ({ ...p, time: '' }));
+  };
+  const addCustomRange = () => {
+    setTimeRanges(p => [...p, { start: '', end: '' }]);
+    setErrors(p => ({ ...p, time: '' }));
+  };
 
   const updateRange = (i: number, key: keyof TimeRange, v: string) => {
     setTimeRanges(p => p.map((r, j) => j === i ? { ...r, [key]: v } : r));
@@ -81,12 +117,17 @@ export default function ModeAPage() {
       return;
     }
     setErrors({});
-    const saved = writeStoredInput('dlbd_mode_a', result.value);
+    const saved = writeStoredInput(MODE_A_STORAGE_KEY, result.value);
     if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-a/results');
   };
 
   const days = getDays(startDate, endDate);
+  const requiredMissing = [
+    !(startDate && endDate) && '출산 기간',
+    selection.status !== 'complete' && '허용 시간',
+    !providerConfirmed && '의료진 확인',
+  ].filter(Boolean) as string[];
 
   return (
     <div className="min-h-screen bg-[#F4F6F9]">
@@ -108,7 +149,7 @@ export default function ModeAPage() {
         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
           <h2 className="flex items-center gap-2 font-bold text-slate-800 text-sm mb-4">
             <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-black">1</span>
-            <Calendar className="w-4 h-4 text-slate-400" /> 의료진이 허용한 출산 기간
+            <Calendar className="w-4 h-4 text-slate-400" /> 의료진이 허용한 출산 일정 <RequiredBadge />
           </h2>
           <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
             <Info className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
@@ -117,65 +158,123 @@ export default function ModeAPage() {
               입력한 범위 밖의 날짜·시간은 계산하거나 추천하지 않습니다. 전통 사주 점수는 건강·발달·의학적 결과를 예측하지 않습니다.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          {init.restoreNotice && (
+            <p role="status" className="text-xs text-indigo-800 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mb-3">{init.restoreNotice}</p>
+          )}
+          {init.dateNotice && (
+            <p role="alert" className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">{init.dateNotice}</p>
+          )}
+
+          {/* 시작일 · 종료일 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-1.5">시작일</label>
-              <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              <label htmlFor="mode-a-start" className="text-sm text-slate-700 font-semibold block mb-1.5">시작일</label>
+              <input id="mode-a-start" type="date" required value={startDate}
+                min={SUPPORTED_KST_DATE_RANGE.first} max={SUPPORTED_KST_DATE_RANGE.last}
+                onChange={e => { setStartDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
+                className="w-full min-h-[44px] px-3 py-2.5 border border-slate-200 rounded-xl text-base bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
             </div>
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-1.5">종료일</label>
-              <input type="date" value={endDate} min={startDate} onChange={e => { setEndDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              <label htmlFor="mode-a-end" className="text-sm text-slate-700 font-semibold block mb-1.5">종료일</label>
+              <input id="mode-a-end" type="date" required value={endDate}
+                min={startDate || SUPPORTED_KST_DATE_RANGE.first} max={SUPPORTED_KST_DATE_RANGE.last}
+                onChange={e => { setEndDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
+                className="w-full min-h-[44px] px-3 py-2.5 border border-slate-200 rounded-xl text-base bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
             </div>
           </div>
           {errors.date && <p className="text-xs text-red-500 mt-2">{errors.date}</p>}
-          {days > 0 && <p className="text-xs text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 mt-3">총 <strong>{days}일</strong> 범위 선택됨</p>}
+          {days > 0 && <p className="text-xs text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 mt-3">총 <strong>{days}일</strong> 범위 선택됨 (최대 30일)</p>}
 
-          {/* 허용 시간대 */}
-          <div className="mt-4 border-t border-slate-100 pt-4">
-            <p className="text-xs font-bold text-slate-700 mb-1">허용 시간대 <span className="font-normal text-slate-400">(매일 동일하게 적용)</span></p>
-            <p className="text-[11px] text-slate-400 mb-2.5">시작 시각 포함, 종료 시각 제외 · 종료 00:00은 자정(24:00) · 자정을 넘기는 구간은 두 개로 나눠 입력</p>
-            <div className="space-y-2">
-              {timeRanges.map((r, i) => (
-                <div key={`r${i}`} className="flex items-center gap-2">
-                  <input type="time" aria-label={`허용 구간 ${i + 1} 시작`} value={r.start} onChange={e => updateRange(i, 'start', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                  <span className="text-xs text-slate-400">~</span>
-                  <input type="time" aria-label={`허용 구간 ${i + 1} 종료`} value={r.end} onChange={e => updateRange(i, 'end', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                  <button type="button" onClick={() => setTimeRanges(p => p.filter((_, j) => j !== i))}
-                    className="text-[11px] text-slate-400 hover:text-red-400 px-1.5">삭제</button>
-                </div>
-              ))}
-              {exactTimes.map((t, i) => (
-                <div key={`t${i}`} className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-500 w-16">특정 시각</span>
-                  <input type="time" aria-label={`특정 시각 ${i + 1}`} value={t} onChange={e => updateExact(i, e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                  <button type="button" onClick={() => setExactTimes(p => p.filter((_, j) => j !== i))}
-                    className="text-[11px] text-slate-400 hover:text-red-400 px-1.5">삭제</button>
-                </div>
-              ))}
+          {/* 허용 시간 */}
+          {/* min-w-0: fieldsets default to min-width:min-content and would overflow on narrow screens */}
+          <fieldset className="mt-5 min-w-0 border-t border-slate-100 pt-4">
+            <legend className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-800">
+              의료진이 허용한 시간 <RequiredBadge />
+              <span data-testid="time-status" className={`text-[11px] font-bold border rounded-full px-2 py-0.5 ${STATUS_CHIP[selection.status].className}`}>
+                {STATUS_CHIP[selection.status].label}
+              </span>
+            </legend>
+            <p className="text-xs text-slate-500 mt-1.5 mb-3 leading-relaxed">
+              담당 의료진이 허용한 시간대를 직접 선택하세요. 오전·오후 버튼은 입력 편의를 위한 예시일 뿐 권장 시간이 아니며,
+              선택한 시간은 모든 날짜에 동일하게 적용됩니다.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2" role="group" aria-label="허용 시간 선택">
+              {TIME_PRESETS.map(p => {
+                const on = hasRange(timeRanges, p.range);
+                return (
+                  <button key={p.id} type="button" aria-pressed={on} onClick={() => togglePreset(p.range)}
+                    className={`min-h-[44px] px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${on ? 'border-indigo-500 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>
+                    {on ? '✓ ' : ''}{p.label} ({p.range.start}–{p.range.end})
+                  </button>
+                );
+              })}
+              <button type="button" aria-pressed={customRangeCount > 0} onClick={addCustomRange}
+                className={`min-h-[44px] px-3 py-2 rounded-xl border-2 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${customRangeCount > 0 ? 'border-indigo-500 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`}>
+                {customRangeCount > 0 ? '✓ ' : ''}직접 지정
+              </button>
             </div>
-            <div className="flex gap-2 mt-2.5">
-              <button type="button" onClick={() => setTimeRanges(p => [...p, { start: '', end: '' }])}
-                className="text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg">+ 시간 구간</button>
-              <button type="button" onClick={() => setExactTimes(p => [...p, ''])}
-                className="text-xs text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg">+ 특정 시각</button>
-            </div>
+
+            {(timeRanges.length > 0 || exactTimes.length > 0) && (
+              <div className="space-y-2 mt-3">
+                {timeRanges.map((r, i) => (
+                  // On narrow screens the delete button wraps below so both time inputs keep a readable width.
+                  <div key={`r${i}`} className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1">
+                    <div className="flex basis-full sm:basis-auto sm:flex-1 items-center gap-2 min-w-0">
+                    <input type="time" aria-label={`허용 구간 ${i + 1} 시작`} value={r.start} onChange={e => updateRange(i, 'start', e.target.value)}
+                      className="flex-1 min-w-0 min-h-[44px] px-2 py-2 border border-slate-200 rounded-xl text-base bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                    <span className="text-sm text-slate-400">~</span>
+                    <input type="time" aria-label={`허용 구간 ${i + 1} 종료`} value={r.end} onChange={e => updateRange(i, 'end', e.target.value)}
+                      className="flex-1 min-w-0 min-h-[44px] px-2 py-2 border border-slate-200 rounded-xl text-base bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                    </div>
+                    <button type="button" aria-label={`허용 구간 ${i + 1} 삭제`} onClick={() => setTimeRanges(p => p.filter((_, j) => j !== i))}
+                      className="ml-auto sm:ml-0 min-h-[44px] text-xs text-slate-500 hover:text-red-500 px-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">삭제</button>
+                  </div>
+                ))}
+                {exactTimes.map((t, i) => (
+                  <div key={`t${i}`} className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500 w-16 flex-shrink-0">특정 시각</span>
+                    <input type="time" aria-label={`특정 시각 ${i + 1}`} value={t} onChange={e => updateExact(i, e.target.value)}
+                      className="flex-1 min-w-0 min-h-[44px] px-2 py-2 border border-slate-200 rounded-xl text-base bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                    <button type="button" aria-label={`특정 시각 ${i + 1} 삭제`} onClick={() => setExactTimes(p => p.filter((_, j) => j !== i))}
+                      className="min-h-[44px] text-xs text-slate-500 hover:text-red-500 px-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">삭제</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button type="button" onClick={() => setExactTimes(p => [...p, ''])}
+              className="mt-2.5 min-h-[44px] text-sm text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">+ 특정 시각 추가</button>
+            <p className="text-xs text-slate-400 mt-2.5">시작 시각 포함, 종료 시각 제외 · 종료 00:00은 자정(24:00) · 자정을 넘기는 구간은 두 개로 나눠 입력</p>
             {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}
-            <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
+            <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
               시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 23:00~23:59는 같은 날짜의 자시로 계산 ·
               분석 가능 기간 {SUPPORTED_KST_DATE_RANGE.first} ~ {SUPPORTED_KST_DATE_RANGE.last}
             </p>
+          </fieldset>
+
+          {/* 선택한 일정 요약 */}
+          <div id="mode-a-schedule-summary" role="status" aria-live="polite"
+            className={`mt-4 rounded-xl border p-3 text-sm ${selection.status === 'complete' ? 'border-emerald-200 bg-emerald-50/60' : selection.status === 'error' ? 'border-red-200 bg-red-50/60' : 'border-slate-200 bg-slate-50'}`}>
+            <p className="text-xs font-bold text-slate-700 mb-1">선택한 일정</p>
+            <p className="text-slate-700">날짜: {startDate && endDate ? `${startDate} ~ ${endDate}${days > 0 ? ` (${days}일)` : ''}` : '미선택'}</p>
+            <p className="text-slate-700">
+              허용 시간: {selection.status === 'complete'
+                ? `${selection.summary.join(', ')} (매일, KST)`
+                : selection.status === 'error' ? '입력 오류 — 아래 내용을 확인해주세요' : '미선택 — 허용 시간을 선택해주세요'}
+            </p>
+            {selection.status === 'error' && (
+              <ul className="mt-1 text-xs text-red-600 list-disc pl-5">{selection.issues.map((m, i) => <li key={i}>{m}</li>)}</ul>
+            )}
           </div>
 
-          <label className="flex items-start gap-2 mt-4 cursor-pointer">
+          {/* 의료진 확인 (시간 선택과 별도) */}
+          <label className="flex items-start gap-2.5 mt-4 cursor-pointer min-h-[44px]">
             <input type="checkbox" checked={providerConfirmed}
               onChange={e => { setProviderConfirmed(e.target.checked); setErrors(p => ({ ...p, confirm: '' })); }}
-              className="mt-0.5 w-4 h-4 accent-indigo-600" />
-            <span className="text-xs text-slate-700">위 날짜·시간 범위는 담당 의료진이 허용한 범위임을 확인합니다</span>
+              className="mt-0.5 w-5 h-5 accent-indigo-600 flex-shrink-0" />
+            <span className="text-sm text-slate-700">
+              위 날짜·시간 범위는 담당 의료진이 허용한 범위임을 확인합니다 <RequiredBadge />
+              <span className="block text-xs text-slate-400 mt-0.5">시간을 선택하는 것만으로는 의료진 확인으로 간주하지 않습니다.</span>
+            </span>
           </label>
           {errors.confirm && <p className="text-xs text-red-500 mt-1.5">{errors.confirm}</p>}
         </section>
@@ -341,7 +440,11 @@ export default function ModeAPage() {
         {errors.storage && (
           <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{errors.storage}</p>
         )}
-        <button onClick={handleStart}
+        <p id="mode-a-required" role="status" aria-live="polite"
+          className={`text-sm text-center ${requiredMissing.length === 0 ? 'text-emerald-700' : 'text-slate-600'}`}>
+          {requiredMissing.length === 0 ? '필수 입력이 모두 완료되었습니다' : `필수 입력 미완료: ${requiredMissing.join(', ')}`}
+        </p>
+        <button onClick={handleStart} aria-describedby="mode-a-required"
           className="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/20 active:scale-[0.99] transition-all">
           <Sparkles className="w-5 h-5" /> 출생 설계 분석 시작 <ChevronRight className="w-5 h-5" />
         </button>
