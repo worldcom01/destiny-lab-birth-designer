@@ -3,8 +3,8 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Filter, Sparkles, TrendingUp } from 'lucide-react';
-import { AnalysisResult, Grade, GRADE_CONFIG, ImageType, IMAGE_LABELS } from '@/types';
-import { runModeAAnalysis } from '@/lib/analysis';
+import { Grade, GRADE_CONFIG, ImageType, IMAGE_LABELS } from '@/types';
+import { analyzeModeA } from '@/lib/analysis';
 import { validateDesignerInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
@@ -14,36 +14,33 @@ import OhaengChart from '@/components/OhaengChart';
 
 type FG = Grade | 'ALL';
 
-const EMPTY: AnalysisResult[] = [];
-
 export default function ModeAResults() {
   const router = useRouter();
-  const state = useStoredAnalysis('dlbd_mode_a', validateDesignerInput, runModeAAnalysis);
-  const results = state.status === 'ready' ? state.data : EMPTY;
+  const state = useStoredAnalysis('dlbd_mode_a', validateDesignerInput, analyzeModeA);
+  const results = state.status === 'ready' ? state.data : null;
   const input = state.status === 'ready' ? state.input : null;
   const [filterGrade, setFilterGrade] = useState<FG>('ALL');
   const [filterImage, setFilterImage] = useState<ImageType | ''>('');
   const [showCount, setShowCount] = useState(20);
 
-  const gc = useMemo(() => {
-    const c: Record<FG, number> = { ALL: results.length, SS: 0, S: 0, A: 0, B: 0, C: 0 };
-    for (const r of results) c[r.grade]++;
-    return c;
-  }, [results]);
+  const gc = useMemo((): Record<FG, number> => (
+    results ? { ALL: results.length, ...results.gradeCounts } : { ALL: 0, SS: 0, S: 0, A: 0, B: 0, C: 0 }
+  ), [results]);
 
-  const filtered = useMemo(() => {
-    let l = results;
-    if (filterGrade !== 'ALL') l = l.filter(r => r.grade === filterGrade);
-    if (filterImage) l = l.filter(r => r.imageMatches.includes(filterImage as ImageType));
-    return l;
-  }, [results, filterGrade, filterImage]);
+  // Every combination is scored; detailed results are built only for the rows shown.
+  const filtered = useMemo(() => results?.view({
+    grade: filterGrade === 'ALL' ? undefined : filterGrade,
+    image: filterImage || undefined,
+  }) ?? null, [results, filterGrade, filterImage]);
+
+  const topResults = useMemo(() => results?.slice(0, 20) ?? [], [results]);
 
   const topOhaeng = useMemo(() => {
-    if (!results.length) return null;
+    if (!topResults.length) return null;
     const acc = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
-    for (const r of results.slice(0, 5)) for (const k of Object.keys(acc) as (keyof typeof acc)[]) acc[k] += r.combinedOhaengBalance[k];
+    for (const r of topResults.slice(0, 5)) for (const k of Object.keys(acc) as (keyof typeof acc)[]) acc[k] += r.combinedOhaengBalance[k];
     return acc;
-  }, [results]);
+  }, [topResults]);
 
   if (state.status === 'loading') return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -52,8 +49,8 @@ export default function ModeAResults() {
     </div>
   );
 
-  if (state.status === 'error') return (
-    <AnalysisErrorPanel error={state.error} onBack={() => router.push('/mode-a')} />
+  if (state.status === 'error' || !results || !filtered) return (
+    <AnalysisErrorPanel error={state.status === 'error' ? state.error : { kind: 'analysis', title: '결과를 불러오지 못했습니다.', details: [] }} onBack={() => router.push('/mode-a')} />
   );
 
   return (
@@ -68,9 +65,13 @@ export default function ModeAResults() {
               <Sparkles className="w-4 h-4 text-indigo-400" /> MODE A 결과
             </p>
             <p className="text-[11px] text-indigo-300">{results.length.toLocaleString()}가지 조합 분석 완료</p>
+            <p className="text-[10px] text-indigo-300/80">
+              후보 이름 {results.coverage.candidates.toLocaleString()}개 × 허용 시각 {results.coverage.slots.toLocaleString()}개 전수 평가
+            </p>
           </div>
           <PDFButton
-            results={results}
+            results={topResults}
+            stats={{ total: results.length, grades: results.gradeCounts }}
             surname={input?.surname ?? ''}
             gender={input?.gender ?? ''}
             dateRange={input ? `${input.startDate} ~ ${input.endDate}` : undefined}

@@ -17,9 +17,11 @@ interface Props {
   surname?: string;
   gender?: string;
   dateRange?: string;
+  /** Counts over every analysed combination when `results` holds only the top rows. */
+  stats?: ReportStats;
 }
 
-export default function PDFButton({ results, top = 20, surname = '', gender = '', dateRange }: Props) {
+export default function PDFButton({ results, top = 20, surname = '', gender = '', dateRange, stats: givenStats }: Props) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,8 +108,12 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
 
   const topResults = results.slice(0, top);
   // The report shows the top results, but totals and grade counts describe every analysed combination.
-  const stats: ReportStats = { total: results.length, grades: { SS: 0, S: 0, A: 0, B: 0, C: 0 } };
-  for (const r of results) stats.grades[r.grade]++;
+  let stats: ReportStats;
+  if (givenStats) stats = givenStats;
+  else {
+    stats = { total: results.length, grades: { SS: 0, S: 0, A: 0, B: 0, C: 0 } };
+    for (const r of results) stats.grades[r.grade]++;
+  }
 
   return (
     <>

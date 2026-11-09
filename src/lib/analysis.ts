@@ -1,15 +1,16 @@
 import {
   DesignerInput, ModeBInput, ModeCInput,
   AnalysisResult, GeneratedName, NameCharData,
-  OhaengType, ImageType, Gender, NameStyle, TimeSlot,
+  OhaengType, ImageType, Gender, NameStyle, TimeSlot, Grade,
 } from '@/types';
 import { calculateFourPillars, getSajuOhaengBalance } from './saju';
 import { parseIsoCivilDate } from './calendar';
-import { assertValid, validateDesignerInput, validateModeBInput, validateModeCInput } from './inputValidation';
+import { assertValid, validateDesignerInput, validateModeBInput, validateModeCInput, ValidDesignerInput } from './inputValidation';
 import { buildDaySlots, isSlotPermitted, isoDatesBetween, normalizeSchedule } from './schedule';
 import { analyzeNameFromGenerated, combineOhaengBalances } from './sungmyung';
 import { calcAllScores, getGrade, getCharacteristics, generateDescription, stylesFittingName } from './scoring';
 import { generateCandidateNames, getImageMatchFromName } from './nameGenerator';
+import { PermittedSlot, rankAllCombinations } from './modeAOptimizer';
 import { findCharByHangul } from '@/data/nameChars';
 import { HanjaSelections, applySelectionToName, buildSurnameHanja, syncProfile, unassignedChar } from './hanjaModel';
 import { parseKoreanName } from './nameParser';
@@ -84,32 +85,145 @@ export function applyHanjaSelections(results: AnalysisResult[], selections: Hanj
 
 // ─── Mode A ──────────────────────────────────────────────────────────────────
 
-/**
- * Evaluates only the medically permitted slots supplied by the user. Medical
- * eligibility is a hard filter (slots outside the window are never generated);
- * it is not a scoring factor. Throws InputValidationError for invalid input.
- */
-export function runModeAAnalysis(rawInput: DesignerInput): AnalysisResult[] {
-  const input = assertValid(validateDesignerInput(rawInput));
-  const schedule = normalizeSchedule(input.schedule);
-  const candidates = generateCandidateNames(input);
-  const nameStyles: NameStyle[] = input.nameStyles ?? [];
-  const results: AnalysisResult[] = [];
+export interface ModeACoverage {
+  dates: number;           // civil dates in the requested range
+  slots: number;           // medically permitted evaluation slots
+  candidates: number;      // complete supported candidate universe (no cap)
+  combinations: number;    // slots × candidates, every one scored
+}
 
+export interface ModeAEntry {
+  date: string;        // YYYY-MM-DD
+  timeSlot: TimeSlot;
+  name: string;        // full name
+  candidateIndex: number; // position in the canonical candidate order
+  overall: number;
+}
+
+/** A filtered, rank-ordered view of the Mode A results. */
+export interface ModeAResultView {
+  length: number;
+  slice(start: number, end: number): AnalysisResult[];
+}
+
+/**
+ * The full Mode A ranking. Every combination is scored exactly; full result
+ * objects are built on demand (identical to the eager pipeline) so a 30-day
+ * schedule does not hold hundreds of thousands of objects in memory.
+ */
+export interface ModeAResultSet extends ModeAResultView {
+  coverage: ModeACoverage;
+  gradeCounts: Record<Grade, number>;
+  at(position: number): AnalysisResult;
+  /** Cheap identity and score of a ranked combination (no detailed result built). */
+  entry(position: number): ModeAEntry;
+  view(filter?: { grade?: Grade; image?: ImageType }): ModeAResultView;
+}
+
+function permittedSlots(input: ValidDesignerInput): PermittedSlot[] {
+  const schedule = normalizeSchedule(input.schedule);
+  const out: PermittedSlot[] = [];
   for (const iso of isoDatesBetween(input.startDate, input.endDate)) {
     const civil = parseIsoCivilDate(iso)!;
     const date = new Date(iso + 'T00:00:00');
     for (const s of buildDaySlots(civil, schedule)) {
       if (!isSlotPermitted(s.slot, schedule)) throw new Error('Internal error: slot outside the permitted window');
-      for (const name of candidates) {
-        results.push(singleAnalysis(name, date, s.hour, input.images, nameStyles, { minute: s.minute, timeSlot: s.slot }));
-      }
+      out.push({ iso, date, hour: s.hour, minute: s.minute, timeSlot: s.slot });
     }
   }
+  return out;
+}
 
-  results.sort((a, b) => b.scores.overall - a.scores.overall);
-  results.forEach((r, i) => { r.rank = i + 1; });
-  return results;
+/**
+ * Evaluates only the medically permitted slots supplied by the user. Medical
+ * eligibility is a hard filter (slots outside the window are never generated);
+ * it is not a scoring factor. Every candidate in the supported universe is
+ * scored at every permitted slot. Throws InputValidationError for invalid input.
+ */
+export function analyzeModeA(rawInput: DesignerInput): ModeAResultSet {
+  const input = assertValid(validateDesignerInput(rawInput));
+  const nameStyles: NameStyle[] = input.nameStyles ?? [];
+  const slots = permittedSlots(input);
+  const names = generateCandidateNames(input);
+  const ranking = rankAllCombinations(slots, names, input.images, nameStyles);
+  const N = names.length;
+  const cache = new Map<number, AnalysisResult>();
+
+  const at = (position: number): AnalysisResult => {
+    if (!(position >= 0 && position < ranking.order.length)) throw new RangeError(`No result at ${position}`);
+    const hit = cache.get(position);
+    if (hit) return hit;
+    const c = ranking.order[position];
+    const slot = slots[Math.floor(c / N)];
+    const r = singleAnalysis(names[c % N], slot.date, slot.hour, input.images, nameStyles,
+      { minute: slot.minute, timeSlot: slot.timeSlot });
+    // The detailed result must reproduce the ranked score exactly.
+    if (r.scores.overall !== ranking.overall[c]) throw new Error('Internal error: ranked score mismatch');
+    r.rank = position + 1;
+    cache.set(position, r);
+    return r;
+  };
+
+  const positionsView = (positions: ArrayLike<number>): ModeAResultView => ({
+    length: positions.length,
+    slice: (a, b) => {
+      const out: AnalysisResult[] = [];
+      for (let i = Math.max(0, a); i < Math.min(b, positions.length); i++) out.push(at(positions[i]));
+      return out;
+    },
+  });
+  const rangeView = ([a, b]: [number, number]): ModeAResultView => ({
+    length: b - a,
+    slice: (x, y) => {
+      const out: AnalysisResult[] = [];
+      for (let i = a + Math.max(0, x); i < Math.min(a + y, b); i++) out.push(at(i));
+      return out;
+    },
+  });
+
+  const total = ranking.order.length;
+  const gradeCounts = {} as Record<Grade, number>;
+  for (const g of Object.keys(ranking.gradeRanges) as Grade[]) {
+    const [a, b] = ranking.gradeRanges[g];
+    gradeCounts[g] = b - a;
+  }
+  const all = rangeView([0, total]);
+
+  const view = (filter: { grade?: Grade; image?: ImageType } = {}): ModeAResultView => {
+    const range: [number, number] = filter.grade ? ranking.gradeRanges[filter.grade] : [0, total];
+    if (!filter.image) return rangeView(range);
+    const img = filter.image;
+    const matches = names.map(n => n.char1.images.includes(img) || n.char2.images.includes(img));
+    const positions: number[] = [];
+    for (let i = range[0]; i < range[1]; i++) if (matches[ranking.order[i] % N]) positions.push(i);
+    return positionsView(positions);
+  };
+
+  const entry = (position: number): ModeAEntry => {
+    if (!(position >= 0 && position < total)) throw new RangeError(`No result at ${position}`);
+    const c = ranking.order[position];
+    const slot = slots[Math.floor(c / N)];
+    return { date: slot.iso, timeSlot: slot.timeSlot, name: names[c % N].full, candidateIndex: c % N, overall: ranking.overall[c] };
+  };
+
+  return {
+    length: total,
+    slice: all.slice,
+    at,
+    entry,
+    view,
+    gradeCounts,
+    coverage: { dates: new Set(slots.map(s => s.iso)).size, slots: slots.length, candidates: N, combinations: total },
+  };
+}
+
+/**
+ * Every Mode A result, fully built, in rank order. Intended for tests and small
+ * schedules; the UI uses analyzeModeA, which builds results on demand.
+ */
+export function runModeAAnalysis(rawInput: DesignerInput): AnalysisResult[] {
+  const set = analyzeModeA(rawInput);
+  return set.slice(0, set.length);
 }
 
 // ─── Mode B ──────────────────────────────────────────────────────────────────

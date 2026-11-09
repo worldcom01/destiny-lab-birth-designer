@@ -143,12 +143,10 @@ export function calcAllScores(
   const sajuOhaengBalance = calcOhaengBalanceScore(sajuBal);
   const yinYangHarmony = calcYinYangScore(pillars);
   const nameHarmony = calcNameHarmonyScore(sajuBal, nameAnalysis.nameOhaengBalance);
-  const sajuScore = sajuOhaengBalance * 0.40 + yinYangHarmony * 0.25 + nameHarmony * 0.35;
 
   // 성명학 하위 점수
   const pronunciationStability = nameAnalysis.pronunciationScore;
   const hanjaQuality = calcHanjaScore(nameAnalysis);
-  const sungmyungScore = pronunciationStability * 0.50 + hanjaQuality * 0.50;
 
   // 오행 균형 (통합)
   const ohaengBalance = calcOhaengBalanceScore(sajuBal);
@@ -162,12 +160,10 @@ export function calcAllScores(
   // 이미지 부합
   const imageMatch = nameAnalysis.imageMatchScore;
 
-  const overall = Math.round(
-    sajuScore             * 0.40 +
-    sungmyungScore        * 0.20 +
-    ohaengBalance         * 0.10 +
-    modernPreference      * 0.20 +
-    pronunciationNaturalness * 0.10
+  const overall = combineOverall(
+    sajuOhaengBalance, yinYangHarmony, nameHarmony,
+    pronunciationStability, hanjaQuality, ohaengBalance,
+    modernPreference, pronunciationNaturalness,
   );
 
   return {
@@ -182,6 +178,32 @@ export function calcAllScores(
     imageMatch,
     overall,
   };
+}
+
+/**
+ * The overall score from its sub-scores. This is the single definition of the
+ * final formula: calcAllScores and the Mode A optimizer both call it, so every
+ * ranked score is bit-for-bit the same number (same operation order).
+ */
+export function combineOverall(
+  sajuOhaengBalance: number,
+  yinYangHarmony: number,
+  nameHarmony: number,
+  pronunciationStability: number,
+  hanjaQuality: number,
+  ohaengBalance: number,
+  modernPreference: number,
+  pronunciationNaturalness: number,
+): number {
+  const sajuScore = sajuOhaengBalance * 0.40 + yinYangHarmony * 0.25 + nameHarmony * 0.35;
+  const sungmyungScore = pronunciationStability * 0.50 + hanjaQuality * 0.50;
+  return Math.round(
+    sajuScore             * 0.40 +
+    sungmyungScore        * 0.20 +
+    ohaengBalance         * 0.10 +
+    modernPreference      * 0.20 +
+    pronunciationNaturalness * 0.10
+  );
 }
 
 export function getGrade(overall: number): Grade {

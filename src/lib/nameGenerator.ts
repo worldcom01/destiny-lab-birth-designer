@@ -121,6 +121,16 @@ export function isValidNameChar(hangul: string): boolean {
 }
 
 // ─── 후보 이름 생성 ──────────────────────────────────────────────────────────
+/**
+ * The complete supported candidate universe for Mode A/B (two-syllable given
+ * names). Every name that passes the documented hard filters is returned; there
+ * is no pre-selection cap (see docs/optimization.md):
+ *  - both syllables from the gender pool in nameChars.ts, or the generational
+ *    character plus one pool syllable in the requested position(s);
+ *  - the two syllables differ, have different initials and no listed initial clash;
+ *  - average modernity >= 35;
+ *  - each given name once.
+ */
 export function generateCandidateNames(input: DesignerInput): GeneratedName[] {
   const genderKey = input.gender === '남' ? 'male' : 'female';
   const charPool = getCharsByGender(genderKey);
@@ -197,8 +207,10 @@ export function generateCandidateNames(input: DesignerInput): GeneratedName[] {
     }
   }
 
+  // Canonical order: pre-score descending, ties in generation order (stable sort).
+  // This order is only a deterministic tie-break; it never removes a candidate.
   results.sort((a, b) => b.nameQualityScore - a.nameQualityScore);
-  return results.slice(0, 200);
+  return results;
 }
 
 // ─── 이미지/스타일 매칭 ──────────────────────────────────────────────────────
