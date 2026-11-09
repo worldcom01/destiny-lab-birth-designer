@@ -2,7 +2,7 @@ import React from 'react';
 import { PdfPage, SectionLabel, GoldDivider, OhaengBar, ScoreMeter } from './PdfPage';
 import { AnalysisResult, OHAENG_COLORS, GRADE_CONFIG, OhaengType, NameCharHanja } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
-import { getDisplayHour, getHourLabel } from '@/lib/saju';
+import { getDisplayHour, getHourLabel, getSijinLabel } from '@/lib/saju';
 import { formatTimeSlot } from '@/lib/schedule';
 import { buildSajuReading } from '@/lib/sajuReading';
 import { getSuriOhaeng } from '@/data/hanjaDB';
@@ -122,7 +122,7 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
             <span style={{ fontSize: '18px', color: '#C9A84C', fontFamily: 'monospace', fontWeight: 700 }}>{hanjaNameDisplay}</span>
           </div>
           <div style={{ fontSize: '12px', color: '#64748B' }}>
-            {formatKoreanDate(result.date)} · {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)} · {result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getHourLabel(result.hour)}
+            {formatKoreanDate(result.date)} · {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)} · {result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getSijinLabel(result.hour)}
           </div>
           <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>
             {hanjaStatusLabel(model)}

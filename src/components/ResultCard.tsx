@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/types';
-import { getDisplayHour, getHourLabel } from '@/lib/saju';
+import { getDisplayHour, getHourLabel, getSijinLabel } from '@/lib/saju';
 import { formatKoreanDate } from '@/lib/analysis';
 import { formatTimeSlot } from '@/lib/schedule';
 import { buildSajuReading } from '@/lib/sajuReading';
@@ -65,7 +65,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
             <p className="text-sm text-slate-600 mt-0.5">{formatKoreanDate(result.date)}</p>
             <p className="text-sm font-medium text-slate-700 mt-0.5">
               {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)}
-              <span className="text-xs text-slate-400 ml-2">{result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getHourLabel(result.hour)}</span>
+              <span className="text-xs text-slate-400 ml-2">{result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getSijinLabel(result.hour)}</span>
             </p>
             {/* 한자 의미 */}
             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">

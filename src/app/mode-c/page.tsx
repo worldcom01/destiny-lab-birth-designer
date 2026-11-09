@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { ClipboardCheck, ChevronRight, Sparkles, ArrowLeft, Calendar, Plus, Trash2, Info } from 'lucide-react';
-import { ModeCInput, Gender } from '@/types';
+import { ModeCInput, Gender, SIJIN_VERSION } from '@/types';
 import TimeSelector from '@/components/TimeSelector';
 import { validateModeCInput } from '@/lib/inputValidation';
 import { writeStoredInput } from '@/lib/storage';
@@ -40,8 +40,9 @@ function ModeCForm() {
   const validate = () => {
     const e: Record<string, string> = {};
     // Date/time rules are shared with the engine boundary (validateModeCInput).
-    const structural = validateModeCInput({ birthDate, birthHour, gender, names: ['-'] });
-    if (!structural.ok) {
+    const structural = validateModeCInput({ birthDate, birthHour, sijinVersion: SIJIN_VERSION, gender, names: ['-'] });
+    if (birthHour === null) e.time = '출생 시간을 선택해주세요';
+    else if (!structural.ok) {
       for (const issue of structural.issues) e[issue.field] = e[issue.field] ? `${e[issue.field]} / ${issue.message}` : issue.message;
     }
     const entered = names.filter(n => n.trim());
@@ -58,9 +59,9 @@ function ModeCForm() {
   };
 
   const handleStart = () => {
-    if (!validate()) return;
+    if (!validate() || birthHour === null) return;
     const input: ModeCInput = {
-      birthDate, birthHour, gender,
+      birthDate, birthHour, sijinVersion: SIJIN_VERSION, gender,
       names: names.filter(n => n.trim()).map(n => n.trim()),
     };
     const saved = writeStoredInput(MODE_C_STORAGE_KEY, input);
@@ -110,7 +111,7 @@ function ModeCForm() {
           </h2>
           <TimeSelector value={birthHour} onChange={h => { setBirthHour(h); setErrors(p => ({ ...p, time: '' })); }} />
           <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
-            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 자시(23:00~01:00)는 선택한 날짜의 일주로 계산 ·
+            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 조자시(00:00~01:00)·야자시(23:00~24:00)는 모두 선택한 날짜의 일주로 계산 ·
             선택한 시진 안에 절기 전환이 있으면 정확한 시각이 필요해 분석하지 않습니다
           </p>
           {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}

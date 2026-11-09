@@ -118,22 +118,30 @@ export function isoDatesBetween(startIso: string, endIso: string): string[] {
 }
 
 /**
- * Mode B/C use a representative hour per 2-hour branch. When a jie transition
- * falls inside the chosen branch on that date, the month (and possibly year)
- * pillar depends on the exact birth time, so the representative hour would be a
- * silent approximation. Under the preserved convention 子 covers 00:00-00:59 and
- * 23:00-23:59 of the same date, so any jie on that date affects 子.
+ * The civil-time interval [from, to) (minutes of the chosen date) that a Mode B/C
+ * sijin choice covers. 자시 is two separate choices on the same civil date
+ * (the preserved convention: the day does not roll over at 23:00):
+ * 조자시 = hour 0 → [00:00, 01:00), 야자시 = hour 23 → [23:00, 24:00).
+ * Other branches cover two hours starting at the odd hour (丑 01:00-03:00, ...).
+ */
+export function sijinInterval(hour: number): [number, number] {
+  if (hour === 0) return [0, 60];
+  if (hour === 23) return [23 * 60, DAY_MINUTES];
+  const start = (hour % 2 === 1 ? hour : hour - 1) * 60;
+  return [start, start + 120];
+}
+
+/**
+ * Mode B/C use a representative time per sijin choice. When a jie transition
+ * falls inside the chosen interval, the month (and possibly year) pillar depends
+ * on the exact birth time, so the representative time would be a silent
+ * approximation. Only the chosen interval is checked: a jie between 조자시 and
+ * 야자시 does not affect either choice.
  */
 export function findTransitionInSijin(dateIso: string, hour: number): { name: string; time: string } | null {
   const date = parseIsoCivilDate(dateIso);
   if (!date) return null;
-  let from = 0;
-  let to = DAY_MINUTES;
-  if (hour !== 23 && hour !== 0) {
-    const start = hour % 2 === 1 ? hour : hour - 1;
-    from = start * 60;
-    to = from + 120;
-  }
+  const [from, to] = sijinInterval(hour);
   const hit = jieTransitionsOn(date).find(t => t.minute >= from && t.minute < to);
   return hit ? { name: hit.name, time: formatHm(hit.minute) } : null;
 }

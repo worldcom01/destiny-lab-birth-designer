@@ -3,7 +3,7 @@
 import { FourPillars, OhaengBalance, OHAENG_COLORS } from '@/types';
 import OhaengChart from './OhaengChart';
 import { formatKoreanDate } from '@/lib/analysis';
-import { getDisplayHour, getHourLabel } from '@/lib/saju';
+import { getDisplayHour, getSijinLabel } from '@/lib/saju';
 import { describeSaju, READING_DISCLAIMER } from '@/lib/sajuReading';
 import SajuReadingBlock from './SajuReadingBlock';
 
@@ -21,7 +21,7 @@ export default function SajuSummary({ date, hour, fourPillars, sajuBalance }: Pr
         <h3 className="text-sm font-bold text-slate-700">확정 사주 정보</h3>
         <p className="text-xs text-slate-500 mt-0.5">
           {formatKoreanDate(date)} · {getDisplayHour(hour)}
-          <span className="ml-1.5 text-slate-400">({getHourLabel(hour)})</span>
+          <span className="ml-1.5 text-slate-400">({getSijinLabel(hour)})</span>
         </p>
       </div>
 

@@ -3,7 +3,7 @@
 import { SIJIN_OPTIONS } from '@/types';
 
 interface Props {
-  value: number;
+  value: number | null; // null: nothing selected yet
   onChange: (hour: number) => void;
 }
 

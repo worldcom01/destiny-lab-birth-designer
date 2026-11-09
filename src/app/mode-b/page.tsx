@@ -3,7 +3,7 @@
 import { useState, useCallback, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { User2, ChevronRight, Sparkles, Layers, ArrowLeft, Calendar } from 'lucide-react';
-import { ModeBInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS } from '@/types';
+import { ModeBInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS, SIJIN_VERSION } from '@/types';
 import { COMMON_SURNAMES } from '@/data/nameChars';
 import { getHanjaOptions, type HanjaOption } from '@/data/hanjaDB';
 import TimeSelector from '@/components/TimeSelector';
@@ -54,8 +54,9 @@ function ModeBForm() {
   }, []);
 
   const handleStart = () => {
+    if (birthHour === null) { setErrors({ time: '출생 시간을 선택해주세요' }); return; }
     const input: ModeBInput = {
-      birthDate, birthHour, surname: surname.trim(), gender,
+      birthDate, birthHour, sijinVersion: SIJIN_VERSION, surname: surname.trim(), gender,
       dolrimChar: dolrimChar.trim(), dolrimPosition,
       dolrimHanja: dolrimHanja?.hanja,
       nameStyles, images,
@@ -113,7 +114,7 @@ function ModeBForm() {
           </h2>
           <TimeSelector value={birthHour} onChange={h => { setBirthHour(h); setErrors(p => ({ ...p, time: '' })); }} />
           <p className="text-[11px] text-slate-400 mt-2.5 leading-relaxed">
-            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 자시(23:00~01:00)는 선택한 날짜의 일주로 계산 ·
+            시간 기준: 한국 표준시(KST, UTC+9) · 진태양시 보정 없음 · 조자시(00:00~01:00)·야자시(23:00~24:00)는 모두 선택한 날짜의 일주로 계산 ·
             선택한 시진 안에 절기 전환이 있으면 정확한 시각이 필요해 분석하지 않습니다
           </p>
           {errors.time && <p className="text-xs text-red-500 mt-2">{errors.time}</p>}

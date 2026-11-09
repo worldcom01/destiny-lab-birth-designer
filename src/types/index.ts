@@ -208,6 +208,15 @@ export interface DesignerInput {
   analysisLevel?: AnalysisLevel; // legacy; Mode A now evaluates the permitted time slots only
 }
 
+/**
+ * Sijin input model. 2 = 자시 is split: birthHour 0 is 조자시 [00:00, 01:00) and
+ * birthHour 23 is 야자시 [23:00, 24:00) of the chosen civil date. Inputs saved
+ * before the split have no marker; their 자시 (0 or 23) meant either interval
+ * and must be chosen again (see validateModeBInput).
+ */
+export type SijinVersion = 2;
+export const SIJIN_VERSION: SijinVersion = 2;
+
 // ─── Mode B Input ────────────────────────────────────────────────────────────
 export interface ModeBInput {
   birthDate: string;       // e.g. "2027-07-04"
@@ -219,6 +228,7 @@ export interface ModeBInput {
   dolrimHanja?: string;      // user-confirmed hanja of the generational character
   images: ImageType[];
   nameStyles: NameStyle[];   // NEW
+  sijinVersion?: SijinVersion; // required for 자시 (birthHour 0 or 23)
 }
 
 // ─── Mode C Input ────────────────────────────────────────────────────────────
@@ -226,12 +236,13 @@ export interface ModeCInput {
   birthDate: string;
   birthHour: number;
   gender: Gender;
+  sijinVersion?: SijinVersion; // required for 자시 (birthHour 0 or 23)
   names: string[];         // user-provided full names e.g. ["김민준", "남궁 민"] (a space separates surname/given)
 }
 
-// 시진 선택지
+// 시진 선택지. 자시는 같은 날짜의 두 구간(조자시·야자시)으로 나누어 고른다.
 export const SIJIN_OPTIONS = [
-  { hour: 23, label: '자시 (子時)', range: '오후 11시 ~ 오전 1시', hanja: '子' },
+  { hour: 0,  label: '조자시 (朝子時)', range: '오전 0시 ~ 1시',    hanja: '子' },
   { hour: 1,  label: '축시 (丑時)', range: '오전 1시 ~ 3시',       hanja: '丑' },
   { hour: 3,  label: '인시 (寅時)', range: '오전 3시 ~ 5시',       hanja: '寅' },
   { hour: 5,  label: '묘시 (卯時)', range: '오전 5시 ~ 7시',       hanja: '卯' },
@@ -243,6 +254,7 @@ export const SIJIN_OPTIONS = [
   { hour: 17, label: '유시 (酉時)', range: '오후 5시 ~ 7시',       hanja: '酉' },
   { hour: 19, label: '술시 (戌時)', range: '오후 7시 ~ 9시',       hanja: '戌' },
   { hour: 21, label: '해시 (亥時)', range: '오후 9시 ~ 11시',      hanja: '亥' },
+  { hour: 23, label: '야자시 (夜子時)', range: '오후 11시 ~ 자정',  hanja: '子' },
 ] as const;
 
 export const OHAENG_COLORS: Record<OhaengType, string> = {

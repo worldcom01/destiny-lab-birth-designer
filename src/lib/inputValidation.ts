@@ -1,12 +1,12 @@
 import {
   DesignerInput, Gender, ImageType, IMAGE_LABELS, MedicalSchedule, ModeBInput, ModeCInput,
-  NameStyle, NAME_STYLE_LABELS,
+  NameStyle, NAME_STYLE_LABELS, SIJIN_VERSION,
 } from '@/types';
 import { SUPPORTED_KST_DATE_RANGE, isSupportedIsoDate, parseIsoCivilDate } from './calendar';
 import { getHanjaOptions } from '@/data/hanjaDB';
 import { confirmedChar } from './hanjaModel';
 import { isValidNameChar } from './nameGenerator';
-import { findTransitionInSijin, isScheduleEmpty, isoDatesBetween, normalizeSchedule, parseHm, parseRangeEnd } from './schedule';
+import { findTransitionInSijin, formatHm, isScheduleEmpty, isoDatesBetween, normalizeSchedule, parseHm, parseRangeEnd, sijinInterval } from './schedule';
 
 // Shared validation for the input pages (page boundary) and the analysis
 // functions (engine boundary). Messages are user-facing Korean.
@@ -151,16 +151,64 @@ function checkBirthHour(v: unknown, issues: InputIssue[]): v is number {
   return true;
 }
 
+const isZiHour = (h: unknown) => h === 0 || h === 23;
+
+function sijinName(hour: number): string {
+  const [from, to] = sijinInterval(hour);
+  const name = hour === 0 ? '조자시' : hour === 23 ? '야자시' : '선택한 시진';
+  return `${name} ${formatHm(from)}~${to === 1440 ? '24:00' : formatHm(to)}`;
+}
+
 function checkSijinTransition(date: string, hour: number, issues: InputIssue[]) {
   const t = findTransitionInSijin(date, hour);
   if (t) {
     issues.push({
       field: 'time',
-      message: `선택한 날짜·시진 안에 절기 전환(${t.name} ${t.time} KST)이 있어 시진 단위로는 월주를 확정할 수 없습니다. ` +
-        '정확한 출생 시각 입력은 아직 지원하지 않으므로 이 조합은 분석하지 않습니다',
+      message: `선택한 시간(${sijinName(hour)}) 안에 절기 전환(${t.name} ${t.time} KST)이 있어 시진 단위로는 월주를 확정할 수 없습니다. ` +
+        '정확한 출생 시각(분 단위)이 필요하지만 이 화면은 아직 분 단위 입력을 지원하지 않으므로 이 조합은 분석하지 않습니다',
     });
   }
 }
+
+export const LEGACY_ZI_MESSAGE =
+  "이전 버전에서 저장된 '자시' 선택은 조자시(00:00~01:00)인지 야자시(23:00~24:00)인지 알 수 없습니다. " +
+  '입력 화면에서 출생 시간을 다시 선택해주세요';
+
+/**
+ * A stored 자시 (birthHour 0 or 23) saved before 조자시/야자시 were separate
+ * choices. It meant either interval, so it is never reinterpreted: the user
+ * must choose again.
+ */
+export function isLegacyZiInput(raw: unknown): boolean {
+  return isRecord(raw) && isZiHour(raw.birthHour) && raw.sijinVersion === undefined;
+}
+
+/**
+ * Birth date and sijin checks shared by Mode B and C. Returns true when the only
+ * time problem is a legacy 자시 selection (validation kind 'legacy').
+ * With `ignoreTime`, only the date is checked (used to restore the other fields
+ * of a legacy input while asking for the time again).
+ */
+function checkBirthTime(raw: Record<string, unknown>, issues: InputIssue[], ignoreTime: boolean): boolean {
+  const dateOk = checkDate(raw.birthDate, '출생일', issues);
+  if (ignoreTime) return false;
+  if (raw.sijinVersion !== undefined && raw.sijinVersion !== SIJIN_VERSION) {
+    issues.push({ field: 'time', message: '출생 시간 정보가 올바르지 않습니다' });
+    return false;
+  }
+  if (!checkBirthHour(raw.birthHour, issues)) return false;
+  if (isLegacyZiInput(raw)) {
+    issues.push({ field: 'time', message: LEGACY_ZI_MESSAGE });
+    return true;
+  }
+  if (dateOk) checkSijinTransition(raw.birthDate as string, raw.birthHour as number, issues);
+  return false;
+}
+
+/** The marker is kept only where it matters (자시), so other inputs keep their analysis scope. */
+const sijinValue = (raw: Record<string, unknown>) => (isZiHour(raw.birthHour) ? { sijinVersion: SIJIN_VERSION } : {});
+
+export interface BirthTimeOptions { ignoreTime?: boolean }
 
 // ─── Mode A ──────────────────────────────────────────────────────────────────
 
@@ -257,29 +305,25 @@ export function validateDesignerInput(raw: unknown): Validation<ValidDesignerInp
 
 // ─── Mode B ──────────────────────────────────────────────────────────────────
 
-export function validateModeBInput(raw: unknown): Validation<ModeBInput> {
+export function validateModeBInput(raw: unknown, options: BirthTimeOptions = {}): Validation<ModeBInput> {
   if (!isRecord(raw)) return { ok: false, kind: 'invalid', issues: [{ field: 'other', message: '입력 데이터 형식이 올바르지 않습니다' }] };
   const issues: InputIssue[] = [];
-  const dateOk = checkDate(raw.birthDate, '출생일', issues);
-  const hourOk = checkBirthHour(raw.birthHour, issues);
-  if (dateOk && hourOk) checkSijinTransition(raw.birthDate as string, raw.birthHour as number, issues);
+  const legacy = checkBirthTime(raw, issues, options.ignoreTime === true);
   checkCommon(raw, issues);
-  if (issues.length > 0) return { ok: false, kind: 'invalid', issues };
+  if (issues.length > 0) return { ok: false, kind: legacy && issues.length === 1 ? 'legacy' : 'invalid', issues };
   return {
     ok: true,
-    value: { ...commonValue(raw), birthDate: raw.birthDate as string, birthHour: raw.birthHour as number },
+    value: { ...commonValue(raw), birthDate: raw.birthDate as string, birthHour: raw.birthHour as number, ...sijinValue(raw) },
   };
 }
 
 // ─── Mode C ──────────────────────────────────────────────────────────────────
 
 /** Validates the stored structure. Individual names are parsed (and reported) by analyzeModeCNames. */
-export function validateModeCInput(raw: unknown): Validation<ModeCInput> {
+export function validateModeCInput(raw: unknown, options: BirthTimeOptions = {}): Validation<ModeCInput> {
   if (!isRecord(raw)) return { ok: false, kind: 'invalid', issues: [{ field: 'other', message: '입력 데이터 형식이 올바르지 않습니다' }] };
   const issues: InputIssue[] = [];
-  const dateOk = checkDate(raw.birthDate, '출생일', issues);
-  const hourOk = checkBirthHour(raw.birthHour, issues);
-  if (dateOk && hourOk) checkSijinTransition(raw.birthDate as string, raw.birthHour as number, issues);
+  const legacy = checkBirthTime(raw, issues, options.ignoreTime === true);
   if (!GENDERS.includes(raw.gender as Gender)) issues.push({ field: 'other', message: '성별 정보가 올바르지 않습니다' });
   const names = raw.names;
   if (!Array.isArray(names) || !names.every(n => typeof n === 'string' && n.length <= 20)) {
@@ -289,11 +333,11 @@ export function validateModeCInput(raw: unknown): Validation<ModeCInput> {
   } else if (names.length > MAX_MODE_C_NAMES) {
     issues.push({ field: 'names', message: `이름은 최대 ${MAX_MODE_C_NAMES}개까지 입력할 수 있습니다` });
   }
-  if (issues.length > 0) return { ok: false, kind: 'invalid', issues };
+  if (issues.length > 0) return { ok: false, kind: legacy && issues.length === 1 ? 'legacy' : 'invalid', issues };
   return {
     ok: true,
     value: {
-      birthDate: raw.birthDate as string, birthHour: raw.birthHour as number,
+      birthDate: raw.birthDate as string, birthHour: raw.birthHour as number, ...sijinValue(raw),
       gender: raw.gender as Gender, names: names as string[],
     },
   };

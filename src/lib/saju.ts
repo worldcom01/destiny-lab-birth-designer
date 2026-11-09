@@ -115,6 +115,16 @@ export function getHourLabel(hour: number): string {
   return labels[hour === 23 ? 0 : Math.floor((hour + 1) / 2)];
 }
 
+/**
+ * Label of a Mode B/C sijin choice. 자시 is two separate choices on the same
+ * civil date (조자시 00:00-01:00, 야자시 23:00-24:00); others as getHourLabel.
+ */
+export function getSijinLabel(hour: number): string {
+  if (hour === 0) return '조자시(0~1시)';
+  if (hour === 23) return '야자시(23~24시)';
+  return getHourLabel(hour);
+}
+
 export function getAnalysisHours(level: string): number[] {
   return level === '정밀'
     ? Array.from({ length: 24 }, (_, i) => i)

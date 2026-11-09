@@ -2,7 +2,7 @@ import React from 'react';
 import { PdfPage, SectionLabel, GoldDivider, OhaengBar, ScoreMeter } from './PdfPage';
 import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, Grade } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
-import { getDisplayHour, getHourLabel } from '@/lib/saju';
+import { getDisplayHour, getHourLabel, getSijinLabel } from '@/lib/saju';
 import { formatTimeSlot } from '@/lib/schedule';
 
 interface Props {
@@ -83,7 +83,7 @@ export default function PdfExecutiveSummary({ results, stats, pageNum, totalPage
             {formatKoreanDate(top.date)}
           </div>
           <div style={{ fontSize: '12px', color: '#64748B', marginBottom: '12px' }}>
-            {top.timeSlot ? formatTimeSlot(top.timeSlot) : getDisplayHour(top.hour)} · {top.timeSlot ? getHourLabel(top.hour).split('(')[0] : getHourLabel(top.hour)}
+            {top.timeSlot ? formatTimeSlot(top.timeSlot) : getDisplayHour(top.hour)} · {top.timeSlot ? getHourLabel(top.hour).split('(')[0] : getSijinLabel(top.hour)}
           </div>
 
           {/* Characteristics */}

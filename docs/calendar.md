@@ -72,11 +72,19 @@ The dataset tests check the order, spacing and HKO/KASI agreement.
 
 ## Known limitations
 
-- Mode B/C collect a 시진 (2-hour slot) as a representative hour, not an exact time.
-  When a jie transition falls inside the chosen 시진 on that date, the month pillar
-  depends on the exact time. Such inputs are now rejected with an explanation
-  (`findTransitionInSijin`) instead of being approximated. An exact-time input for
-  Mode B/C is not implemented yet.
+- Mode B/C collect a 시진 choice, not an exact time. 자시 is two separate choices
+  on the chosen civil date (same-date convention above): 조자시 = `birthHour` 0,
+  [00:00, 01:00), and 야자시 = `birthHour` 23, [23:00, 24:00). Other choices cover
+  two hours from the odd hour (`sijinInterval`). Pillars are computed at the start
+  of the chosen interval. When a jie transition falls inside **that interval**, the
+  month (and possibly year) pillar depends on the exact time, so the input is
+  rejected with a request for an exact time (`findTransitionInSijin`); a jie
+  between 조자시 and 야자시 affects neither. An exact-time input for Mode B/C is
+  not implemented yet.
+- Inputs saved before the split carry no `sijinVersion`. Their 자시 (`birthHour`
+  0 or 23) meant either interval, so it is never mapped to 조자시 or 야자시: the
+  results page reports a legacy input and the input form restores every other
+  field and asks for the time again. Other legacy inputs are unaffected.
 - The 23:00 hour-stem convention above gives 23:00 the stem of the previous 子 hour.
   The usual 子時 schools (자시 일진 교체 / 야자시) give it the following day's 子 stem.
   This was kept as-is and needs a decision.

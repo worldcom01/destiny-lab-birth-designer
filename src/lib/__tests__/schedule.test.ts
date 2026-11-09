@@ -138,7 +138,7 @@ describe('Mode B/C sijin at solar-term transitions', () => {
   it('detects a jie inside the chosen 시진 and refuses to approximate', () => {
     expect(findTransitionInSijin('2024-02-04', 17)).toEqual({ name: '입춘', time: '17:27' }); // 酉시 17-19
     expect(findTransitionInSijin('2024-02-04', 15)).toBeNull();
-    expect(findTransitionInSijin('2027-01-05', 23)).toEqual({ name: '소한', time: '23:10' }); // 자시 covers 23:00-24:00 and 00:00-01:00
+    expect(findTransitionInSijin('2027-01-05', 23)).toEqual({ name: '소한', time: '23:10' }); // 야자시 23:00-24:00
     const v = validateModeBInput({ ...modeB, birthDate: '2024-02-04', birthHour: 17 });
     expect(v.ok).toBe(false);
     expect(() => runModeBAnalysis({ ...modeB, birthDate: '2024-02-04', birthHour: 17 })).toThrow(/절기 전환\(입춘 17:27 KST\)/);
