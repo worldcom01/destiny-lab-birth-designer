@@ -6,6 +6,7 @@ import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/typ
 import OhaengChart from './OhaengChart';
 import HanjaDisplay from './HanjaDisplay';
 import { hanjaStatusLabel } from '@/lib/hanjaModel';
+import { buildSajuReading } from '@/lib/sajuReading';
 
 const GRADE_RING: Record<string, string> = {
   SS: 'ring-2 ring-amber-400 shadow-amber-100 shadow-md',
@@ -112,6 +113,9 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
 
         {/* 설명 */}
         <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">{result.description}</p>
+        <p data-testid="name-relation" className="text-[11px] text-indigo-800 bg-indigo-50/60 rounded-lg px-2.5 py-1.5 mt-2 leading-relaxed">
+          <span className="font-semibold">이름과의 관계</span> · {buildSajuReading(result).nameRelation}
+        </p>
 
         {/* 핵심 점수 미리보기 (이름·사주 조화 강조) */}
         <div className="mt-3 bg-slate-50 rounded-xl p-3">

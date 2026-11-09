@@ -4,6 +4,7 @@ import { AnalysisResult, OHAENG_COLORS, GRADE_CONFIG, OhaengType, NameCharHanja 
 import { formatKoreanDate } from '@/lib/analysis';
 import { getDisplayHour, getHourLabel } from '@/lib/saju';
 import { formatTimeSlot } from '@/lib/schedule';
+import { buildSajuReading } from '@/lib/sajuReading';
 import { getSuriOhaeng } from '@/data/hanjaDB';
 import { STATUS_LABEL, UNASSIGNED_MARK, formatFullHanja, hanjaStatusLabel, totalStrokes } from '@/lib/hanjaModel';
 
@@ -25,7 +26,7 @@ function PillarCard({ label, pillar }: {
     <div style={{
       flex: 1, textAlign: 'center',
       backgroundColor: '#F8FAFC', borderRadius: '10px',
-      padding: '14px 8px', border: '1px solid #E2E8F0',
+      padding: '10px 8px', border: '1px solid #E2E8F0',
     }}>
       <div style={{ fontSize: '9px', color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '14px', fontWeight: 800, color: '#0D1B2A', marginBottom: '8px' }}>{parts[0] ?? pillar.label}</div>
@@ -50,7 +51,7 @@ function HanjaCharCard({ caption, char }: { caption: string; char: NameCharHanja
     <div data-hanja-char={char.hanja ?? ''} data-hanja-status={char.status} style={{
       flex: 1, textAlign: 'center',
       backgroundColor: '#FAFBFC', borderRadius: '10px',
-      border: '1px solid #E2E8F0', padding: '16px 8px',
+      border: '1px solid #E2E8F0', padding: '12px 8px',
     }}>
       <div style={{ fontSize: '36px', fontWeight: 900, color: char.hanja ? '#0D1B2A' : '#CBD5E1', lineHeight: 1, marginBottom: '6px' }}>
         {char.hanja ?? UNASSIGNED_MARK}
@@ -89,6 +90,7 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
 
   // Hanja data: canonical model only (no independent lookup or fallback)
   const model = result.name.hanja;
+  const reading = buildSajuReading(result);
   const hanjaNameDisplay = formatFullHanja(model);
   const strokesSum = totalStrokes([...model.surname, ...model.given]);
 
@@ -98,8 +100,8 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
 
       {/* Name hero */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px',
-        padding: '20px 24px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '14px',
+        padding: '16px 24px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0',
       }}>
         {/* Grade */}
         <div style={{
@@ -131,10 +133,10 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
         </div>
       </div>
 
-      <GoldDivider mt={0} mb={20} />
+      <GoldDivider mt={0} mb={14} />
 
       {/* Hanja breakdown */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '14px' }}>
         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '12px' }}>
           한자 분석
         </div>
@@ -149,7 +151,7 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
       </div>
 
       {/* 4 Pillars */}
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '14px' }}>
         <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '12px' }}>
           사주 구조
         </div>
@@ -161,7 +163,7 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
         </div>
       </div>
 
-      <GoldDivider mt={0} mb={20} />
+      <GoldDivider mt={0} mb={14} />
 
       {/* Ohaeng + Scores */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
@@ -191,6 +193,25 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Short Saju reading */}
+      <div data-testid="pdf-saju-reading" style={{
+        marginTop: '12px', padding: '12px 16px', backgroundColor: '#F5F3FF', borderRadius: '10px', border: '1px solid #E0E7FF',
+      }}>
+        <div style={{ fontSize: '11px', color: '#3730A3', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '8px' }}>
+          짧은 사주풀이
+        </div>
+        {[
+          ['사주 구성', reading.dayMaster],
+          ['오행 분포', reading.distribution],
+          ['이름과의 관계', reading.nameRelation],
+        ].map(([label, text]) => (
+          <p key={label} style={{ fontSize: '10px', color: '#334155', lineHeight: 1.7, margin: '0 0 4px 0' }}>
+            <span style={{ fontWeight: 700, color: '#3730A3' }}>{label}</span> · {text}
+          </p>
+        ))}
+        <p style={{ fontSize: '9px', color: '#94A3B8', margin: '6px 0 0 0' }}>{reading.disclaimer}</p>
       </div>
     </PdfPage>
   );

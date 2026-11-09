@@ -6,6 +6,8 @@ import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/typ
 import { getDisplayHour, getHourLabel } from '@/lib/saju';
 import { formatKoreanDate } from '@/lib/analysis';
 import { formatTimeSlot } from '@/lib/schedule';
+import { buildSajuReading } from '@/lib/sajuReading';
+import SajuReadingBlock from './SajuReadingBlock';
 import OhaengChart from './OhaengChart';
 
 const SCORE_LABELS: { key: keyof AnalysisResult['scores']; label: string }[] = [
@@ -96,6 +98,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
 
         {/* 설명 */}
         <p className="text-[11px] text-slate-500 mt-2.5 leading-relaxed">{result.description}</p>
+        <SajuReadingBlock compact {...buildSajuReading(result)} />
 
         {/* 사주 요약 */}
         <div className="flex gap-1.5 mt-3">

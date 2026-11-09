@@ -37,3 +37,32 @@ describe('PDF report totals and page numbers', () => {
     expect(pageFooters(html)).toEqual([1, 2, 3, 4, 5, 6].map(n => [n, 6]));
   });
 });
+
+describe('short Saju reading in UI and PDF', () => {
+  it('shows the saju lines in the summary, the name line on name cards, and all four lines in Mode A cards and PDF pages', async () => {
+    const { default: SajuSummary } = await import('@/components/SajuSummary');
+    const { default: NameRankCard } = await import('@/components/NameRankCard');
+    const { default: ResultCard } = await import('@/components/ResultCard');
+    const { default: PdfNameDetail } = await import('@/components/pdf/PdfNameDetail');
+    const { buildSajuReading } = await import('@/lib/sajuReading');
+    const r = runModeBAnalysis(BASE_B)[0];
+    const reading = buildSajuReading(r);
+
+    const summary = renderToStaticMarkup(<SajuSummary date={r.date} hour={r.hour} fourPillars={r.fourPillars} sajuBalance={r.sajuOhaengBalance} />);
+    expect(summary).toContain(reading.dayMaster);
+    expect(summary).toContain(reading.distribution);
+    expect(summary).toContain(reading.disclaimer);
+
+    const card = renderToStaticMarkup(<NameRankCard result={r} rank={1} />);
+    expect(card).toContain(reading.nameRelation.replace(/'/g, '&#x27;'));
+
+    for (const html of [
+      renderToStaticMarkup(<ResultCard result={r} />),
+      renderToStaticMarkup(<PdfNameDetail result={r} rank={1} pageNum={3} totalPages={8} />),
+    ]) {
+      for (const line of [reading.dayMaster, reading.distribution, reading.nameRelation.replace(/'/g, '&#x27;'), reading.disclaimer]) {
+        expect(html).toContain(line);
+      }
+    }
+  });
+});

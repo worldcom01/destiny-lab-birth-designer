@@ -4,6 +4,8 @@ import { FourPillars, OhaengBalance, OHAENG_COLORS } from '@/types';
 import OhaengChart from './OhaengChart';
 import { formatKoreanDate } from '@/lib/analysis';
 import { getDisplayHour, getHourLabel } from '@/lib/saju';
+import { describeSaju, READING_DISCLAIMER } from '@/lib/sajuReading';
+import SajuReadingBlock from './SajuReadingBlock';
 
 interface Props {
   date: Date;
@@ -50,6 +52,11 @@ export default function SajuSummary({ date, hour, fourPillars, sajuBalance }: Pr
       </div>
 
       <OhaengChart balance={sajuBalance} size={160} />
+
+      {(() => {
+        const saju = describeSaju(fourPillars, sajuBalance);
+        return <SajuReadingBlock dayMaster={saju.dayMaster} distribution={saju.distribution} disclaimer={READING_DISCLAIMER} />;
+      })()}
     </div>
   );
 }
