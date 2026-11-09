@@ -10,8 +10,8 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: 'Destiny Lab Birth Designer | AI 출생일·작명 설계 플랫폼',
-  description: '전통 명리학·성명학 기반 AI 이름 생성 및 출생 조합 분석 서비스. 의료진 결정 최우선.',
+  title: 'Destiny Lab Birth Designer | 출생일·작명 설계 플랫폼',
+  description: '전통 명리학·성명학 기반 이름 생성 및 출생 조합 분석 서비스. 의료진 결정 최우선.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-5xl mx-auto px-4 text-center space-y-1">
             <p className="text-xs font-semibold text-indigo-600 tracking-wider">Powered by Destiny Lab</p>
             <p className="text-[11px] text-slate-400">
-              Destiny Lab Birth Designer — 전통 명리학·성명학 기반 AI 출생 설계 플랫폼
+              Destiny Lab Birth Designer — 전통 명리학·성명학 기반 출생 설계 플랫폼
             </p>
             <p className="text-[11px] text-slate-400">
               본 서비스는 참고 분석 자료이며 의료적 판단, 투자 조언, 미래를 보장하지 않습니다.

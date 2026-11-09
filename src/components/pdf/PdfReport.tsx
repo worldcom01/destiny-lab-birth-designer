@@ -44,7 +44,7 @@ export default function PdfReport({ results, stats, surname, gender, dateRange }
   // 1: Cover
   // 2: Executive Summary
   // 3-5: Name Details (top 3, one per page)
-  // 6: AI Interpretation
+  // 6: Interpretation
   // 7: TOP 1-10
   // 8: TOP 11-20
   // Page numbers follow the pages actually rendered.
@@ -87,7 +87,7 @@ export default function PdfReport({ results, stats, surname, gender, dateRange }
         />
       ))}
 
-      {/* Page 6: AI Interpretation */}
+      {/* Page 6: Interpretation */}
       <PdfInterpretation
         result={top20[0]}
         interpretation={interpretation}

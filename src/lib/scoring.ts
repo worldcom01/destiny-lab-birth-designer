@@ -244,7 +244,7 @@ export function getCharacteristics(
   return tags.slice(0, 5);
 }
 
-// ─── AI 설명 생성 ────────────────────────────────────────────────────────────
+// ─── 설명 생성 ───────────────────────────────────────────────────────────────
 export function generateDescription(
   pillars: FourPillars,
   sajuBal: OhaengBalance,

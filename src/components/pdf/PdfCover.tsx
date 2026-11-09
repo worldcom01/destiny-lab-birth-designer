@@ -60,7 +60,7 @@ export default function PdfCover({
             Birth Designer
           </div>
           <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px', letterSpacing: '0.06em' }}>
-            AI 출생일 · 출생시 · 작명 설계 플랫폼
+            출생일 · 출생시 · 작명 설계 플랫폼
           </div>
         </div>
 

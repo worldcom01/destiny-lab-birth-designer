@@ -30,7 +30,7 @@ const MODES = [
     title: '이름 설계 모드',
     subtitle: '출생일·시간이 이미 확정된 경우',
     description:
-      '확정된 출생일·시간의 사주에 가장 잘 어울리는 이름 후보를 AI가 자동 생성하고 TOP 50으로 추천합니다.',
+      '확정된 출생일·시간의 사주에 가장 잘 어울리는 이름 후보를 자동 생성하고 TOP 50으로 추천합니다.',
     inputs: ['출생일 (확정)', '출생시간 (확정)', '성씨', '성별', '돌림자'],
     outputs: ['추천 이름 TOP 50', '이름별 사주 조화도', '한자 의미 + 오행 분석'],
     from: 'from-violet-600',
@@ -68,7 +68,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-indigo-500/15 border border-indigo-400/25 rounded-full px-3 py-1 text-xs text-indigo-300 mb-5">
             <Sparkles className="w-3 h-3" />
-            전통 명리학 · 성명학 기반 AI 분석 플랫폼
+            전통 명리학 · 성명학 기반 분석 플랫폼
           </div>
           <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
             Destiny Lab
@@ -76,7 +76,7 @@ export default function LandingPage() {
             <span className="text-indigo-400">Birth Designer</span>
           </h1>
           <p className="mt-4 text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
-            AI가 수천 가지 이름·날짜·시간 조합을 전통 명리학과 성명학으로 분석하여 최적의 조합을 추천합니다.
+            수천 가지 이름·날짜·시간 조합을 전통 명리학과 성명학으로 분석하여 최적의 조합을 추천합니다.
           </p>
           <div className="flex justify-center gap-3 mt-5 flex-wrap text-xs text-slate-500">
             <span className="flex items-center gap-1"><ArrowRight className="w-3 h-3 text-indigo-400" />이름 자동 생성</span>

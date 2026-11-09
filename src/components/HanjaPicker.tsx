@@ -86,7 +86,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
           </button>
         </div>
 
-        {/* AI 추천 안내 */}
+        {/* 추천 안내 */}
         {recommended && (
           <div className="mx-5 mt-3 flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-2">
             <Sparkles className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
@@ -132,7 +132,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
                     <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
                       {isRecommended && (
                         <span className="flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 border border-amber-300 px-2 py-0.5 rounded-full font-bold">
-                          <Star className="w-2.5 h-2.5" /> AI 추천
+                          <Star className="w-2.5 h-2.5" /> 추천
                         </span>
                       )}
                       {isSelected && (

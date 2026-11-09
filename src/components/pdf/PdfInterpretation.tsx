@@ -23,7 +23,7 @@ const DIMENSIONS = [
 export default function PdfInterpretation({ result, interpretation, pageNum, totalPages }: Props) {
   return (
     <PdfPage pageNum={pageNum} totalPages={totalPages}>
-      <SectionLabel>AI Comprehensive Interpretation</SectionLabel>
+      <SectionLabel>Comprehensive Interpretation</SectionLabel>
       <div style={{ fontSize: '22px', fontWeight: 800, color: '#0D1B2A', marginBottom: '4px' }}>
         종합 해석 — {result.name.full}
       </div>

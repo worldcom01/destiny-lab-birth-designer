@@ -84,7 +84,7 @@ function ModeBForm() {
             <User2 className="w-3 h-3" /> MODE B · 이름 설계 모드
           </div>
           <h1 className="text-2xl font-black text-white">이름 설계 모드</h1>
-          <p className="text-sm text-violet-300 mt-1.5">확정된 사주에 어울리는 이름을 AI가 설계합니다</p>
+          <p className="text-sm text-violet-300 mt-1.5">확정된 사주에 어울리는 이름을 설계합니다</p>
         </div>
       </div>
 
