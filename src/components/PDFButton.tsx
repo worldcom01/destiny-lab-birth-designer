@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { Download, Loader2, FileText } from 'lucide-react';
 import { AnalysisResult } from '@/types';
 import PdfReport, { ReportStats } from './pdf/PdfReport';
+import { seoulToday, toIsoDate } from '@/lib/modeAForm';
 
 // html2canvas measures each font's text baseline with an inline <img> in the live
 // document. Tailwind's preflight makes every <img> display:block, which skews that
@@ -87,7 +88,8 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
       setProgress('PDF 저장 중...');
 
       // Step 6: Save
-      const dateStr = new Date().toISOString().slice(0, 10);
+      // Korean users: the file date follows Asia/Seoul, not UTC.
+      const dateStr = toIsoDate(seoulToday(new Date()));
       const nameStr = results[0]?.name.full ?? 'report';
       doc.save(`destiny-lab-${nameStr}-${dateStr}.pdf`);
 

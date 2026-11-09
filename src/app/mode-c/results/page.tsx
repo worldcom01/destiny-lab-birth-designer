@@ -9,7 +9,7 @@ import { validateModeCInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
 import {
-  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, saveHanjaSelections, withSelection,
+  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, purgeLegacyHanjaSelections, saveHanjaSelections, withSelection,
 } from '@/lib/hanjaModel';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
@@ -20,6 +20,7 @@ interface ModeCData { results: AnalysisResult[]; rejected: ModeCAnalysis['reject
 
 function runModeC(input: ModeCInput): ModeCData {
   const scope = analysisScope(input);
+  purgeLegacyHanjaSelections();
   const selections = loadHanjaSelections(HANJA_SELECTION_KEYS.modeC, scope);
   const analysis = analyzeModeCNames(input);
   return { results: applyHanjaSelections(analysis.results, selections), rejected: analysis.rejected, selections, scope };

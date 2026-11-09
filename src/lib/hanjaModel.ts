@@ -139,7 +139,8 @@ export const HANJA_SELECTION_KEYS = {
 } as const;
 
 // v1 stored selections by full name only. They cannot be attributed to an
-// analysis input, so they are never applied; they are left in place (not deleted).
+// analysis input, so they are never applied, and they are removed by
+// purgeLegacyHanjaSelections() when a results page loads.
 export const LEGACY_HANJA_SELECTION_KEYS = {
   modeB: 'dlbd_mode_b_hanja',
   modeC: 'dlbd_mode_c_hanja',
@@ -228,6 +229,23 @@ function readStore(key: string, storage: StorageLike | undefined): ScopedStore {
 export function loadHanjaSelections(key: string, scope: string, storage = defaultStorage()): HanjaSelections {
   const entry = readStore(key, storage).scopes[scope];
   return entry ? entry.names : {};
+}
+
+/** Removes the unused v1 selection keys (only those two keys; nothing else is touched). Never throws. */
+export function purgeLegacyHanjaSelections(storage?: Pick<Storage, 'removeItem'>): void {
+  let target = storage;
+  try {
+    target ??= typeof window !== 'undefined' ? window.localStorage : undefined;
+  } catch {
+    return;
+  }
+  for (const key of Object.values(LEGACY_HANJA_SELECTION_KEYS)) {
+    try {
+      target?.removeItem(key);
+    } catch {
+      // Storage blocked: the stale keys are harmless because they are never read.
+    }
+  }
 }
 
 /** Returns false when the selection could not be persisted (it then survives only in memory). */

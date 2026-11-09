@@ -52,8 +52,9 @@ describe('B01 page-level: stale stored Hanja vs current confirmed generational H
     const text = await minseoHanja();
     expect(text).toContain('敏');
     expect(text).not.toContain('珉');
-    // Legacy data is left untouched, not deleted.
-    expect(localStorage.getItem('dlbd_mode_b_hanja')).toContain('珉');
+    // The unusable v1 key is removed; other keys are untouched.
+    expect(localStorage.getItem('dlbd_mode_b_hanja')).toBeNull();
+    expect(localStorage.getItem('unrelated_key')).toBe('keep-me');
   });
 
   it('restores a selection for the same input, but not for a different analysis with the same name', async () => {

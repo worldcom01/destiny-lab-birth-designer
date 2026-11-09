@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { ClipboardCheck, ChevronRight, Sparkles, ArrowLeft, Calendar, Plus, Trash2, Info } from 'lucide-react';
 import { ModeCInput, Gender } from '@/types';
@@ -8,18 +8,27 @@ import TimeSelector from '@/components/TimeSelector';
 import { validateModeCInput } from '@/lib/inputValidation';
 import { writeStoredInput } from '@/lib/storage';
 import { parseKoreanName } from '@/lib/nameParser';
+import { MODE_C_STORAGE_KEY, loadModeCFormInit } from '@/lib/formRestore';
+
+const subscribeNoop = () => () => {};
 
 export default function ModeCPage() {
+  // The previous input lives in localStorage and the default date depends on
+  // today (Asia/Seoul), so the form renders on the client only (no hydration mismatch).
+  const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  return isClient
+    ? <ModeCForm />
+    : <div className="min-h-screen bg-[#F4F6F9] flex items-center justify-center text-sm text-slate-400" aria-busy="true">입력 화면을 준비하는 중…</div>;
+}
+
+function ModeCForm() {
   const router = useRouter();
+  const [init] = useState(() => loadModeCFormInit(new Date()));
 
-  const nextYear = new Date();
-  nextYear.setFullYear(nextYear.getFullYear() + 1);
-  const defDate = nextYear.toISOString().split('T')[0];
-
-  const [birthDate, setBirthDate] = useState(defDate);
-  const [birthHour, setBirthHour] = useState(9);
-  const [gender, setGender] = useState<Gender>('남');
-  const [names, setNames] = useState<string[]>(['', '']);
+  const [birthDate, setBirthDate] = useState(init.birthDate);
+  const [birthHour, setBirthHour] = useState(init.birthHour);
+  const [gender, setGender] = useState<Gender>(init.gender);
+  const [names, setNames] = useState<string[]>(init.names);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const updateName = (i: number, v: string) => {
@@ -54,7 +63,7 @@ export default function ModeCPage() {
       birthDate, birthHour, gender,
       names: names.filter(n => n.trim()).map(n => n.trim()),
     };
-    const saved = writeStoredInput('dlbd_mode_c', input);
+    const saved = writeStoredInput(MODE_C_STORAGE_KEY, input);
     if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-c/results');
   };
@@ -77,6 +86,10 @@ export default function ModeCPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+
+        {init.restoreNotice && (
+          <p role="status" className="text-xs text-teal-800 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2">{init.restoreNotice}</p>
+        )}
 
         {/* 1. 출생일 */}
         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">

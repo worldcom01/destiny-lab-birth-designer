@@ -192,6 +192,15 @@ export function getGrade(overall: number): Grade {
   return 'C';
 }
 
+/**
+ * Selected styles that the name's characters are actually classified under
+ * (nameStyleFit). Only these may be labelled "○○ 적합" or "○○ 스타일에 어울리는";
+ * a selected style the name does not fit is never claimed.
+ */
+export function stylesFittingName(name: GeneratedName, nameStyles: NameStyle[]): NameStyle[] {
+  return nameStyles.filter(s => name.char1.nameStyleFit?.includes(s) || name.char2.nameStyleFit?.includes(s));
+}
+
 // ─── 특징 태그 ──────────────────────────────────────────────────────────────
 export function getCharacteristics(
   pillars: FourPillars,

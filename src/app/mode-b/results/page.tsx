@@ -9,7 +9,7 @@ import { validateModeBInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
 import {
-  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, saveHanjaSelections, withSelection,
+  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, purgeLegacyHanjaSelections, saveHanjaSelections, withSelection,
 } from '@/lib/hanjaModel';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
@@ -22,6 +22,7 @@ interface ModeBData { results: AnalysisResult[]; selections: HanjaSelections; sc
 
 function runModeB(input: ModeBInput): ModeBData {
   const scope = analysisScope(input);
+  purgeLegacyHanjaSelections();
   const selections = loadHanjaSelections(HANJA_SELECTION_KEYS.modeB, scope);
   return { results: applyHanjaSelections(runModeBAnalysis(input), selections), selections, scope };
 }

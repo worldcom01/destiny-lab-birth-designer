@@ -8,7 +8,7 @@ import { parseIsoCivilDate } from './calendar';
 import { assertValid, validateDesignerInput, validateModeBInput, validateModeCInput } from './inputValidation';
 import { buildDaySlots, isSlotPermitted, isoDatesBetween, normalizeSchedule } from './schedule';
 import { analyzeNameFromGenerated, combineOhaengBalances } from './sungmyung';
-import { calcAllScores, getGrade, getCharacteristics, generateDescription } from './scoring';
+import { calcAllScores, getGrade, getCharacteristics, generateDescription, stylesFittingName } from './scoring';
 import { generateCandidateNames, getImageMatchFromName } from './nameGenerator';
 import { findCharByHangul } from '@/data/nameChars';
 import { HanjaSelections, applySelectionToName, buildSurnameHanja, syncProfile, unassignedChar } from './hanjaModel';
@@ -41,8 +41,10 @@ function singleAnalysis(
   // 신규: name + nameStyles 파라미터 전달
   const scores = calcAllScores(fourPillars, sajuOhaengBalance, nameAnalysis, name, nameStyles);
   const grade = getGrade(scores.overall);
-  const characteristics = getCharacteristics(fourPillars, sajuOhaengBalance, nameAnalysis, imageMatches, nameStyles);
-  const description = generateDescription(fourPillars, sajuOhaengBalance, nameAnalysis, imageMatches, nameStyles);
+  // Text only claims styles the name actually fits; scoring above still uses all selected styles.
+  const fitStyles = stylesFittingName(name, nameStyles);
+  const characteristics = getCharacteristics(fourPillars, sajuOhaengBalance, nameAnalysis, imageMatches, fitStyles);
+  const description = generateDescription(fourPillars, sajuOhaengBalance, nameAnalysis, imageMatches, fitStyles);
 
   return {
     id: `${civilIso(date)}-${pad2(hour)}${pad2(time.minute)}-${name.full}`,

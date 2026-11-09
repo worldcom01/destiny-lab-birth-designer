@@ -1,37 +1,48 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { User2, ChevronRight, Sparkles, Layers, ArrowLeft, Calendar } from 'lucide-react';
 import { ModeBInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS } from '@/types';
 import { COMMON_SURNAMES } from '@/data/nameChars';
-import type { HanjaOption } from '@/data/hanjaDB';
+import { getHanjaOptions, type HanjaOption } from '@/data/hanjaDB';
 import TimeSelector from '@/components/TimeSelector';
 import { HanjaInputRow } from '@/components/HanjaInputRow';
 import { dolrimNotice, validateModeBInput } from '@/lib/inputValidation';
 import { writeStoredInput } from '@/lib/storage';
+import { MODE_B_STORAGE_KEY, loadModeBFormInit } from '@/lib/formRestore';
 
 const ALL_IMAGES: ImageType[] = [
   '리더형', '학자형', '예술형', '사업가형', '창의형',
   '균형형', '건강중심형', '글로벌형', '대인관계형',
 ];
 
+const subscribeNoop = () => () => {};
+
 export default function ModeBPage() {
+  // The previous input lives in localStorage and the default date depends on
+  // today (Asia/Seoul), so the form renders on the client only (no hydration mismatch).
+  const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  return isClient
+    ? <ModeBForm />
+    : <div className="min-h-screen bg-[#F4F6F9] flex items-center justify-center text-sm text-slate-400" aria-busy="true">입력 화면을 준비하는 중…</div>;
+}
+
+function ModeBForm() {
   const router = useRouter();
+  const [init] = useState(() => loadModeBFormInit(new Date()));
 
-  const nextYear = new Date();
-  nextYear.setFullYear(nextYear.getFullYear() + 1);
-  const defDate = nextYear.toISOString().split('T')[0];
-
-  const [birthDate, setBirthDate] = useState(defDate);
-  const [birthHour, setBirthHour] = useState(9);
-  const [surname, setSurname] = useState('김');
-  const [gender, setGender] = useState<Gender>('남');
-  const [dolrimChar, setDolrimChar] = useState('');
-  const [dolrimPosition, setDolrimPosition] = useState<'first' | 'second' | 'auto'>('auto');
-  const [dolrimHanja, setDolrimHanja] = useState<HanjaOption | null>(null);
-  const [nameStyles, setNameStyles] = useState<NameStyle[]>([]);
-  const [images, setImages] = useState<ImageType[]>([]);
+  const [birthDate, setBirthDate] = useState(init.birthDate);
+  const [birthHour, setBirthHour] = useState(init.birthHour);
+  const [surname, setSurname] = useState(init.surname);
+  const [gender, setGender] = useState<Gender>(init.gender);
+  const [dolrimChar, setDolrimChar] = useState(init.dolrimChar);
+  const [dolrimPosition, setDolrimPosition] = useState<'first' | 'second' | 'auto'>(init.dolrimPosition);
+  const [dolrimHanja, setDolrimHanja] = useState<HanjaOption | null>(
+    () => (init.dolrimHanja && getHanjaOptions(init.dolrimChar).find(o => o.hanja === init.dolrimHanja)) || null,
+  );
+  const [nameStyles, setNameStyles] = useState<NameStyle[]>(init.nameStyles);
+  const [images, setImages] = useState<ImageType[]>(init.images);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const toggleNameStyle = useCallback((s: NameStyle) => {
@@ -57,7 +68,7 @@ export default function ModeBPage() {
       return;
     }
     setErrors({});
-    const saved = writeStoredInput('dlbd_mode_b', result.value);
+    const saved = writeStoredInput(MODE_B_STORAGE_KEY, result.value);
     if (!saved.ok) { setErrors({ storage: saved.message }); return; }
     router.push('/mode-b/results');
   };
@@ -78,6 +89,10 @@ export default function ModeBPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+
+        {init.restoreNotice && (
+          <p role="status" className="text-xs text-violet-800 bg-violet-50 border border-violet-100 rounded-lg px-3 py-2">{init.restoreNotice}</p>
+        )}
 
         {/* 1. 출생일 */}
         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
