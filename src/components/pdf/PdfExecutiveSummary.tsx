@@ -7,6 +7,7 @@ import { formatTimeSlot } from '@/lib/schedule';
 
 interface Props {
   results: AnalysisResult[];
+  stats?: { total: number; grades: Record<Grade, number> };
   pageNum: number;
   totalPages: number;
 }
@@ -27,13 +28,12 @@ function GradeStat({ grade, count, total }: { grade: Grade; count: number; total
   );
 }
 
-export default function PdfExecutiveSummary({ results, pageNum, totalPages }: Props) {
+export default function PdfExecutiveSummary({ results, stats, pageNum, totalPages }: Props) {
   const top = results[0];
   if (!top) return null;
 
-  const grades: Record<Grade, number> = { SS: 0, S: 0, A: 0, B: 0, C: 0 };
-  for (const r of results) grades[r.grade]++;
-  const total = results.length;
+  const grades: Record<Grade, number> = stats?.grades ?? results.reduce<Record<Grade, number>>((acc, r) => ({ ...acc, [r.grade]: acc[r.grade] + 1 }), { SS: 0, S: 0, A: 0, B: 0, C: 0 });
+  const total = stats?.total ?? results.length;
   const ohaeng = top.sajuOhaengBalance;
   const ohaengTotal = Object.values(ohaeng).reduce((a, b) => a + b, 0);
   const gc = GRADE_CONFIG[top.grade];

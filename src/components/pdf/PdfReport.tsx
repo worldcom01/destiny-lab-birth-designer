@@ -7,8 +7,14 @@ import PdfInterpretation from './PdfInterpretation';
 import PdfTop20 from './PdfTop20';
 import { generateFullInterpretation } from '@/lib/interpretationEngine';
 
+export interface ReportStats {
+  total: number;
+  grades: Record<Grade, number>;
+}
+
 interface Props {
   results: AnalysisResult[];
+  stats?: ReportStats; // whole-population counts; defaults to `results`
   surname: string;
   gender: string;
   dateRange?: string;
@@ -21,7 +27,7 @@ function makeReportId(): string {
   return `DBD-${dateStr}-${rand}`;
 }
 
-export default function PdfReport({ results, surname, gender, dateRange }: Props) {
+export default function PdfReport({ results, stats, surname, gender, dateRange }: Props) {
   if (!results.length) return null;
 
   const top20 = results.slice(0, 20);
@@ -29,8 +35,8 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
   const reportId = makeReportId();
   const analysisDate = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  const gradeCounts: Record<Grade, number> = { SS: 0, S: 0, A: 0, B: 0, C: 0 };
-  for (const r of results) gradeCounts[r.grade]++;
+  const gradeCounts: Record<Grade, number> = stats?.grades ?? results.reduce<Record<Grade, number>>((acc, r) => ({ ...acc, [r.grade]: acc[r.grade] + 1 }), { SS: 0, S: 0, A: 0, B: 0, C: 0 });
+  const totalCount = stats?.total ?? results.length;
 
   const interpretation = generateFullInterpretation(top20[0]);
 
@@ -41,14 +47,18 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
   // 6: AI Interpretation
   // 7: TOP 1-10
   // 8: TOP 11-20
-  const TOTAL_PAGES = 8;
+  // Page numbers follow the pages actually rendered.
+  const interpretationPage = 3 + top3.length;
+  const firstTablePage = interpretationPage + 1;
+  const TOTAL_PAGES = firstTablePage + (top20.length > 10 ? 1 : 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
       {/* Page 1: Cover */}
       <PdfCover
         topResult={top20[0]}
-        totalCount={results.length}
+        totalCount={totalCount}
+        totalPages={TOTAL_PAGES}
         surname={surname}
         gender={gender}
         dateRange={dateRange}
@@ -61,6 +71,7 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
       {/* Page 2: Executive Summary */}
       <PdfExecutiveSummary
         results={top20}
+        stats={{ total: totalCount, grades: gradeCounts }}
         pageNum={2}
         totalPages={TOTAL_PAGES}
       />
@@ -80,7 +91,7 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
       <PdfInterpretation
         result={top20[0]}
         interpretation={interpretation}
-        pageNum={6}
+        pageNum={interpretationPage}
         totalPages={TOTAL_PAGES}
       />
 
@@ -88,7 +99,7 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
       <PdfTop20
         results={top20.slice(0, 10)}
         startRank={1}
-        pageNum={7}
+        pageNum={firstTablePage}
         totalPages={TOTAL_PAGES}
         title="추천 순위 1위~10위"
       />
@@ -98,7 +109,7 @@ export default function PdfReport({ results, surname, gender, dateRange }: Props
         <PdfTop20
           results={top20.slice(10, 20)}
           startRank={11}
-          pageNum={8}
+          pageNum={firstTablePage + 1}
           totalPages={TOTAL_PAGES}
           title="추천 순위 11위~20위"
         />

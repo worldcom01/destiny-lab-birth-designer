@@ -6,6 +6,7 @@ import { formatKoreanDate } from '@/lib/analysis';
 interface Props {
   topResult: AnalysisResult;
   totalCount: number;
+  totalPages: number;
   surname: string;
   gender: string;
   dateRange?: string;
@@ -18,7 +19,7 @@ interface Props {
 const FONT = "'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif";
 
 export default function PdfCover({
-  topResult, totalCount, surname, gender, dateRange, reportId, analysisDate, ssCount, sCount,
+  topResult, totalCount, totalPages, surname, gender, dateRange, reportId, analysisDate, ssCount, sCount,
 }: Props) {
   const gc = GRADE_CONFIG[topResult.grade];
 
@@ -181,7 +182,7 @@ export default function PdfCover({
           Powered by Destiny Lab
         </span>
         <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>CONFIDENTIAL</span>
-        <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>1 / {'{total}'}</span>
+        <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)' }}>1 / {totalPages}</span>
       </div>
     </div>
   );

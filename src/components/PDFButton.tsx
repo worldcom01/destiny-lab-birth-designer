@@ -3,7 +3,12 @@
 import { useState, useRef } from 'react';
 import { Download, Loader2, FileText } from 'lucide-react';
 import { AnalysisResult } from '@/types';
-import PdfReport from './pdf/PdfReport';
+import PdfReport, { ReportStats } from './pdf/PdfReport';
+
+// html2canvas measures each font's text baseline with an inline <img> in the live
+// document. Tailwind's preflight makes every <img> display:block, which skews that
+// measurement and draws all PDF text too low. This rule is applied only while capturing.
+const CAPTURE_FIX_CSS = 'img { display: inline !important; }';
 
 interface Props {
   results: AnalysisResult[];
@@ -21,6 +26,7 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
 
   const handleExport = async () => {
     if (loading) return;
+    let captureFix: HTMLStyleElement | null = null;
     setLoading(true);
     setProgress('리포트 렌더링 중...');
 
@@ -45,6 +51,10 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
       // Step 4: Import libraries
       const { jsPDF } = await import('jspdf');
       const html2canvas = (await import('html2canvas')).default;
+
+      captureFix = document.createElement('style');
+      captureFix.textContent = CAPTURE_FIX_CSS;
+      document.head.appendChild(captureFix);
 
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -85,6 +95,7 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
       console.error('PDF generation failed:', err);
       alert('PDF 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
+      captureFix?.remove();
       setShowReport(false);
       setLoading(false);
       setProgress('');
@@ -92,6 +103,9 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
   };
 
   const topResults = results.slice(0, top);
+  // The report shows the top results, but totals and grade counts describe every analysed combination.
+  const stats: ReportStats = { total: results.length, grades: { SS: 0, S: 0, A: 0, B: 0, C: 0 } };
+  for (const r of results) stats.grades[r.grade]++;
 
   return (
     <>
@@ -130,6 +144,7 @@ export default function PDFButton({ results, top = 20, surname = '', gender = ''
         >
           <PdfReport
             results={topResults}
+            stats={stats}
             surname={surname}
             gender={gender}
             dateRange={dateRange}
