@@ -24,20 +24,21 @@ describe('style tags', () => {
   };
   const results = runModeBAnalysis(input);
 
-  it('a "○○ 적합" tag or "○○ 스타일" sentence appears only when a character fits that style', () => {
+  it('a "○○ 분류 글자 포함" tag or "○○ 스타일로 분류된 글자" sentence appears only when a character fits that style', () => {
     let tagged = 0;
     let untagged = 0;
     for (const r of results) {
       const fits = stylesFittingName(r.name, STYLES);
       for (const style of STYLES) {
-        const claimed = r.characteristics.includes(`${style} 적합`) || r.description.includes(`${style} 스타일에 어울리는`);
+        const claimed = r.characteristics.includes(`${style} 분류 글자 포함`) || r.description.includes(`'${style}' 스타일로 분류된 글자`);
         if (claimed) {
           expect(fits).toContain(style);
           expect([r.name.char1, r.name.char2].some(c => c.nameStyleFit?.includes(style))).toBe(true);
         }
       }
       if (fits.length > 0) tagged++; else untagged++;
-      if (fits.length === 0) expect(r.characteristics.some(t => t.endsWith(' 적합'))).toBe(false);
+      if (fits.length === 0) expect(r.characteristics.some(t => t.endsWith(' 분류 글자 포함'))).toBe(false);
+      else expect(r.characteristics).toContain(`${fits[0]} 분류 글자 포함`); // the positive branch is really exercised
     }
     // The fixture exercises both branches.
     expect(tagged).toBeGreaterThan(0);
@@ -70,7 +71,10 @@ describe('Mode B / Mode C input restore', () => {
 
   it('restores a valid Mode B input with a notice', () => {
     const init = loadModeBFormInit(now, store({ dlbd_mode_b: JSON.stringify(B) }));
-    expect(init).toMatchObject({ ...B, restoreNotice: '이전에 입력한 내용을 불러왔습니다.' });
+    // R3-FIX F31: restored styles are announced (the notice starts with the generic sentence).
+    expect(init).toMatchObject({ ...B });
+    expect(init.restoreNotice!.startsWith('이전에 입력한 내용을 불러왔습니다.')).toBe(true);
+    if (B.nameStyles.length) expect(init.restoreNotice).toContain(`이름 스타일(${B.nameStyles.join('·')})`);
   });
 
   it('starts fresh without a notice when nothing is stored', () => {

@@ -11,13 +11,13 @@ interface Props {
 }
 
 const DIMENSIONS = [
-  { key: 'personality',  label: '성격 및 기질',      icon: '◆' },
-  { key: 'strengths',    label: '핵심 강점',          icon: '◆' },
-  { key: 'growth',       label: '성장 방향',          icon: '◆' },
-  { key: 'learning',     label: '학습 성향',          icon: '◆' },
-  { key: 'relationships',label: '대인관계',           icon: '◆' },
-  { key: 'leadership',   label: '리더십 성향',        icon: '◆' },
-  { key: 'creativity',   label: '창의성',             icon: '◆' },
+  { key: 'personality',  label: '오행과 성품의 전통적 비유', icon: '◆' },
+  { key: 'strengths',    label: '전통적으로 꼽는 덕목',     icon: '◆' },
+  { key: 'growth',       label: '오행 상생 관계',           icon: '◆' },
+  { key: 'learning',     label: '배움에 대한 전통적 비유',  icon: '◆' },
+  { key: 'relationships',label: '관계의 상징',              icon: '◆' },
+  { key: 'leadership',   label: '이끎에 대한 전통적 비유',  icon: '◆' },
+  { key: 'creativity',   label: '창의의 상징',              icon: '◆' },
 ] as const;
 
 export default function PdfInterpretation({ result, interpretation, pageNum, totalPages }: Props) {
@@ -28,7 +28,7 @@ export default function PdfInterpretation({ result, interpretation, pageNum, tot
         종합 해석 — {result.name.full}
       </div>
       <div style={{ fontSize: '11px', color: '#94A3B8', marginBottom: '20px' }}>
-        전통 명리학 기반 가능성·성향·기질 중심 분석 | 미래 보장 서비스가 아닙니다
+        사주에서 가장 많은 오행의 전통적 상징 해설 | 아이의 성격·능력·미래를 예측하지 않습니다
       </div>
 
       {/* Summary box */}

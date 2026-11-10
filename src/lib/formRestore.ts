@@ -1,5 +1,5 @@
 import { Gender, ImageType, NameStyle } from '@/types';
-import { isLegacyZiInput, validateModeBInput, validateModeCInput } from './inputValidation';
+import { isLegacyZiInput, isNameStyle, uniqueList, validateModeBInput, validateModeCInput } from './inputValidation';
 import { addMonthsClamped, seoulToday, toIsoDate } from './modeAForm';
 
 // Restores the previous Mode B / Mode C input (the one saved before the last
@@ -55,14 +55,45 @@ export function loadModeBFormInit(now: Date, storage?: Pick<Storage, 'getItem'>)
   if (read.kind === 'empty') return base;
   if (read.kind === 'unreadable') return { ...base, restoreNotice: UNREADABLE_NOTICE };
   const legacyZi = isLegacyZiInput(read.raw);
-  const v = validateModeBInput(read.raw, { ignoreTime: legacyZi });
+  const styles = inspectStoredStyles(read.raw);
+  // A malformed style list alone does not discard the rest of the input: the
+  // valid entries are kept and the user is told which ones were dropped.
+  const raw = styles.malformed && typeof read.raw === 'object' && read.raw !== null
+    ? { ...(read.raw as Record<string, unknown>), nameStyles: styles.valid }
+    : read.raw;
+  const v = validateModeBInput(raw, { ignoreTime: legacyZi });
   if (!v.ok) return { ...base, restoreNotice: INVALID_NOTICE };
   const x = v.value;
+  const notices = [legacyZi ? LEGACY_ZI_NOTICE : RESTORED_NOTICE];
+  if (styles.malformed) {
+    notices.push(styles.valid.length > 0
+      ? `저장된 이름 스타일 중 올바르지 않은 값(${styles.dropped})은 제외했습니다. 남은 스타일: ${x.nameStyles.join('·')}.`
+      : `저장된 이름 스타일 정보(${styles.dropped})가 올바르지 않아 스타일 선택 없이 불러왔습니다.`);
+  }
+  if (styles.duplicates) notices.push('중복 저장된 이름 스타일은 하나로 정리했습니다.');
+  if (x.nameStyles.length > 0) {
+    notices.push(`이전에 고른 이름 스타일(${x.nameStyles.join('·')})이 선택된 상태입니다. 아래 '이름 스타일'에서 확인하거나 해제할 수 있습니다.`);
+  }
   return {
     birthDate: x.birthDate, birthHour: legacyZi ? null : x.birthHour, surname: x.surname, gender: x.gender,
     dolrimChar: x.dolrimChar, dolrimPosition: x.dolrimPosition, dolrimHanja: x.dolrimHanja ?? null,
     nameStyles: [...x.nameStyles], images: [...x.images],
-    restoreNotice: legacyZi ? LEGACY_ZI_NOTICE : RESTORED_NOTICE,
+    restoreNotice: notices.join(' '),
+  };
+}
+
+/** Classifies a stored nameStyles value: valid entries, malformed parts, duplicates. */
+function inspectStoredStyles(raw: unknown): { valid: string[]; malformed: boolean; dropped: string; duplicates: boolean } {
+  const v = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>).nameStyles : undefined;
+  if (v === undefined) return { valid: [], malformed: false, dropped: '', duplicates: false };
+  if (!Array.isArray(v)) return { valid: [], malformed: true, dropped: JSON.stringify(v).slice(0, 40), duplicates: false };
+  const valid = v.filter(isNameStyle);
+  const bad = v.filter(x => !isNameStyle(x));
+  return {
+    valid,
+    malformed: bad.length > 0,
+    dropped: bad.map(x => JSON.stringify(x)).join(', ').slice(0, 60),
+    duplicates: uniqueList(valid).length !== valid.length,
   };
 }
 

@@ -9,22 +9,25 @@ import { validateModeBInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
 import {
-  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, loadHanjaSelections, purgeLegacyHanjaSelections, saveHanjaSelections, withSelection,
+  HANJA_SELECTION_KEYS, HanjaScopeRecovery, HanjaSelections, analysisScope, hanjaRecoveryNotice, loadHanjaSelectionsWithLegacy, saveHanjaSelectionPatch,
 } from '@/lib/hanjaModel';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
 import SajuSummary from '@/components/SajuSummary';
 import PDFButton from '@/components/PDFButton';
+import HanjaSaveFeedback, { HanjaSaveState } from '@/components/HanjaSaveFeedback';
+import { OVERALL_SCORE_EXPLANATION, appliedPreferencesText } from '@/lib/scoreComponents';
 
 type FG = Grade | 'ALL';
 
-interface ModeBData { results: AnalysisResult[]; selections: HanjaSelections; scope: string }
+interface ModeBData { results: AnalysisResult[]; selections: HanjaSelections; scope: string; recovery: HanjaScopeRecovery }
 
 function runModeB(input: ModeBInput): ModeBData {
   const scope = analysisScope(input);
-  purgeLegacyHanjaSelections();
-  const selections = loadHanjaSelections(HANJA_SELECTION_KEYS.modeB, scope);
-  return { results: applyHanjaSelections(runModeBAnalysis(input), selections), selections, scope };
+  // Read-only: no stored record (v1 or v2) is deleted when results are opened.
+  // Read-only: an older duplicate-preference scope is used only when provably the same input.
+  const { selections, recovery } = loadHanjaSelectionsWithLegacy(HANJA_SELECTION_KEYS.modeB, scope);
+  return { results: applyHanjaSelections(runModeBAnalysis(input), selections), selections, scope, recovery };
 }
 
 const EMPTY: AnalysisResult[] = [];
@@ -32,7 +35,7 @@ const EMPTY: AnalysisResult[] = [];
 export default function ModeBResults() {
   const router = useRouter();
   const state = useStoredAnalysis('dlbd_mode_b', validateModeBInput, runModeB);
-  const [saveFailed, setSaveFailed] = useState(false);
+  const [saveState, setSaveState] = useState<HanjaSaveState>(null);
   const [edited, setEdited] = useState<ModeBData | null>(null);
   const current = edited ?? (state.status === 'ready' ? state.data : null);
   const results = current?.results ?? EMPTY;
@@ -42,9 +45,13 @@ export default function ModeBResults() {
 
   const handleHanjaSelect = (fullName: string, index: number, hanja: string) => {
     if (!current) return;
-    const next = withSelection(current.selections, fullName, index, hanja);
-    setSaveFailed(!saveHanjaSelections(HANJA_SELECTION_KEYS.modeB, current.scope, next));
-    setEdited({ ...current, results: applyHanjaSelections(current.results, next), selections: next });
+    // One strict read + patch of the stored record (fail-closed). The screen shows only
+    // what was actually persisted; a refused save changes neither storage nor the screen.
+    const saved = saveHanjaSelectionPatch(HANJA_SELECTION_KEYS.modeB, current.scope, fullName, index, hanja, current.selections);
+    if (!saved.ok) { setSaveState({ ok: false, fullName, reason: saved.reason }); return; }
+    setSaveState({ ok: true, fullName });
+    // A verified write supersedes any earlier read/recovery notice (H4).
+    setEdited({ ...current, results: applyHanjaSelections(current.results, saved.selections), selections: saved.selections, recovery: { kind: 'none' } });
   };
 
   const gc = useMemo(() => {
@@ -114,6 +121,18 @@ export default function ModeBResults() {
           />
         )}
 
+        {current && hanjaRecoveryNotice(current.recovery) && (
+          <p role="status" data-testid="hanja-recovery-notice" className="text-[11px] text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+            {hanjaRecoveryNotice(current.recovery)}
+          </p>
+        )}
+        {input && (
+          <p data-testid="applied-preferences" className="text-[11px] text-slate-600 bg-white border border-slate-100 rounded-xl px-3 py-2">
+            {appliedPreferencesText(input.nameStyles, input.images)}
+            <span className="text-slate-400"> — 바꾸려면 &lsquo;돌아가기&rsquo;에서 수정하세요</span>
+          </p>
+        )}
+
         {/* 등급 요약 */}
         <div className="grid grid-cols-4 gap-3">
           {(['SS', 'S', 'A', 'B'] as Grade[]).map(g => (
@@ -144,11 +163,7 @@ export default function ModeBResults() {
           </div>
         </div>
 
-        {saveFailed && (
-          <p role="status" className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-            선택한 한자를 브라우저에 저장하지 못했습니다. 이 화면에서는 반영되지만 새로고침하면 사라질 수 있습니다.
-          </p>
-        )}
+        <HanjaSaveFeedback state={saveState} />
         {/* 이름 목록 */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -156,7 +171,7 @@ export default function ModeBResults() {
               추천 이름 {filterGrade === 'ALL' ? '' : `(${filterGrade} 등급)`}
               <span className="text-slate-400 font-normal ml-1">({filtered.length}개)</span>
             </h2>
-            <span className="text-xs text-slate-400">이름·사주 조화도 높은 순</span>
+            <span className="text-xs text-slate-400">종합 점수 높은 순</span>
           </div>
           <div className="space-y-3">
             {filtered.slice(0, showCount).map((r, i) => (
@@ -175,7 +190,8 @@ export default function ModeBResults() {
 
         <div className="bg-violet-50 border border-violet-200 rounded-2xl p-4 text-xs text-violet-800 leading-relaxed">
           <p className="font-bold mb-1">이름 설계 모드 안내</p>
-          <p>확정된 출생일·시간을 기준으로, 해당 사주와 이름-사주 조화도가 높은 이름을 추천합니다. 오행 보완, 음양 조화, 발음 안정성, 한자 의미를 종합 분석합니다.</p>
+          <p>확정된 출생일·시간의 사주를 기준으로 지원하는 두 글자 이름 후보 전체를 같은 공식으로 계산해 종합 점수 순으로 보여줍니다.</p>
+          <p className="mt-1.5">{OVERALL_SCORE_EXPLANATION}</p>
         </div>
         <p className="text-center text-xs text-indigo-500 font-bold pb-4">Powered by Destiny Lab</p>
       </div>

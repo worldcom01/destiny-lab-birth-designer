@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { HANJA_SELECTION_NOTE, INDEX_PROVENANCE_NOTE } from '@/lib/scoreComponents';
 import { X, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { OhaengType, OHAENG_COLORS } from '@/types';
-import { HanjaOption, getHanjaOptions, getSuriOhaeng, getRecommendedHanja } from '@/data/hanjaDB';
+import { HanjaOption, getHanjaOptions, getSuriOhaeng, explainRecommendedHanja, recommendationReasonText } from '@/data/hanjaDB';
 
 interface Props {
   hangul: string;
@@ -41,10 +42,11 @@ function FreqBar({ value, label }: { value: number; label: string }) {
 
 export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, recommendedOhaeng, label }: Props) {
   const options = useMemo(() => getHanjaOptions(hangul), [hangul]);
-  const recommended = useMemo(
-    () => getRecommendedHanja(hangul, recommendedOhaeng ?? null),
+  const explanation = useMemo(
+    () => explainRecommendedHanja(hangul, recommendedOhaeng ?? null),
     [hangul, recommendedOhaeng]
   );
+  const recommended = explanation?.option;
 
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -86,13 +88,16 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
           </button>
         </div>
 
+        <p className="mx-5 mt-3 text-[11px] text-slate-500" data-testid="hanja-score-note">
+          {HANJA_SELECTION_NOTE}
+        </p>
+
         {/* 추천 안내 */}
-        {recommended && (
+        {explanation && (
           <div className="mx-5 mt-3 flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-2">
             <Sparkles className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
-            <p className="text-xs text-indigo-700">
-              <strong>{recommended.hanja}</strong>({recommended.meaning})이
-              {recommendedOhaeng ? ` 사주의 부족한 ${recommendedOhaeng} 기운을 보완합니다.` : ' 종합 균형에 추천됩니다.'}
+            <p className="text-xs text-indigo-700" data-testid="hanja-recommendation" data-basis={explanation.basis}>
+              {recommendationReasonText(explanation)}
             </p>
           </div>
         )}
@@ -155,14 +160,16 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
 
                     {/* 빈도 바 */}
                     <div className="grid grid-cols-2 gap-2 mt-2.5">
-                      <FreqBar value={opt.usageFreq} label="사용 빈도" />
-                      <FreqBar value={opt.modernPref} label="현대 선호도" />
+                      <FreqBar value={opt.usageFreq} label="사용 빈도(내부 지수)" />
+                      <FreqBar value={opt.modernPref} label="현대 선호(내부 지수)" />
                     </div>
                   </div>
                 </div>
               </button>
             );
           })}
+
+          <p className="text-[10px] text-slate-400 leading-relaxed" data-testid="index-provenance-note">{INDEX_PROVENANCE_NOTE}</p>
 
           {/* 선택 안 함 */}
           <button

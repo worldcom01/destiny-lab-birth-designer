@@ -24,7 +24,10 @@ describe('Mode B / Mode C pages restore the previous input', () => {
     };
     localStorage.setItem('dlbd_mode_b', JSON.stringify(prev));
     render(<ModeBPage />);
-    expect(screen.getByRole('status').textContent).toBe('이전에 입력한 내용을 불러왔습니다.');
+    // R3-FIX F31: the restored style is announced and visibly selected.
+    expect(screen.getByRole('status').textContent).toBe(
+      "이전에 입력한 내용을 불러왔습니다. 이전에 고른 이름 스타일(현대형)이 선택된 상태입니다. 아래 '이름 스타일'에서 확인하거나 해제할 수 있습니다.");
+    expect(screen.getByRole('button', { name: /현대형/, pressed: true })).toBeTruthy();
     expect(dateInput().value).toBe('2027-07-04');
     expect((screen.getByPlaceholderText('예) 민') as HTMLInputElement).value).toBe('민');
     fireEvent.click(screen.getByRole('button', { name: /이름 설계 시작|분석 시작/ }));

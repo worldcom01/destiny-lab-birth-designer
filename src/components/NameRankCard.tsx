@@ -7,6 +7,8 @@ import OhaengChart from './OhaengChart';
 import HanjaDisplay from './HanjaDisplay';
 import { hanjaStatusLabel } from '@/lib/hanjaModel';
 import { buildSajuReading } from '@/lib/sajuReading';
+import { componentByKey } from '@/lib/scoreComponents';
+import ScoreBreakdown from './ScoreBreakdown';
 
 const GRADE_RING: Record<string, string> = {
   SS: 'ring-2 ring-amber-400 shadow-amber-100 shadow-md',
@@ -16,15 +18,6 @@ const GRADE_RING: Record<string, string> = {
   C:  'ring-1 ring-slate-200',
 };
 
-const SCORE_KEYS: { key: keyof AnalysisResult['scores']; label: string }[] = [
-  { key: 'nameHarmony',          label: '이름·사주 조화' },
-  { key: 'pronunciationStability', label: '발음 안정성' },
-  { key: 'hanjaQuality',         label: '한자 의미 품질' },
-  { key: 'modernUsability',      label: '현대적 사용성' },
-  { key: 'imageMatch',           label: '이미지 부합도' },
-  { key: 'sajuOhaengBalance',    label: '사주 오행 균형' },
-  { key: 'yinYangHarmony',       label: '음양 조화' },
-];
 
 export default function NameRankCard({ result, rank, onHanjaSelect }: {
   result: AnalysisResult;
@@ -120,7 +113,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
         {/* 핵심 점수 미리보기 (이름·사주 조화 강조) */}
         <div className="mt-3 bg-slate-50 rounded-xl p-3">
           <div className="flex justify-between text-[11px] text-slate-600 mb-1">
-            <span className="font-semibold">이름·사주 조화도</span>
+            <span className="font-semibold">{componentByKey('nameHarmony').label} <span className="font-normal text-slate-400">(종합의 {componentByKey('nameHarmony').weight}%)</span></span>
             <span className="font-bold text-indigo-600">{result.scores.nameHarmony}점</span>
           </div>
           <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
@@ -161,23 +154,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
             </div>
             <div>
               <h4 className="text-xs font-semibold text-slate-600 mb-3">세부 점수</h4>
-              <div className="space-y-2">
-                {SCORE_KEYS.map(({ key, label }) => {
-                  const val = result.scores[key] as number;
-                  return (
-                    <div key={key}>
-                      <div className="flex justify-between text-[11px] mb-0.5">
-                        <span className="text-slate-600">{label}</span>
-                        <span className="font-bold text-slate-700">{val}점</span>
-                      </div>
-                      <div className="bg-slate-200 rounded-full h-1 overflow-hidden">
-                        <div className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-violet-400"
-                          style={{ width: `${val}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <ScoreBreakdown scores={result.scores} given={result.name.given} />
             </div>
           </div>
         </div>

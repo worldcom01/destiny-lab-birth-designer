@@ -1,4 +1,5 @@
 import React from 'react';
+import { OVERALL_COMPONENTS, OVERALL_SCORE_EXPLANATION } from '@/lib/scoreComponents';
 import { PdfPage, SectionLabel, GoldDivider, OhaengBar, ScoreMeter } from './PdfPage';
 import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, Grade } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
@@ -131,12 +132,10 @@ export default function PdfExecutiveSummary({ results, stats, pageNum, totalPage
           <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             세부 분석 점수
           </div>
-          <ScoreMeter label="사주 오행 균형" value={top.scores.sajuOhaengBalance} />
-          <ScoreMeter label="음양 조화" value={top.scores.yinYangHarmony} />
-          <ScoreMeter label="이름·사주 조화" value={top.scores.nameHarmony} />
-          <ScoreMeter label="발음 안정성" value={top.scores.pronunciationStability} />
-          <ScoreMeter label="한자 의미 품질" value={top.scores.hanjaQuality} />
-          <ScoreMeter label="현대적 사용성" value={top.scores.modernUsability} />
+          {OVERALL_COMPONENTS.map(c => (
+            <ScoreMeter key={c.key} label={`${c.label} ${c.weight}%`} value={top.scores[c.key]} />
+          ))}
+          <p style={{ fontSize: '9px', color: '#64748B', lineHeight: 1.6, margin: '10px 0 0' }}>{OVERALL_SCORE_EXPLANATION}</p>
         </div>
       </div>
     </PdfPage>

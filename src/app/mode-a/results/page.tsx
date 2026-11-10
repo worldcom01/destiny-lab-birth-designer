@@ -10,6 +10,7 @@ import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
 import ResultCard from '@/components/ResultCard';
 import PDFButton from '@/components/PDFButton';
+import { OVERALL_SCORE_EXPLANATION } from '@/lib/scoreComponents';
 import OhaengChart from '@/components/OhaengChart';
 
 type FG = Grade | 'ALL';
@@ -156,7 +157,7 @@ export default function ModeAResults() {
 
         <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 text-xs text-indigo-800 leading-relaxed">
           <p className="font-bold mb-1">분석 기준</p>
-          <p>사주 오행 균형·음양 조화·이름-사주 조화·발음 안정성·한자 의미·현대적 사용성·이미지 부합도 기준으로 종합 분석합니다. 높은 등급이 더 나은 삶을 보장하지 않습니다.</p>
+          <p>{OVERALL_SCORE_EXPLANATION} 높은 등급이 더 나은 삶을 보장하지 않습니다.</p>
           <p className="mt-1.5">입력하신 의료진 허용 날짜·시간대 안의 시각만 계산했으며, 허용 여부는 점수에 반영하지 않습니다. 이 앱은 의료적 안전성을 판단할 수 없고, 전통 사주 점수는 건강·발달·의학적 결과를 예측하지 않습니다.</p>
         </div>
         <p className="text-center text-xs text-indigo-500 font-bold pb-4">Powered by Destiny Lab</p>

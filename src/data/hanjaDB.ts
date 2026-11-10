@@ -7,8 +7,8 @@ export interface HanjaOption {
   strokes: number;
   radical: string;       // 부수
   jaWonOhaeng: OhaengType;   // 자원오행 (부수 기반)
-  usageFreq: number;     // 0-100 사용 빈도
-  modernPref: number;    // 0-100 현대 선호도
+  usageFreq: number;     // 0-100 internal index (no documented source; display only)
+  modernPref: number;    // 0-100 internal index (no documented source)
   positivity: number;    // 0-100 의미 긍정성
 }
 
@@ -327,4 +327,57 @@ export function getRecommendedHanja(
   if (suriMatch.length > 0) return suriMatch[0];
   // 그래도 없으면 기본값
   return opts[0];
+}
+
+// ─── Why a Hanja was recommended (explanation only) ─────────────────────────
+//
+// getRecommendedHanja is unchanged. This classifies the record it actually
+// returned, so the UI never claims a resource-element (자원오행) match that the
+// DB record does not have.
+export type RecommendationBasis =
+  | 'jawon'        // the returned Hanja's 자원오행 equals the requested element
+  | 'suri'         // no 자원오행 match; its stroke-count element (수리오행) matches
+  | 'fallback'     // neither matches: the first registered Hanja for the syllable
+  | 'preference';  // no element requested: highest internal modernity/positivity index
+
+export interface RecommendationExplanation {
+  option: HanjaOption;
+  basis: RecommendationBasis;
+  neededOhaeng: OhaengType | null;
+  suriOhaeng: OhaengType;
+}
+
+export function explainRecommendedHanja(
+  hangul: string,
+  neededOhaeng: OhaengType | null,
+): RecommendationExplanation | undefined {
+  const option = getRecommendedHanja(hangul, neededOhaeng);
+  if (!option) return undefined;
+  const suriOhaeng = getSuriOhaeng(option.strokes);
+  const basis: RecommendationBasis = !neededOhaeng ? 'preference'
+    : option.jaWonOhaeng === neededOhaeng ? 'jawon'
+    : suriOhaeng === neededOhaeng ? 'suri'
+    : 'fallback';
+  return { option, basis, neededOhaeng, suriOhaeng };
+}
+
+// Korean particles for the element names (목·금 end in a final consonant).
+const hasFinal = (o: OhaengType) => o === '목' || o === '금';
+const eulReul = (o: OhaengType) => `${o}${hasFinal(o) ? '을' : '를'}`;
+const gwaWa = (o: OhaengType) => `${o}${hasFinal(o) ? '과' : '와'}`;
+
+/** User-facing sentence for a recommendation, built from the actual DB record. */
+export function recommendationReasonText(e: RecommendationExplanation): string {
+  const { option: o, neededOhaeng: x, suriOhaeng } = e;
+  const head = `${o.hanja}(${o.meaning}) · 자원오행 ${o.jaWonOhaeng} · ${o.strokes}획 수리오행 ${suriOhaeng}. `;
+  switch (e.basis) {
+    case 'jawon':
+      return head + `자원오행이 사주에 가장 적은 ${gwaWa(x!)} 같아, 전통 작명 관례에서 ${x} 기운을 보완하는 글자로 봅니다.`;
+    case 'suri':
+      return head + `이 음에는 자원오행이 ${x}인 한자가 없어, 획수로 정하는 수리오행이 ${x}인 한자를 추천했습니다. 자원오행으로 ${eulReul(x!)} 보완하는 것은 아닙니다.`;
+    case 'fallback':
+      return head + `이 음에는 자원오행·수리오행이 ${x}인 한자가 없어 첫 번째 등록 한자를 표시했습니다. ${x} 기운을 보완한다는 근거는 없습니다.`;
+    case 'preference':
+      return head + '오행 기준 없이 내부 현대 선호·긍정 지수가 가장 높은 한자를 기본 추천으로 표시했습니다.';
+  }
 }

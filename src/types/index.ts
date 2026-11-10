@@ -86,7 +86,7 @@ export interface NameCharData {
   ohaeng: OhaengType;
   yinyang: YinYangType;
   gender: 'male' | 'female' | 'neutral';
-  modernity: number;        // 0-100: 2020-2024 실제 출생신고 기반 현대 선호도
+  modernity: number;        // 0-100: internal model index (source/method undocumented, not empirically validated)
   positivity: number;       // 0-100: 의미 긍정성
   nameStyleFit: NameStyle[]; // 이름 스타일 분류
   images: ImageType[];
@@ -281,11 +281,11 @@ export const GRADE_CONFIG: Record<Grade, {
   bgTo: string;
   ring: string;
 }> = {
-  SS: { label: 'SS', description: '최고 조화도', textColor: 'text-amber-800', bgFrom: 'from-amber-400', bgTo: 'to-yellow-500', ring: 'ring-2 ring-amber-400' },
-  S:  { label: 'S',  description: '우수 조화도', textColor: 'text-indigo-800', bgFrom: 'from-indigo-500', bgTo: 'to-violet-600', ring: 'ring-2 ring-indigo-400' },
-  A:  { label: 'A',  description: '양호 조화도', textColor: 'text-emerald-800', bgFrom: 'from-emerald-500', bgTo: 'to-teal-600', ring: 'ring-2 ring-emerald-400' },
-  B:  { label: 'B',  description: '보통 조화도', textColor: 'text-blue-800', bgFrom: 'from-blue-500', bgTo: 'to-cyan-600', ring: 'ring-1 ring-blue-300' },
-  C:  { label: 'C',  description: '기본 조화도', textColor: 'text-slate-700', bgFrom: 'from-slate-400', bgTo: 'to-slate-500', ring: 'ring-1 ring-slate-200' },
+  SS: { label: 'SS', description: '87점 이상', textColor: 'text-amber-800', bgFrom: 'from-amber-400', bgTo: 'to-yellow-500', ring: 'ring-2 ring-amber-400' },
+  S:  { label: 'S',  description: '75~86점', textColor: 'text-indigo-800', bgFrom: 'from-indigo-500', bgTo: 'to-violet-600', ring: 'ring-2 ring-indigo-400' },
+  A:  { label: 'A',  description: '60~74점', textColor: 'text-emerald-800', bgFrom: 'from-emerald-500', bgTo: 'to-teal-600', ring: 'ring-2 ring-emerald-400' },
+  B:  { label: 'B',  description: '45~59점', textColor: 'text-blue-800', bgFrom: 'from-blue-500', bgTo: 'to-cyan-600', ring: 'ring-1 ring-blue-300' },
+  C:  { label: 'C',  description: '45점 미만', textColor: 'text-slate-700', bgFrom: 'from-slate-400', bgTo: 'to-slate-500', ring: 'ring-1 ring-slate-200' },
 };
 
 export const IMAGE_LABELS: Record<ImageType, { icon: string; desc: string }> = {

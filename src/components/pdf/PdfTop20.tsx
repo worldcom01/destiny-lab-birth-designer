@@ -1,4 +1,5 @@
 import React from 'react';
+import { componentByKey } from '@/lib/scoreComponents';
 import { PdfPage, SectionLabel, GoldDivider } from './PdfPage';
 import { AnalysisResult, OHAENG_COLORS, OhaengType, Grade } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
@@ -21,6 +22,10 @@ const GRADE_BG: Record<Grade, string> = {
   SS: '#FFF9E8', S: '#F5F3FF', A: '#ECFDF5', B: '#EFF6FF', C: '#F8FAFC',
 };
 
+// Column tracks + 8 gaps (8px) must fit the row content box:
+// 682 (page content) − 24 (padding) − 3 (left accent border) = 655 ≥ 590 + 64 = 654.
+export const TOP20_COLUMNS = '40px 60px 110px 100px 80px 50px 50px 60px 40px';
+
 function MiniOhaengDot({ value, total, color }: { value: number; total: number; color: string }) {
   const pct = total > 0 ? (value / total) * 100 : 0;
   return (
@@ -42,14 +47,15 @@ export default function PdfTop20({ results, startRank, pageNum, totalPages, titl
       {/* Table header */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '40px 60px 120px 100px 80px 50px 50px 60px 40px',
+        gridTemplateColumns: TOP20_COLUMNS,
         gap: '0 8px',
         padding: '8px 12px',
         backgroundColor: '#F1F5F9',
         borderRadius: '8px',
+        borderLeft: '3px solid transparent', // same box as the rows, so columns line up
         marginBottom: '6px',
       }}>
-        {['순위', '등급', '이름 (한자)', '출생일', '출생시', '종합', '이름조화', '오행', '음양'].map(h => (
+        {['순위', '등급', '이름 (한자)', '출생일', '출생시', '종합', componentByKey('nameHarmony').short, '사주 오행', componentByKey('yinYangHarmony').short].map(h => (
           <div key={h} style={{ fontSize: '9px', fontWeight: 700, color: '#64748B', letterSpacing: '0.05em', textAlign: 'center' }}>
             {h}
           </div>
@@ -65,7 +71,7 @@ export default function PdfTop20({ results, startRank, pageNum, totalPages, titl
         return (
           <div key={r.id} style={{
             display: 'grid',
-            gridTemplateColumns: '40px 60px 120px 100px 80px 50px 50px 60px 40px',
+            gridTemplateColumns: TOP20_COLUMNS,
             gap: '0 8px',
             padding: '9px 12px',
             backgroundColor: isTop3 ? GRADE_BG[r.grade] : i % 2 === 0 ? '#FFFFFF' : '#FAFBFC',

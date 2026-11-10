@@ -1,0 +1,2897 @@
+{
+ "modeA": {
+  "audit-09:00-male-traditional": {
+   "coverage": {
+    "dates": 1,
+    "slots": 1,
+    "candidates": 1672,
+    "combinations": 1672
+   },
+   "gradeCounts": {
+    "SS": 0,
+    "S": 189,
+    "A": 1483,
+    "B": 0,
+    "C": 0
+   },
+   "rankingHash": "6bdce59e",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2026-11-10-0900-김가서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 79
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2026-11-10-0900-김서우",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2026-11-10-0900-김우서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2026-11-10-0900-김기서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 90,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2026-11-10-0900-김서가",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2026-11-10-0900-김가지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2026-11-10-0900-김지가",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2026-11-10-0900-김가시",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2026-11-10-0900-김시가",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2026-11-10-0900-김서하",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2026-11-10-0900-김서예",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2026-11-10-0900-김우지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2026-11-10-0900-김지우",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2026-11-10-0900-김하서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2026-11-10-0900-김시우",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2026-11-10-0900-김예서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2026-11-10-0900-김우시",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2026-11-10-0900-김지하",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 91,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2026-11-10-0900-김하지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2026-11-10-0900-김시하",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 91,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2026-11-10-0900-김예지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2026-11-10-0900-김성가",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2026-11-10-0900-김수가",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2026-11-10-0900-김기지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2026-11-10-0900-김혁서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 무戊·자子 정丁·사巳",
+     "scores": {
+      "sajuOhaengBalance": 30,
+      "yinYangHarmony": 100,
+      "nameHarmony": 95,
+      "pronunciationStability": 100,
+      "hanjaQuality": 88,
+      "modernPreference": 85,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 85,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    }
+   ]
+  },
+  "7day-female-images-styles": {
+   "coverage": {
+    "dates": 7,
+    "slots": 15,
+    "candidates": 1044,
+    "combinations": 15660
+   },
+   "gradeCounts": {
+    "SS": 0,
+    "S": 6269,
+    "A": 9284,
+    "B": 107,
+    "C": 0
+   },
+   "rankingHash": "9f29a99c",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2026-12-04-0900-남궁윤서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2026-12-04-0900-남궁서윤",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2026-12-04-0900-남궁윤지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2026-12-04-0900-남궁지윤",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2026-12-04-0900-남궁서하",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2026-12-04-0900-남궁서아",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2026-12-04-0900-남궁아서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2026-12-04-0900-남궁하서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2026-12-06-0900-남궁빈채",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 갑甲·인寅 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 93,
+      "hanjaQuality": 93,
+      "modernPreference": 98,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 98,
+      "imageMatch": 80,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2026-12-06-0900-남궁빈서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 갑甲·인寅 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 97,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 97,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2026-12-06-0900-남궁빈지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 갑甲·인寅 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2026-12-06-0900-남궁빈시",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 갑甲·인寅 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2026-12-07-1100-남궁윤서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2026-12-07-1100-남궁서윤",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2026-12-07-1100-남궁윤지",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2026-12-07-1100-남궁지윤",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2026-12-07-1100-남궁서하",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2026-12-07-1100-남궁서아",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2026-12-07-1100-남궁아서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2026-12-07-1100-남궁하서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 을乙·묘卯 임壬·오午",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2026-12-04-0900-남궁린채",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 93,
+      "hanjaQuality": 93,
+      "modernPreference": 98,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 98,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2026-12-04-0900-남궁연채",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 87,
+      "pronunciationStability": 93,
+      "hanjaQuality": 91,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2026-12-04-0900-남궁빈채",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 93,
+      "hanjaQuality": 93,
+      "modernPreference": 98,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 98,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2026-12-04-0900-남궁린서",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 97,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 97,
+      "imageMatch": 65,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2026-12-04-0900-남궁린슬",
+     "grade": "S",
+     "pillars": "병丙·오午 기己·해亥 임壬·자子 을乙·사巳",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 100,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    }
+   ]
+  },
+  "dolrim-min-first": {
+   "coverage": {
+    "dates": 3,
+    "slots": 7,
+    "candidates": 43,
+    "combinations": 301
+   },
+   "gradeCounts": {
+    "SS": 3,
+    "S": 173,
+    "A": 124,
+    "B": 1,
+    "C": 0
+   },
+   "rankingHash": "894fc874",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2027-01-06-2300-이민우",
+     "grade": "SS",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 91,
+      "imageMatch": 65,
+      "overall": 87
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2027-01-06-2300-이민하",
+     "grade": "SS",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 65,
+      "overall": 87
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2027-01-06-2300-이민윤",
+     "grade": "SS",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 91,
+      "imageMatch": 65,
+      "overall": 87
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2027-01-06-2300-이민준",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 80,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2027-01-06-2300-이민지",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 80,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2027-01-06-2300-이민예",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 80,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2027-01-06-2300-이민서",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 65,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2027-01-06-2300-이민시",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 65,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2027-01-06-2300-이민현",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 80,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2027-01-06-2300-이민온",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 65,
+      "overall": 86
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2027-01-06-2300-이민율",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 96,
+      "modernUsability": 86,
+      "imageMatch": 80,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2027-01-06-2300-이민도",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 80,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2027-01-06-2300-이민가",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2027-01-06-2300-이민이",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 83,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 83,
+      "imageMatch": 65,
+      "overall": 85
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2027-01-06-2300-이민성",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 79,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 79,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2027-01-06-2300-이민찬",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 93,
+      "hanjaQuality": 93,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 65,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2027-01-06-2300-이민재",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 81,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 81,
+      "imageMatch": 80,
+      "overall": 84
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2027-01-05-2310-이민준",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 갑甲·신申 갑甲·자子",
+     "scores": {
+      "sajuOhaengBalance": 90,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 80,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2027-01-05-2310-이민우",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 갑甲·신申 갑甲·자子",
+     "scores": {
+      "sajuOhaengBalance": 90,
+      "yinYangHarmony": 10,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 91,
+      "imageMatch": 65,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2027-01-05-2310-이민하",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 갑甲·신申 갑甲·자子",
+     "scores": {
+      "sajuOhaengBalance": 90,
+      "yinYangHarmony": 10,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 65,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2027-01-05-2310-이민윤",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 갑甲·신申 갑甲·자子",
+     "scores": {
+      "sajuOhaengBalance": 90,
+      "yinYangHarmony": 10,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 91,
+      "imageMatch": 65,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2027-01-06-2300-이민진",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 82,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 82,
+      "imageMatch": 80,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2027-01-06-2300-이민수",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 90,
+      "modernPreference": 78,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 78,
+      "imageMatch": 80,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2027-01-06-2300-이민인",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 74,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 74,
+      "imageMatch": 80,
+      "overall": 83
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2027-01-06-2300-이민건",
+     "grade": "S",
+     "pillars": "병丙·오午 신辛·축丑 을乙·유酉 병丙·자子",
+     "scores": {
+      "sajuOhaengBalance": 70,
+      "yinYangHarmony": 100,
+      "nameHarmony": 79,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 76,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 76,
+      "imageMatch": 65,
+      "overall": 83
+     }
+    }
+   ]
+  }
+ },
+ "modeB": {
+  "early-zi-traditional": {
+   "count": 1672,
+   "rankingHash": "c432ddcb",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2028-11-07-0000-김건서",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2028-11-07-0000-김건준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 91,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2028-11-07-0000-김준가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2028-11-07-0000-김가준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2028-11-07-0000-김준윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2028-11-07-0000-김서윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2028-11-07-0000-김윤서",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2028-11-07-0000-김건윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2028-11-07-0000-김윤준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2028-11-07-0000-김건도",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2028-11-07-0000-김기윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 89,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2028-11-07-0000-김민준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2028-11-07-0000-김도준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2028-11-07-0000-김윤가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2028-11-07-0000-김가윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2028-11-07-0000-김준우",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2028-11-07-0000-김민가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2028-11-07-0000-김현가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2028-11-07-0000-김가도",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2028-11-07-0000-김가현",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 85,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 85,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2028-11-07-0000-김건우",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2028-11-07-0000-김준하",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2028-11-07-0000-김우준",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2028-11-07-0000-김도가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2028-11-07-0000-김진가",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 90,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    }
+   ]
+  },
+  "late-zi-images": {
+   "count": 1672,
+   "rankingHash": "cf9b7d05",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2028-11-07-2300-김준가",
+     "grade": "S",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 65,
+      "overall": 75
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2028-11-07-2300-김가준",
+     "grade": "S",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 65,
+      "overall": 75
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2028-11-07-2300-김가윤",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 89,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2028-11-07-2300-김윤가",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2028-11-07-2300-김가도",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2028-11-07-2300-김민가",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2028-11-07-2300-김도가",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2028-11-07-2300-김현가",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2028-11-07-2300-김가현",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 85,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 85,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2028-11-07-2300-김윤서",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2028-11-07-2300-김준윤",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2028-11-07-2300-김서윤",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2028-11-07-2300-김윤준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2028-11-07-2300-김가서",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2028-11-07-2300-김민준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2028-11-07-2300-김도준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2028-11-07-2300-김가우",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 89,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2028-11-07-2300-김가지",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 80,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 88,
+      "imageMatch": 65,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2028-11-07-2300-김준우",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2028-11-07-2300-김준하",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2028-11-07-2300-김우준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 98,
+      "modernPreference": 95,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 95,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2028-11-07-2300-김하준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2028-11-07-2300-김건준",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 85,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 85,
+      "imageMatch": 50,
+      "overall": 74
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2028-11-07-2300-김빈가",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 83,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 83,
+      "imageMatch": 80,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2028-11-07-2300-김가빈",
+     "grade": "A",
+     "pillars": "무戊·신申 계癸·해亥 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 10,
+      "nameHarmony": 87,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 83,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 83,
+      "imageMatch": 80,
+      "overall": 73
+     }
+    }
+   ]
+  },
+  "dolrim-min-hanja": {
+   "count": 68,
+   "rankingHash": "bc3d9d4c",
+   "top": [
+    {
+     "rank": 1,
+     "id": "2027-07-04-0900-김민서",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 80
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2027-07-04-0900-김민지",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 79
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2027-07-04-0900-김서민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 91,
+      "imageMatch": 50,
+      "overall": 79
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2027-07-04-0900-김지민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 79
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2027-07-04-0900-김민시",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 79
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2027-07-04-0900-김민아",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 7,
+     "id": "2027-07-04-0900-김아민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 8,
+     "id": "2027-07-04-0900-김민예",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 9,
+     "id": "2027-07-04-0900-김민채",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 93,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 10,
+     "id": "2027-07-04-0900-김민유",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 11,
+     "id": "2027-07-04-0900-김시민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 12,
+     "id": "2027-07-04-0900-김예민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 13,
+     "id": "2027-07-04-0900-김민가",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 84,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 84,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 14,
+     "id": "2027-07-04-0900-김가민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 93,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 15,
+     "id": "2027-07-04-0900-김민찬",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 93,
+      "hanjaQuality": 93,
+      "modernPreference": 86,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 86,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 16,
+     "id": "2027-07-04-0900-김민슬",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 92,
+      "modernPreference": 83,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 83,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 17,
+     "id": "2027-07-04-0900-김민하",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 18,
+     "id": "2027-07-04-0900-김민은",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 19,
+     "id": "2027-07-04-0900-김하민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 95,
+      "modernPreference": 89,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 89,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 20,
+     "id": "2027-07-04-0900-김민윤",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 91,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 91,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 21,
+     "id": "2027-07-04-0900-김윤민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 90,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 90,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 22,
+     "id": "2027-07-04-0900-김민온",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 23,
+     "id": "2027-07-04-0900-김민현",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 87,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 87,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 24,
+     "id": "2027-07-04-0900-김현민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 78
+     }
+    },
+    {
+     "rank": 25,
+     "id": "2027-07-04-0900-김채민",
+     "grade": "S",
+     "pillars": "정丁·미未 병丙·오午 갑甲·신申 기己·사巳",
+     "scores": {
+      "sajuOhaengBalance": 45,
+      "yinYangHarmony": 100,
+      "nameHarmony": 72,
+      "pronunciationStability": 93,
+      "hanjaQuality": 94,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 94,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 77
+     }
+    }
+   ]
+  }
+ },
+ "modeC": {
+  "mixed-names-early-zi": {
+   "results": [
+    {
+     "rank": 1,
+     "id": "2028-11-07-0000-이서윤",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 97,
+      "modernPreference": 94,
+      "pronunciationNaturalness": 98,
+      "modernUsability": 94,
+      "imageMatch": 50,
+      "overall": 73
+     }
+    },
+    {
+     "rank": 2,
+     "id": "2028-11-07-0000-김민서",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 96,
+      "modernPreference": 92,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 92,
+      "imageMatch": 50,
+      "overall": 72
+     }
+    },
+    {
+     "rank": 3,
+     "id": "2028-11-07-0000-최하늘",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 91,
+      "modernPreference": 78,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 78,
+      "imageMatch": 50,
+      "overall": 69
+     }
+    },
+    {
+     "rank": 4,
+     "id": "2028-11-07-0000-남궁민",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 100,
+      "hanjaQuality": 77,
+      "modernPreference": 88,
+      "pronunciationNaturalness": 75,
+      "modernUsability": 88,
+      "imageMatch": 50,
+      "overall": 67
+     }
+    },
+    {
+     "rank": 5,
+     "id": "2028-11-07-0000-정우",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 65,
+      "pronunciationStability": 100,
+      "hanjaQuality": 79,
+      "modernPreference": 93,
+      "pronunciationNaturalness": 75,
+      "modernUsability": 93,
+      "imageMatch": 50,
+      "overall": 67
+     }
+    },
+    {
+     "rank": 6,
+     "id": "2028-11-07-0000-박똠별",
+     "grade": "A",
+     "pillars": "무戊·신申 임壬·술戌 병丙·신申 무戊·자子",
+     "scores": {
+      "sajuOhaengBalance": 55,
+      "yinYangHarmony": 0,
+      "nameHarmony": 72,
+      "pronunciationStability": 82,
+      "hanjaQuality": 86,
+      "modernPreference": 71,
+      "pronunciationNaturalness": 100,
+      "modernUsability": 71,
+      "imageMatch": 50,
+      "overall": 65
+     }
+    }
+   ],
+   "rejected": []
+  }
+ },
+ "universe": {
+  "male": 1672,
+  "female": 1044
+ }
+}

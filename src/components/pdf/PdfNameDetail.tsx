@@ -1,4 +1,5 @@
 import React from 'react';
+import { OVERALL_COMPONENTS, nameLengthScopeNote } from '@/lib/scoreComponents';
 import { PdfPage, SectionLabel, GoldDivider, OhaengBar, ScoreMeter } from './PdfPage';
 import { AnalysisResult, OHAENG_COLORS, GRADE_CONFIG, OhaengType, NameCharHanja } from '@/types';
 import { formatKoreanDate } from '@/lib/analysis';
@@ -100,8 +101,8 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
 
       {/* Name hero */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '14px',
-        padding: '16px 24px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px',
+        padding: '12px 24px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0',
       }}>
         {/* Grade */}
         <div style={{
@@ -133,11 +134,11 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
         </div>
       </div>
 
-      <GoldDivider mt={0} mb={14} />
+      <GoldDivider mt={0} mb={10} />
 
       {/* Hanja breakdown */}
-      <div style={{ marginBottom: '14px' }}>
-        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '12px' }}>
+      <div style={{ marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
           한자 분석
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -151,8 +152,8 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
       </div>
 
       {/* 4 Pillars */}
-      <div style={{ marginBottom: '14px' }}>
-        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '12px' }}>
+      <div style={{ marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
           사주 구조
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -163,12 +164,12 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
         </div>
       </div>
 
-      <GoldDivider mt={0} mb={14} />
+      <GoldDivider mt={0} mb={10} />
 
       {/* Ohaeng + Scores */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
         <div>
-          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px' }}>
+          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
             오행 분포
           </div>
           {(['목', '화', '토', '금', '수'] as OhaengType[]).map(k => (
@@ -176,18 +177,20 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
           ))}
         </div>
         <div>
-          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px' }}>
+          <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
             분석 점수
           </div>
-          <ScoreMeter label="사주 오행 균형" value={result.scores.sajuOhaengBalance} />
-          <ScoreMeter label="음양 조화" value={result.scores.yinYangHarmony} />
-          <ScoreMeter label="이름·사주 조화" value={result.scores.nameHarmony} />
-          <ScoreMeter label="발음 안정성" value={result.scores.pronunciationStability} />
-          <ScoreMeter label="한자 의미 품질" value={result.scores.hanjaQuality} />
-          <ScoreMeter label="현대적 사용성" value={result.scores.modernUsability} />
+          {OVERALL_COMPONENTS.map(c => (
+            <ScoreMeter key={c.key} label={`${c.label} ${c.weight}%`} value={result.scores[c.key]} />
+          ))}
+          {nameLengthScopeNote(result.name.given, { compact: true }) && (
+            <p data-testid="pdf-name-length-note" style={{ fontSize: '9px', color: '#92400E', lineHeight: 1.5, margin: '6px 0 0' }}>
+              {nameLengthScopeNote(result.name.given, { compact: true })}
+            </p>
+          )}
 
           {/* Description */}
-          <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#F8FAFC', borderRadius: '8px', borderLeft: '3px solid #C9A84C' }}>
+          <div style={{ marginTop: '10px', padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '8px', borderLeft: '3px solid #C9A84C' }}>
             <p style={{ fontSize: '10px', color: '#475569', lineHeight: 1.7, margin: 0 }}>
               {result.description}
             </p>
@@ -197,7 +200,7 @@ export default function PdfNameDetail({ result, rank, pageNum, totalPages }: Pro
 
       {/* Short Saju reading */}
       <div data-testid="pdf-saju-reading" style={{
-        marginTop: '12px', padding: '12px 16px', backgroundColor: '#F5F3FF', borderRadius: '10px', border: '1px solid #E0E7FF',
+        marginTop: '10px', padding: '10px 16px', backgroundColor: '#F5F3FF', borderRadius: '10px', border: '1px solid #E0E7FF',
       }}>
         <div style={{ fontSize: '11px', color: '#3730A3', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '8px' }}>
           짧은 사주풀이

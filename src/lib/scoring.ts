@@ -47,13 +47,16 @@ export function calcNameHarmonyScore(sajuBal: OhaengBalance, nameBal: OhaengBala
   return Math.max(0, Math.min(score, 100));
 }
 
-// ─── 한자 품질 점수 ─────────────────────────────────────────────────────────
+// ─── 글자 수·음절 현대성 (field name hanjaQuality is historical) ─────────────
+// Uses only the syllable count and the Hangul syllables' modernity index; the
+// selected Hanja (meaning, strokes) is not an input.
 export function calcHanjaScore(nameAnalysis: NameAnalysis): number {
   return Math.round((nameAnalysis.readabilityScore + nameAnalysis.modernityScore) / 2);
 }
 
 // ─── 현대 이름 선호도 (20%) ─────────────────────────────────────────────────
-// 2020-2024 실제 출생신고 빈도 + 스타일 매칭 기반
+// Internal syllable modernity index (no documented source, not empirically
+// validated; see docs/scoring.md) + style matching bonus
 export function calcModernPreference(
   name: GeneratedName,
   nameStyles: NameStyle[],
@@ -243,25 +246,23 @@ export function getCharacteristics(
     토: '토 기운 중심(조화 상징)', 금: '금 기운 중심(결실 상징)', 수: '수 기운 중심(지혜 상징)',
   };
 
+  // Tags state facts about the saju and the name's characters; they make no
+  // suitability or outcome claim.
   if (dominantRatio > 0.3) tags.push(ohaengTraits[dominant]);
-  if (present === 5) tags.push('오행 균형 우수');
-  else if (present === 4) tags.push('오행 조화 양호');
+  if (present === 5) tags.push('사주 오행 5종 모두 있음');
+  else if (present === 4) tags.push('사주 오행 4종');
 
   const { yang, yin } = getYinYangCounts(pillars);
-  if (Math.abs(yang - yin) <= 2) tags.push('음양 조화');
+  if (Math.abs(yang - yin) <= 2) tags.push(`사주 음양 ${yang}:${yin}`);
 
-  // 스타일 태그 우선 표시
-  for (const style of nameStyles.slice(0, 2)) tags.push(`${style} 적합`);
+  // Only styles/images the name's characters are classified under (see stylesFittingName).
+  for (const style of nameStyles.slice(0, 2)) tags.push(`${style} 분류 글자 포함`);
   if (nameStyles.length === 0) {
-    for (const img of imageMatches.slice(0, 2)) tags.push(`${img}에 적합`);
+    for (const img of imageMatches.slice(0, 2)) tags.push(`${img} 분류 글자 포함`);
   }
 
-  const nameOhaengLabel: Record<OhaengType, string> = {
-    목: '성장 기운 이름', 화: '열정 기운 이름',
-    토: '안정 기운 이름', 금: '결단 기운 이름', 수: '지혜 기운 이름',
-  };
   const firstOhaeng = nameAnalysis.pronunciationOhaeng[0];
-  if (firstOhaeng) tags.push(nameOhaengLabel[firstOhaeng]);
+  if (firstOhaeng) tags.push(`첫 소리 발음오행 ${firstOhaeng}`);
 
   return tags.slice(0, 5);
 }
@@ -291,9 +292,9 @@ export function generateDescription(
     : '전통적 오행 해석에서는 특정 오행이 두드러진 구성으로 봅니다. ';
 
   const styleText = nameStyles.length > 0
-    ? `${nameStyles[0]} 스타일에 어울리는 이름입니다. `
+    ? `선택하신 '${nameStyles[0]}' 스타일로 분류된 글자가 들어 있습니다(현대 선호도 가산 대상). `
     : imageMatches.length > 0
-      ? `이름 글자가 선택하신 '${imageMatches[0]}' 이미지 분류와 연결됩니다. `
+      ? `선택하신 '${imageMatches[0]}' 이미지로 분류된 글자가 들어 있습니다(종합 점수에는 반영되지 않음). `
       : '';
 
   // Only Hanja that are actually assigned contribute a meaning sentence.
@@ -303,7 +304,7 @@ export function generateDescription(
     : `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})은 ` + assignedMeanings
       .map(m => m.split(' — ')[1] ?? m)
       .join('·')
-      .substring(0, 20) + '의 의미를 담고 있습니다. ';
+      .substring(0, 20) + '의 뜻을 지닌 한자입니다(뜻은 점수에 반영되지 않음). ';
 
   return `${balanceText}${styleText}${hanjaSentence}${descs[dominant] ?? '균형 잡힌 사주 구조입니다'}. 전통 명리학·현대 선호도를 함께 고려한 참고 분석입니다.`;
 }

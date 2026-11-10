@@ -10,7 +10,7 @@ function c(
   ohaeng: OhaengType,
   yinyang: '양' | '음',
   gender: 'male' | 'female' | 'neutral',
-  modernity: number,       // 2020-2024 한국 출생신고 기반 선호도 0-100
+  modernity: number,       // 0-100 internal model index; source/method undocumented, not validated
   positivity: number,      // 의미 긍정성 0-100
   nameStyleFit: NameStyle[],
   images: ImageType[],
@@ -19,18 +19,21 @@ function c(
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 현대 선호도 기준:
-// 95+ : 2024년 기준 TOP 5 빈도 글자 (도윤·서준·시우·지호·민준·서아·서윤·지우·하윤·하린 등)
-// 85-94: TOP 20 이내 빈도 글자
-// 70-84: 인기 있으나 TOP 20 밖
-// 55-69: 중간 / 클래식
-// 40-54: 다소 올드한 느낌
-// <40  : 구식 / 현대 부모 선호도 낮음
+// modernity: internal model index (0-100), not a measured statistic.
+// No primary source, sample, extraction script or version is documented, so
+// the values must not be described as birth-registration frequencies or as
+// year-specific rankings. The bands below only describe the index values:
+// 95+  : internal band A (highest index)
+// 85-94: internal band B
+// 70-84: internal band C
+// 55-69: internal band D
+// 40-54: internal band E
+// <40  : internal band F (lowest index)
 // ────────────────────────────────────────────────────────────────────────────
 
 export const NAME_CHARS: NameCharData[] = [
 
-  // ── 1그룹: 2024 최고 인기 글자 (modernity 90+) ─────────────────────────────
+  // ── Group 1: internal modernity index 90+ ─────────────────────────────────
 
   c('준', '俊', '뛰어날 준',       '금', '양', 'male',    96, 95, ['고급형', '리더형'], ['리더형', '학자형']),
   c('서', '瑞', '상서로울 서',      '금', '양', 'neutral', 95, 97, ['현대형', '고급형', '글로벌형'], ['균형형', '글로벌형']),
@@ -41,7 +44,7 @@ export const NAME_CHARS: NameCharData[] = [
   c('시', '時', '때 시·아름다울',   '금', '양', 'neutral', 91, 90, ['현대형', '글로벌형', '부드러운 느낌'], ['균형형', '창의형']),
   c('아', '雅', '우아할 아',        '토', '양', 'female',  90, 97, ['현대형', '고급형', '부드러운 느낌'], ['예술형', '균형형']),
 
-  // ── 2그룹: TOP 20 인기 (modernity 80-89) ─────────────────────────────────
+  // ── Group 2: internal modernity index 80-89 ───────────────────────────────
 
   c('민', '珉', '옥돌 민',          '수', '음', 'neutral', 88, 90, ['현대형', '고급형'], ['학자형', '창의형']),
   c('도', '道', '길 도',             '화', '음', 'male',    88, 92, ['현대형', '지적인 느낌'], ['학자형', '균형형']),
@@ -60,7 +63,7 @@ export const NAME_CHARS: NameCharData[] = [
   // '빛' 제거: 炳의 음독은 '병'이며 '빛'은 훈(뜻)이므로 한국식 작명 규칙 위반
   c('슬', '瑟', '거문고 슬',         '금', '양', 'female',  80, 90, ['현대형', '예술형', '고급형'], ['예술형', '창의형']),
 
-  // ── 3그룹: 인기 / 클래식 (modernity 65-79) ───────────────────────────────
+  // ── Group 3: internal modernity index 65-79 ───────────────────────────────
 
   c('진', '眞', '참 진',             '금', '양', 'neutral', 78, 97, ['현대형', '전통형'], ['학자형', '균형형']),
   c('재', '才', '재주 재',           '목', '음', 'male',    77, 92, ['현대형', '지적인 느낌'], ['창의형', '학자형']),
@@ -86,7 +89,7 @@ export const NAME_CHARS: NameCharData[] = [
   // '빌' → '별'로 수정: 別의 음독은 '별'이며 '빌'은 존재하지 않는 음독
   c('별', '別', '특별할 별',         '수', '양', 'female',  72, 88, ['현대형', '글로벌형', '예술형'], ['창의형', '글로벌형']),
 
-  // ── 4그룹: 클래식 / 다소 올드 (modernity 45-64) ──────────────────────────
+  // ── Group 4: internal modernity index 45-64 ───────────────────────────────
 
   c('혁', '赫', '빛날 혁',           '수', '양', 'male',    55, 88, ['전통형', '리더형'], ['리더형', '사업가형']),
   c('호', '昊', '넓은 하늘 호',      '수', '양', 'male',    60, 90, ['전통형'], ['글로벌형', '창의형']),

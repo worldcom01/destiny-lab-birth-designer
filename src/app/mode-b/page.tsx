@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useSyncExternalStore } from 'react';
+import { IMAGE_EFFECT_TEXT, STYLE_EFFECT_TEXT } from '@/lib/scoreComponents';
 import { useRouter } from 'next/navigation';
 import { User2, ChevronRight, Sparkles, Layers, ArrowLeft, Calendar } from 'lucide-react';
 import { ModeBInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS, SIJIN_VERSION } from '@/types';
@@ -206,10 +207,44 @@ function ModeBForm() {
           )}
         </section>
 
-        {/* 6. 이미지 */}
+        {/* 6. 이름 스타일 — every preference that is scored is visible and can be cleared here */}
+        <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5" data-testid="mode-b-styles" aria-labelledby="mode-b-styles-title">
+          <h2 id="mode-b-styles-title" className="flex items-center gap-2 font-bold text-slate-800 text-sm mb-1">
+            <span className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-black">6</span>
+            <Sparkles className="w-4 h-4 text-slate-400" /> 이름 스타일 <span className="text-slate-400 font-normal">(선택·복수)</span>
+          </h2>
+          <p className="text-[11px] text-slate-400 mb-4 ml-8">{STYLE_EFFECT_TEXT}</p>
+          <div className="grid grid-cols-4 gap-2 mb-3" role="group" aria-label="이름 스타일 선택">
+            {(Object.keys(NAME_STYLE_LABELS) as NameStyle[]).map(style => {
+              const { icon, desc } = NAME_STYLE_LABELS[style];
+              const sel = nameStyles.includes(style);
+              return (
+                <button key={style} type="button" aria-pressed={sel} data-style={style} onClick={() => toggleNameStyle(style)}
+                  className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl border-2 text-center transition-all ${sel ? 'border-violet-500 bg-violet-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'}`}>
+                  <span className="text-base" aria-hidden>{icon}</span>
+                  <span className={`text-[10px] font-bold leading-tight ${sel ? 'text-violet-700' : 'text-slate-700'}`}>{style}</span>
+                  <span className="text-[9px] text-slate-400 leading-tight">{desc}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center justify-between gap-2 text-[11px]">
+            <p data-testid="mode-b-active-styles" aria-live="polite" className={nameStyles.length ? 'text-violet-700 font-semibold' : 'text-slate-500'}>
+              적용할 스타일: {nameStyles.length ? nameStyles.join(' · ') : '없음'}
+            </p>
+            {nameStyles.length > 0 && (
+              <button type="button" data-testid="mode-b-clear-styles" onClick={() => setNameStyles([])}
+                className="shrink-0 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
+                스타일 모두 해제
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* 7. 이미지 */}
         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
           <h2 className="flex items-center gap-2 font-bold text-slate-800 text-sm mb-4">
-            <span className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-black">6</span>
+            <span className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-black">7</span>
             <Sparkles className="w-4 h-4 text-slate-400" /> 원하는 이미지 <span className="text-slate-400 font-normal">(선택)</span>
           </h2>
           <div className="grid grid-cols-3 gap-2">
@@ -226,6 +261,7 @@ function ModeBForm() {
               );
             })}
           </div>
+          <p className="text-[11px] text-slate-500 bg-slate-50 rounded-lg p-2.5 mt-3">{IMAGE_EFFECT_TEXT}</p>
         </section>
 
         {errors.other && (

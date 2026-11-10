@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useSyncExternalStore } from 'react';
+import { IMAGE_EFFECT_TEXT, STYLE_EFFECT_TEXT } from '@/lib/scoreComponents';
 import { useRouter } from 'next/navigation';
 import { Calendar, User, ChevronRight, Sparkles, Info, Layers, ArrowLeft } from 'lucide-react';
 import { DesignerInput, Gender, ImageType, IMAGE_LABELS, NameStyle, NAME_STYLE_LABELS, TimeRange } from '@/types';
@@ -375,7 +376,7 @@ function ModeAForm() {
             <Sparkles className="w-4 h-4 text-slate-400" /> 원하는 이름 스타일 <span className="text-slate-400 font-normal">(선택·복수)</span>
           </h2>
           <p className="text-[11px] text-slate-400 mb-4 ml-8">
-            선택 시 현대 이름 선호도 점수에 20% 가산됩니다 · 전통 명리학과 함께 반영
+            {STYLE_EFFECT_TEXT}
           </p>
           <div className="grid grid-cols-4 gap-2 mb-3">
             {(Object.keys(NAME_STYLE_LABELS) as NameStyle[]).map(style => {
@@ -422,12 +423,10 @@ function ModeAForm() {
               );
             })}
           </div>
-          {images.length === 0 && (
-            <div className="flex items-start gap-2 mt-3 bg-slate-50 rounded-lg p-2.5">
-              <Info className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-slate-500">선택하지 않으면 균형잡힌 조합을 우선 추천합니다</p>
-            </div>
-          )}
+          <div className="flex items-start gap-2 mt-3 bg-slate-50 rounded-lg p-2.5">
+            <Info className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-slate-500">{IMAGE_EFFECT_TEXT}</p>
+          </div>
         </section>
 
         {errors.other && (

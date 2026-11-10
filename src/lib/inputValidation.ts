@@ -56,6 +56,12 @@ const STYLE_VALUES: ReadonlySet<string> = new Set(Object.keys(NAME_STYLE_LABELS)
 const isStringListOf = (v: unknown, allowed: ReadonlySet<string>) =>
   Array.isArray(v) && v.every(x => typeof x === 'string' && allowed.has(x));
 
+/** Order-preserving de-duplication (first occurrence kept). */
+export const uniqueList = <T,>(xs: readonly T[]): T[] => Array.from(new Set(xs));
+
+/** Valid style values (for explicit handling of malformed stored preferences). */
+export const isNameStyle = (x: unknown): x is NameStyle => typeof x === 'string' && STYLE_VALUES.has(x);
+
 // ─── Generational character (돌림자) ──────────────────────────────────────────
 
 export type DolrimSupport =
@@ -138,8 +144,10 @@ function commonValue(raw: Record<string, unknown>) {
     dolrimChar: typeof raw.dolrimChar === 'string' ? raw.dolrimChar.trim() : '',
     dolrimPosition: (raw.dolrimPosition as DesignerInput['dolrimPosition']) ?? 'auto',
     dolrimHanja: typeof raw.dolrimHanja === 'string' && raw.dolrimHanja ? raw.dolrimHanja : undefined,
-    images: [...((raw.images ?? []) as ImageType[])],
-    nameStyles: [...((raw.nameStyles ?? []) as NameStyle[])],
+    // Duplicates are normalized away (first occurrence kept): the input pages
+    // can only express a set, and the shown selection must equal what is scored.
+    images: uniqueList((raw.images ?? []) as ImageType[]),
+    nameStyles: uniqueList((raw.nameStyles ?? []) as NameStyle[]),
   };
 }
 

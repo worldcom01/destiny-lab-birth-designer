@@ -52,8 +52,8 @@ describe('B01 page-level: stale stored Hanja vs current confirmed generational H
     const text = await minseoHanja();
     expect(text).toContain('敏');
     expect(text).not.toContain('珉');
-    // The unusable v1 key is removed; other keys are untouched.
-    expect(localStorage.getItem('dlbd_mode_b_hanja')).toBeNull();
+    // R3 final patch (R36-E2): the unusable v1 key is never applied, and opening results no longer deletes it.
+    expect(localStorage.getItem('dlbd_mode_b_hanja')).toBe(JSON.stringify({ version: 1, names: { 김민서: ['珉', null] } }));
     expect(localStorage.getItem('unrelated_key')).toBe('keep-me');
   });
 
@@ -142,7 +142,7 @@ describe('H04 page-level: input persistence failures', () => {
     expect(screen.getByText(/한자 데이터가 없어 한자 없이\(미지정\)/)).toBeTruthy();
   });
 
-  it('Mode B results: a Hanja choice that cannot be saved is flagged as not surviving reload', async () => {
+  it('Mode B results: a Hanja choice that cannot be saved is reported and not shown as saved', async () => {
     localStorage.setItem('dlbd_mode_b', JSON.stringify(MIN_MIN));
     render(<ModeBResults />);
     const heading = await screen.findByRole('heading', { name: '김민서' });
@@ -155,7 +155,10 @@ describe('H04 page-level: input persistence failures', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('fail', 'QuotaExceededError'); });
     const alt = HANJA_DB['서'].find(o => o.hanja !== '瑞')!.hanja;
     fireEvent.click(screen.getAllByRole('button').find(b => b.textContent?.startsWith(alt))!);
-    expect(await screen.findByText(/새로고침하면 사라질 수 있습니다/)).toBeTruthy();
-    expect(heading.parentElement!.textContent).toContain(`敏${alt}`);
+    // Data-safety hotfix: quota failure is surfaced and the unsaved choice is not applied on screen.
+    expect((await screen.findByRole('alert')).textContent).toContain('브라우저 저장 공간이 부족합니다');
+    expect(screen.queryByTestId('hanja-save-status')).toBeNull();
+    expect(heading.parentElement!.textContent).toContain('敏瑞');
+    expect(heading.parentElement!.textContent).not.toContain(`敏${alt}`);
   });
 });

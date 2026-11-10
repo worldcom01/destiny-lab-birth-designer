@@ -9,16 +9,8 @@ import { formatTimeSlot } from '@/lib/schedule';
 import { buildSajuReading } from '@/lib/sajuReading';
 import SajuReadingBlock from './SajuReadingBlock';
 import OhaengChart from './OhaengChart';
+import ScoreBreakdown from './ScoreBreakdown';
 
-const SCORE_LABELS: { key: keyof AnalysisResult['scores']; label: string }[] = [
-  { key: 'sajuOhaengBalance',    label: '사주 오행 균형' },
-  { key: 'yinYangHarmony',       label: '음양 조화' },
-  { key: 'nameHarmony',          label: '이름·사주 조화' },
-  { key: 'pronunciationStability', label: '발음 안정성' },
-  { key: 'hanjaQuality',         label: '한자 의미 품질' },
-  { key: 'modernUsability',      label: '현대적 사용성' },
-  { key: 'imageMatch',           label: '이미지 부합도' },
-];
 
 const GRADE_RING: Record<string, string> = {
   SS: 'ring-2 ring-amber-400 shadow-amber-100 shadow-md',
@@ -139,25 +131,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
             </div>
             <div>
               <h4 className="text-xs font-semibold text-slate-600 mb-3">세부 점수</h4>
-              <div className="space-y-2">
-                {SCORE_LABELS.map(({ key, label }) => {
-                  const val = result.scores[key] as number;
-                  return (
-                    <div key={key}>
-                      <div className="flex justify-between text-[11px] text-slate-600 mb-0.5">
-                        <span>{label}</span>
-                        <span className="font-semibold">{val}점</span>
-                      </div>
-                      <div className="bg-slate-200 rounded-full h-1 overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
-                          style={{ width: `${val}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <ScoreBreakdown scores={result.scores} given={result.name.given} />
 
               <div className="mt-4">
                 <p className="text-[11px] font-semibold text-slate-600 mb-2">이름 발음오행</p>
