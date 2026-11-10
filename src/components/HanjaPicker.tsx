@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { HANJA_SELECTION_NOTE, INDEX_PROVENANCE_NOTE } from '@/lib/scoreComponents';
 import { X, Star, TrendingUp, Sparkles } from 'lucide-react';
+import { openModal } from './modalStack';
 import { OhaengType, OHAENG_COLORS } from '@/types';
 import { HanjaOption, getHanjaOptions, getSuriOhaeng, explainRecommendedHanja, recommendationReasonText } from '@/data/hanjaDB';
 
@@ -13,6 +15,11 @@ interface Props {
   onClose: () => void;
   recommendedOhaeng?: OhaengType | null;  // 사주에서 부족한 오행
   label?: string;  // e.g., "돌림자 '민'"
+  /**
+   * Control that opened the picker; focus returns to it on close/confirm/Escape
+   * (when it still exists). Defaults to the element focused when the picker opened.
+   */
+  returnFocusTo?: HTMLElement | null;
 }
 
 function OhaengBadge({ ohaeng, label }: { ohaeng: OhaengType; label?: string }) {
@@ -40,7 +47,17 @@ function FreqBar({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, recommendedOhaeng, label }: Props) {
+/**
+ * The picker is a viewport overlay. It is rendered into document.body so that an
+ * ancestor's transform (e.g. the `.fade-up` card animation, which keeps its final
+ * transform) or `overflow-hidden` cannot turn `position: fixed` into a
+ * card-relative, clipped box (R3.1: the sheet was cut off inside result cards).
+ */
+function Overlay({ children }: { children: ReactNode }) {
+  return typeof document === 'undefined' ? <>{children}</> : createPortal(children, document.body);
+}
+
+export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, recommendedOhaeng, label, returnFocusTo }: Props) {
   const options = useMemo(() => getHanjaOptions(hangul), [hangul]);
   const explanation = useMemo(
     () => explainRecommendedHanja(hangul, recommendedOhaeng ?? null),
@@ -49,32 +66,60 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
   const recommended = explanation?.option;
 
   const [hovered, setHovered] = useState<string | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Modal behaviour lives in the shared modal stack (U1/U2/U5): focus moves in,
+  // Tab is contained, the background is inert, only the topmost dialog handles
+  // Escape, and focus returns to the trigger on close, confirm or unmount.
+  const closeRef = useRef(onClose);
+  const returnRef = useRef(returnFocusTo);
+  useEffect(() => { closeRef.current = onClose; returnRef.current = returnFocusTo; });
+  useEffect(() => {
+    const active = document.activeElement;
+    const fallback = active instanceof HTMLElement && active !== document.body ? active : null;
+    return openModal({
+      overlay: overlayRef.current!,
+      dialog: dialogRef.current!,
+      onEscape: () => closeRef.current(),
+      returnFocus: returnRef.current ?? fallback,
+    });
+  }, []);
 
   if (options.length === 0) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
+      <Overlay>
+      <div ref={overlayRef} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={`'${hangul}' 한자 정보`} tabIndex={-1}
+          className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full focus:outline-none">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-800">{`'${hangul}' 한자 정보`}</h3>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <button type="button" aria-label="닫기" onClick={onClose} className="text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>
           </div>
           <p className="text-sm text-slate-500">이 글자의 한자 데이터가 없습니다. 향후 업데이트에서 추가될 예정입니다.</p>
-          <button onClick={onClose} className="mt-4 w-full py-2 bg-slate-100 rounded-xl text-sm text-slate-600">닫기</button>
+          <button type="button" onClick={onClose} className="mt-4 w-full py-2 bg-slate-100 rounded-xl text-sm text-slate-600">닫기</button>
         </div>
       </div>
+      </Overlay>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4" onClick={onClose}>
+    <Overlay>
+    <div ref={overlayRef} className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-t-3xl sm:rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={label ?? `'${hangul}' 한자 선택`}
+        tabIndex={-1}
+        className="flex flex-col bg-white rounded-t-3xl sm:rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] supports-[max-height:90dvh]:max-h-[90dvh] overflow-hidden focus:outline-none"
         onClick={e => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-5 pb-3 border-b border-slate-100">
+        <div className="flex shrink-0 items-center justify-between p-5 pb-3 border-b border-slate-100">
           <div>
             <h3 className="font-black text-slate-900 text-lg">
               {label ?? `'${hangul}' 한자 선택`}
@@ -83,11 +128,14 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
               {options.length}가지 한자 · 자원오행과 수리오행 포함 분석
             </p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200">
+          <button type="button" aria-label="닫기" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
             <X className="w-4 h-4" />
           </button>
         </div>
 
+        {/* One scroll region for everything below the header: explanation texts of any
+            length can never push the last candidate or the cancel action out of reach. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain" data-testid="hanja-picker-scroll">
         <p className="mx-5 mt-3 text-[11px] text-slate-500" data-testid="hanja-score-note">
           {HANJA_SELECTION_NOTE}
         </p>
@@ -103,7 +151,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
         )}
 
         {/* 한자 목록 */}
-        <div className="overflow-y-auto p-5 space-y-3" style={{ maxHeight: 'calc(90vh - 160px)' }}>
+        <div className="p-5 space-y-3">
           {options.map(opt => {
             const isSelected = selectedHanja === opt.hanja;
             const isRecommended = recommended?.hanja === opt.hanja;
@@ -112,11 +160,13 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
 
             return (
               <button
+                type="button"
                 key={opt.hanja}
+                aria-pressed={isSelected}
                 onClick={() => { onSelect(opt); onClose(); }}
                 onMouseEnter={() => setHovered(opt.hanja)}
                 onMouseLeave={() => setHovered(null)}
-                className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${
+                className={`w-full text-left rounded-2xl border-2 p-4 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                   isSelected
                     ? 'border-indigo-500 bg-indigo-50 shadow-sm shadow-indigo-100'
                     : isHovered
@@ -173,13 +223,16 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
 
           {/* 선택 안 함 */}
           <button
+            type="button"
             onClick={() => onClose()}
             className="w-full text-center py-3 border border-dashed border-slate-300 rounded-xl text-sm text-slate-500 hover:bg-slate-50 transition-colors"
           >
             선택하지 않음 (기본값 유지)
           </button>
         </div>
+        </div>
       </div>
     </div>
+    </Overlay>
   );
 }

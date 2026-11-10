@@ -2,16 +2,19 @@
 
 import { useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
-import { NameCharHanja, NameHanjaModel, OhaengType, OHAENG_COLORS } from '@/types';
-import { HanjaOption, getHanjaOptions, getSuriOhaeng } from '@/data/hanjaDB';
+import { NameCharHanja, NameHanjaModel, OHAENG_COLORS } from '@/types';
+import { getHanjaOptions, getSuriOhaeng } from '@/data/hanjaDB';
 import { STATUS_LABEL, UNASSIGNED_MARK, formatFullHanja, totalStrokes } from '@/lib/hanjaModel';
-import HanjaPicker from './HanjaPicker';
 
 interface Props {
   model: NameHanjaModel;
-  /** Called with the given-name index and the chosen option. Omit for read-only display. */
-  onSelect?: (index: number, opt: HanjaOption) => void;
-  weakestOhaeng?: OhaengType | null;
+  /**
+   * Asks the owner (the result card) to open its single HanjaPicker for the
+   * given-name index. Omit for read-only display.
+   */
+  onOpenPicker?: (index: number, trigger: HTMLElement) => void;
+  /** id of the card's save-feedback text (U4). */
+  describedBy?: string;
 }
 
 const STATUS_STYLE: Record<NameCharHanja['status'], string> = {
@@ -20,81 +23,87 @@ const STATUS_STYLE: Record<NameCharHanja['status'], string> = {
   unassigned: 'bg-slate-200 text-slate-600',
 };
 
+/**
+ * One syllable of the detailed Hanja analysis. With `onOpen` and available
+ * candidates it is a real button (keyboard and screen-reader operable); the
+ * picker itself belongs to the card, so only one picker exists per card.
+ * The caption comes first in the DOM (shown below the Hanja via CSS order) so
+ * the accessible text starts with the syllable, not with a Hanja.
+ */
 export function HanjaCharCard({
   char,
   caption,
-  onSelect,
-  weakestOhaeng,
+  onOpen,
+  describedBy,
 }: {
   char: NameCharHanja;
   caption: string;
-  onSelect?: (opt: HanjaOption) => void;
-  weakestOhaeng?: OhaengType | null;
+  onOpen?: (trigger: HTMLElement) => void;
+  describedBy?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const options = onSelect ? getHanjaOptions(char.hangul) : [];
-  const selectable = options.length > 0;
+  const selectable = !!onOpen && getHanjaOptions(char.hangul).length > 0;
   const suri = char.strokes != null ? getSuriOhaeng(char.strokes) : null;
+  const className = `flex-1 min-w-0 flex flex-col items-center border-2 rounded-xl p-3 text-center transition-all ${
+    selectable ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2' : ''
+  } ${char.status === 'confirmed' ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'}`;
 
-  return (
+  const body = (
     <>
-      <div
-        data-hanja-char={char.hanja ?? ''}
-        data-hanja-status={char.status}
-        className={`flex-1 border-2 rounded-xl p-3 text-center transition-all ${selectable ? 'cursor-pointer' : ''} ${
-          char.status === 'confirmed' ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
-        }`}
-        onClick={() => selectable && setOpen(true)}
-      >
-        <div className={`text-3xl font-black mb-1 ${char.hanja ? 'text-slate-900' : 'text-slate-300'}`}>
-          {char.hanja ?? UNASSIGNED_MARK}
-        </div>
-        <p className="text-[11px] font-semibold text-slate-700">{caption}</p>
-        <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded-full font-bold mt-1 ${STATUS_STYLE[char.status]}`}>
-          {STATUS_LABEL[char.status]}
+      <span className="order-2 block text-[11px] font-semibold text-slate-700">{caption}</span>
+      <span className={`order-1 block text-3xl font-black mb-1 ${char.hanja ? 'text-slate-900' : 'text-slate-300'}`}>
+        {char.hanja ?? UNASSIGNED_MARK}
+      </span>
+      <span className={`order-3 inline-block text-[9px] px-1.5 py-0.5 rounded-full font-bold mt-1 ${STATUS_STYLE[char.status]}`}>
+        {STATUS_LABEL[char.status]}
+      </span>
+      <span className="order-4 block text-[10px] text-slate-500 mt-0.5 leading-tight">
+        {char.hanja ? (char.meaning ?? '뜻 정보 없음') : '한자를 선택하지 않았습니다'}
+      </span>
+      {char.hanja && (
+        <span className="order-5 block text-[10px] text-slate-400 mt-1">{char.strokes != null ? `${char.strokes}획` : '획수 미확인'}</span>
+      )}
+      <span className="order-6 flex justify-center gap-1 mt-1.5 flex-wrap">
+        {char.jaWonOhaeng && (
+          <span className="text-[9px] px-1 py-0.5 rounded font-medium"
+            style={{ backgroundColor: OHAENG_COLORS[char.jaWonOhaeng] + '18', color: OHAENG_COLORS[char.jaWonOhaeng] }}>
+            자원 {char.jaWonOhaeng}
+          </span>
+        )}
+        {suri && (
+          <span className="text-[9px] px-1 py-0.5 rounded font-medium"
+            style={{ backgroundColor: OHAENG_COLORS[suri] + '18', color: OHAENG_COLORS[suri] }}>
+            수리 {suri}
+          </span>
+        )}
+      </span>
+      {onOpen && (
+        <span className={`order-7 block text-[9px] mt-1.5 ${selectable ? 'text-indigo-500' : 'text-slate-400'}`}>
+          {selectable ? '탭하여 한자 변경' : '한자 데이터 없음'}
         </span>
-        <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
-          {char.hanja ? (char.meaning ?? '뜻 정보 없음') : '한자를 선택하지 않았습니다'}
-        </p>
-        {char.hanja && (
-          <p className="text-[10px] text-slate-400 mt-1">{char.strokes != null ? `${char.strokes}획` : '획수 미확인'}</p>
-        )}
-        <div className="flex justify-center gap-1 mt-1.5 flex-wrap">
-          {char.jaWonOhaeng && (
-            <span className="text-[9px] px-1 py-0.5 rounded font-medium"
-              style={{ backgroundColor: OHAENG_COLORS[char.jaWonOhaeng] + '18', color: OHAENG_COLORS[char.jaWonOhaeng] }}>
-              자원 {char.jaWonOhaeng}
-            </span>
-          )}
-          {suri && (
-            <span className="text-[9px] px-1 py-0.5 rounded font-medium"
-              style={{ backgroundColor: OHAENG_COLORS[suri] + '18', color: OHAENG_COLORS[suri] }}>
-              수리 {suri}
-            </span>
-          )}
-        </div>
-        {onSelect && (
-          <p className={`text-[9px] mt-1.5 ${selectable ? 'text-indigo-500' : 'text-slate-400'}`}>
-            {selectable ? '탭하여 한자 변경' : '한자 데이터 없음'}
-          </p>
-        )}
-      </div>
-
-      {open && onSelect && (
-        <HanjaPicker
-          hangul={char.hangul}
-          selectedHanja={char.hanja ?? undefined}
-          onSelect={opt => { onSelect(opt); setOpen(false); }}
-          onClose={() => setOpen(false)}
-          recommendedOhaeng={weakestOhaeng}
-          label={`'${char.hangul}' 한자 선택`}
-        />
       )}
     </>
   );
+
+  return selectable ? (
+    <button
+      type="button"
+      data-hanja-char={char.hanja ?? ''}
+      data-hanja-status={char.status}
+      aria-label={`'${char.hangul}' 한자 선택`}
+      aria-describedby={describedBy}
+      className={className}
+      onClick={e => onOpen!(e.currentTarget)}
+    >
+      {body}
+    </button>
+  ) : (
+    <div data-hanja-char={char.hanja ?? ''} data-hanja-status={char.status} className={className}>
+      {body}
+    </div>
+  );
 }
 
-export default function HanjaDisplay({ model, onSelect, weakestOhaeng }: Props) {
+export default function HanjaDisplay({ model, onOpenPicker, describedBy }: Props) {
   const [expanded, setExpanded] = useState(false);
   const allChars = [...model.surname, ...model.given];
   const strokesSum = totalStrokes(allChars);
@@ -102,6 +111,8 @@ export default function HanjaDisplay({ model, onSelect, weakestOhaeng }: Props) 
   return (
     <div className="border border-slate-100 rounded-xl overflow-hidden">
       <button
+        type="button"
+        aria-expanded={expanded}
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-4 py-2.5 bg-slate-50 hover:bg-slate-100 transition-colors"
       >
@@ -120,7 +131,7 @@ export default function HanjaDisplay({ model, onSelect, weakestOhaeng }: Props) 
 
       {expanded && (
         <div className="p-4 bg-white">
-          {onSelect && (
+          {onOpenPicker && (
             <p className="text-[11px] text-slate-500 mb-3">각 글자를 탭하면 다른 한자를 선택할 수 있습니다</p>
           )}
 
@@ -133,8 +144,8 @@ export default function HanjaDisplay({ model, onSelect, weakestOhaeng }: Props) 
                 key={`g${i}`}
                 char={c}
                 caption={c.hangul}
-                onSelect={onSelect ? opt => onSelect(i, opt) : undefined}
-                weakestOhaeng={weakestOhaeng}
+                onOpen={onOpenPicker ? trigger => onOpenPicker(i, trigger) : undefined}
+                describedBy={describedBy}
               />
             ))}
           </div>

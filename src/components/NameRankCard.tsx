@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/types';
+import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS, OhaengType } from '@/types';
 import OhaengChart from './OhaengChart';
 import HanjaDisplay from './HanjaDisplay';
-import { hanjaStatusLabel } from '@/lib/hanjaModel';
+import HanjaPicker from './HanjaPicker';
+import { isModalOpen } from './modalStack';
+import HanjaQuickSelect from './HanjaQuickSelect';
+import { hanjaSaveFailureMessage, hanjaStatusLabel } from '@/lib/hanjaModel';
+import type { HanjaSaveState } from './HanjaSaveFeedback';
 import { buildSajuReading } from '@/lib/sajuReading';
 import { componentByKey } from '@/lib/scoreComponents';
 import ScoreBreakdown from './ScoreBreakdown';
@@ -19,15 +23,43 @@ const GRADE_RING: Record<string, string> = {
 };
 
 
-export default function NameRankCard({ result, rank, onHanjaSelect }: {
+export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback }: {
   result: AnalysisResult;
   rank?: number;
   /** Lifts a Hanja choice to the page-level selection state (persisted there). */
   onHanjaSelect?: (fullName: string, index: number, hanja: string) => void;
+  /** The page's latest save result when it concerns this name (shown at the card, U4). */
+  saveFeedback?: HanjaSaveState;
 }) {
   const [expanded, setExpanded] = useState(false);
+  // The card's single Hanja picker (R3.1): opened from the visible "한자 선택"
+  // buttons or from the detailed analysis; one save path (onHanjaSelect).
+  const [picker, setPicker] = useState<{ index: number; trigger: HTMLElement } | null>(null);
   const g = result.grade;
   const gc = GRADE_CONFIG[g];
+  const selectable = !!onHanjaSelect;
+  // Only one active picker on the page (U2): a request while any dialog is open is ignored.
+  // Focus returns to `trigger` through the shared modal stack (U5).
+  const openPicker = (index: number, trigger: HTMLElement) => { if (!isModalOpen()) setPicker({ index, trigger }); };
+  const closePicker = () => setPicker(null);
+  const pickerIndex = picker?.index ?? null;
+  // Number of confirmations made from this card; re-keys the local feedback so a
+  // repeated identical result is shown as new (U4).
+  const [attempts, setAttempts] = useState(0);
+  const feedbackId = `hanja-feedback-${result.id}`;
+  const feedback = selectable && saveFeedback && saveFeedback.fullName === result.name.full ? saveFeedback : null;
+  // After a confirmation from this card, keep its result visible where the user is
+  // working (a low-ranked card may be far below the page-level message).
+  useEffect(() => {
+    if (attempts > 0) document.getElementById(feedbackId)?.scrollIntoView?.({ block: 'nearest' });
+  }, [attempts, feedbackId]);
+  const pickerChar = pickerIndex !== null ? result.name.hanja.given[pickerIndex] : undefined;
+  const weakestOhaeng: OhaengType | null = (() => {
+    const b = result.sajuOhaengBalance;
+    const min = Math.min(b.목, b.화, b.토, b.금, b.수);
+    const entry = Object.entries(b).find(([, v]) => v === min);
+    return entry ? entry[0] as OhaengType : null;
+  })();
 
   return (
     <div className={`bg-white rounded-2xl overflow-hidden ${GRADE_RING[g]} transition-all`}>
@@ -110,6 +142,20 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
           <span className="font-semibold">이름과의 관계</span> · {buildSajuReading(result).nameRelation}
         </p>
 
+        {selectable && <HanjaQuickSelect model={result.name.hanja} onOpen={openPicker} describedBy={feedback ? feedbackId : undefined} />}
+        {feedback && (
+          // Not a live region: the page-level status/alert announces once; this text is
+          // the visible result at the card and the description of its Hanja buttons.
+          <p key={attempts} id={feedbackId} data-testid="hanja-card-feedback" data-state={feedback.ok ? 'ok' : 'error'} data-attempt={attempts}
+            className={`fade-up mt-2 rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${
+              feedback.ok ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-red-200 bg-red-50 text-red-700'
+            }`}>
+            {feedback.ok
+              ? `${feedback.fullName}의 한자 선택을 브라우저에 저장했습니다.`
+              : hanjaSaveFailureMessage(feedback.fullName, feedback.reason)}
+          </p>
+        )}
+
         {/* 핵심 점수 미리보기 (이름·사주 조화 강조) */}
         <div className="mt-3 bg-slate-50 rounded-xl p-3">
           <div className="flex justify-between text-[11px] text-slate-600 mb-1">
@@ -124,6 +170,8 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
       </div>
 
       <button
+        type="button"
+        aria-expanded={expanded}
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-center gap-1.5 py-2 border-t border-slate-100 text-[11px] text-slate-500 hover:bg-slate-50 transition-colors"
       >
@@ -135,16 +183,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
         <div className="border-t border-slate-100 p-5 bg-slate-50/50">
           {/* 한자 분석 */}
           <div className="mb-5">
-            <HanjaDisplay
-              model={result.name.hanja}
-              onSelect={onHanjaSelect ? (index, opt) => onHanjaSelect(result.name.full, index, opt.hanja) : undefined}
-              weakestOhaeng={(() => {
-                const b = result.sajuOhaengBalance;
-                const min = Math.min(b.목, b.화, b.토, b.금, b.수);
-                const entry = Object.entries(b).find(([, v]) => v === min);
-                return entry ? entry[0] as import('@/types').OhaengType : null;
-              })()}
-            />
+            <HanjaDisplay model={result.name.hanja} onOpenPicker={selectable ? openPicker : undefined} describedBy={feedback ? feedbackId : undefined} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -158,6 +197,19 @@ export default function NameRankCard({ result, rank, onHanjaSelect }: {
             </div>
           </div>
         </div>
+      )}
+
+      {pickerChar && pickerIndex !== null && onHanjaSelect && (
+        <HanjaPicker
+          hangul={pickerChar.hangul}
+          selectedHanja={pickerChar.hanja ?? undefined}
+          // HanjaPicker calls onSelect then onClose once per confirmed choice: one save.
+          onSelect={opt => { setAttempts(a => a + 1); onHanjaSelect(result.name.full, pickerIndex, opt.hanja); }}
+          onClose={closePicker}
+          recommendedOhaeng={weakestOhaeng}
+          label={`'${pickerChar.hangul}' 한자 선택`}
+          returnFocusTo={picker?.trigger}
+        />
       )}
     </div>
   );

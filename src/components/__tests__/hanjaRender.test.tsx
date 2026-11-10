@@ -107,13 +107,13 @@ describe('UI and PDF render the same canonical Hanja', () => {
 
   it('UI card marks unknown strokes and syllables without Hanja data', () => {
     const [won] = runModeBAnalysis({ ...BASE_B, dolrimChar: '원', dolrimPosition: 'first' });
-    const wonCard = renderToStaticMarkup(<HanjaCharCard char={won.name.hanja.given[0]} caption="원" onSelect={() => {}} />);
+    const wonCard = renderToStaticMarkup(<HanjaCharCard char={won.name.hanja.given[0]} caption="원" onOpen={() => {}} />);
     expect(wonCard).toContain('媛');
     expect(wonCard).toContain('획수 미확인');
     expect(wonCard).toContain('추천');
 
     const { results } = analyzeModeCNames({ birthDate: '2027-07-04', birthHour: 9, gender: '남', names: ['김똥개'] });
-    const ddong = renderToStaticMarkup(<HanjaCharCard char={results[0].name.hanja.given[0]} caption="똥" onSelect={() => {}} />);
+    const ddong = renderToStaticMarkup(<HanjaCharCard char={results[0].name.hanja.given[0]} caption="똥" onOpen={() => {}} />);
     expect(ddong).toContain('미지정');
     expect(ddong).toContain('한자 데이터 없음');
   });

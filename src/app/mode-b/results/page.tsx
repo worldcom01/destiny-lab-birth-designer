@@ -176,7 +176,7 @@ export default function ModeBResults() {
           <div className="space-y-3">
             {filtered.slice(0, showCount).map((r, i) => (
               <div key={r.id} className="fade-up">
-                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} onHanjaSelect={handleHanjaSelect} />
+                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} />
               </div>
             ))}
             {showCount < filtered.length && (

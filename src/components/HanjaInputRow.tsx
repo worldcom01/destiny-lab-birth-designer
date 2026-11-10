@@ -5,6 +5,7 @@ import { BookOpen, ChevronDown } from 'lucide-react';
 import { OhaengType, OHAENG_COLORS } from '@/types';
 import { HanjaOption, getSuriOhaeng, findSurnameHanja } from '@/data/hanjaDB';
 import HanjaPicker from './HanjaPicker';
+import { isModalOpen } from './modalStack';
 
 interface HanjaInputRowProps {
   label: string;
@@ -19,7 +20,8 @@ interface HanjaInputRowProps {
 export function HanjaInputRow({
   label, hangul, selected, onSelect, onClear, recommendedOhaeng, isSurname = false
 }: HanjaInputRowProps) {
-  const [open, setOpen] = useState(false);
+  // The control that opened the picker (null: closed). Focus returns to it (U5).
+  const [trigger, setTrigger] = useState<HTMLElement | null>(null);
 
   // 성씨인 경우 DB에서 직접 로드
   const surnameData = isSurname ? findSurnameHanja(hangul) : null;
@@ -72,71 +74,78 @@ export function HanjaInputRow({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
-          selected
-            ? 'border-indigo-400 bg-indigo-50'
-            : 'border-dashed border-slate-300 bg-slate-50 hover:border-slate-400'
-        }`}
-      >
-        {/* 한자 표시 */}
-        <div className={`text-3xl font-black w-10 text-center flex-shrink-0 ${selected ? 'text-indigo-800' : 'text-slate-400'}`}>
-          {displayHanja}
-        </div>
+      {/* The selection trigger and the reset control are sibling buttons inside one
+          styled row (N1): no interactive element is nested in another. */}
+      <div className={`w-full flex items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
+        selected
+          ? 'border-indigo-400 bg-indigo-50'
+          : 'border-dashed border-slate-300 bg-slate-50 hover:border-slate-400'
+      }`}>
+        <button
+          type="button"
+          onClick={e => { if (!isModalOpen()) setTrigger(e.currentTarget); }}
+          className="flex flex-1 min-w-0 items-center gap-3 text-left rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        >
+          {/* 한자 표시 */}
+          <span className={`block text-3xl font-black w-10 text-center flex-shrink-0 ${selected ? 'text-indigo-800' : 'text-slate-400'}`}>
+            {displayHanja}
+          </span>
 
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-slate-700">
-            {label}
-            {selected ? ` — ${displayHanja}` : ' — 한자 선택'}
-          </p>
-          {selected ? (
-            <>
-              <p className="text-[11px] text-slate-500">{displayMeaning} · {displayStrokes}획</p>
-              <div className="flex gap-1.5 mt-1">
-                {displayJaWon && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded font-medium"
-                    style={{ backgroundColor: OHAENG_COLORS[displayJaWon] + '18', color: OHAENG_COLORS[displayJaWon] }}>
-                    자원 {displayJaWon}
-                  </span>
-                )}
-                {displaySuri && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded font-medium"
-                    style={{ backgroundColor: OHAENG_COLORS[displaySuri] + '18', color: OHAENG_COLORS[displaySuri] }}>
-                    수리 {displaySuri}
-                  </span>
-                )}
-              </div>
-            </>
-          ) : (
-            <p className="text-[11px] text-slate-400">탭하여 한자를 선택하세요</p>
-          )}
-        </div>
+          <span className="block flex-1 min-w-0">
+            <span className="block text-xs font-bold text-slate-700">
+              {label}
+              {selected ? ` — ${displayHanja}` : ' — 한자 선택'}
+            </span>
+            {selected ? (
+              <>
+                <span className="block text-[11px] text-slate-500">{displayMeaning} · {displayStrokes}획</span>
+                <span className="flex gap-1.5 mt-1">
+                  {displayJaWon && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                      style={{ backgroundColor: OHAENG_COLORS[displayJaWon] + '18', color: OHAENG_COLORS[displayJaWon] }}>
+                      자원 {displayJaWon}
+                    </span>
+                  )}
+                  {displaySuri && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                      style={{ backgroundColor: OHAENG_COLORS[displaySuri] + '18', color: OHAENG_COLORS[displaySuri] }}>
+                      수리 {displaySuri}
+                    </span>
+                  )}
+                </span>
+              </>
+            ) : (
+              <span className="block text-[11px] text-slate-400">탭하여 한자를 선택하세요</span>
+            )}
+          </span>
 
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          {selected && (
-            <button
-              type="button"
-              onClick={e => { e.stopPropagation(); onClear(); }}
-              className="text-[10px] text-slate-400 hover:text-red-400 px-1.5 py-0.5 rounded transition-colors"
-            >
-              초기화
-            </button>
-          )}
-          <BookOpen className="w-4 h-4 text-slate-400" />
-          <ChevronDown className="w-3 h-3 text-slate-400" />
-        </div>
-      </button>
+          <span className="flex items-center gap-1.5 flex-shrink-0" aria-hidden="true">
+            <BookOpen className="w-4 h-4 text-slate-400" />
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+          </span>
+        </button>
 
-      {open && (
+        {selected && (
+          <button
+            type="button"
+            aria-label="한자 초기화"
+            onClick={onClear}
+            className="flex-shrink-0 text-[10px] text-slate-400 hover:text-red-400 px-1.5 py-0.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            초기화
+          </button>
+        )}
+      </div>
+
+      {trigger && (
         <HanjaPicker
           hangul={hangul}
           selectedHanja={selected?.hanja}
           onSelect={onSelect}
-          onClose={() => setOpen(false)}
+          onClose={() => setTrigger(null)}
           recommendedOhaeng={recommendedOhaeng}
           label={label}
+          returnFocusTo={trigger}
         />
       )}
     </>

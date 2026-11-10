@@ -161,7 +161,7 @@ export default function ModeCResults() {
             <div className="space-y-3">
               {results.map((r, i) => (
                 <div key={r.id} className="fade-up">
-                  <NameRankCard result={r} rank={i + 1} onHanjaSelect={handleHanjaSelect} />
+                  <NameRankCard result={r} rank={i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} />
                 </div>
               ))}
             </div>
