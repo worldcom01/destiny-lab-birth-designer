@@ -1,6 +1,6 @@
 import { FourPillars, OhaengBalance, OhaengType, NameAnalysis, Grade, Scores, ImageType, GeneratedName, NameStyle } from '@/types';
 import { getYinYangCounts } from './saju';
-import { UNASSIGNED_MEANING } from './hanjaModel';
+import { LEGACY_GLOSS_LABEL, UNASSIGNED_MEANING } from './hanjaModel';
 
 // ─── 오행 균형 점수 ─────────────────────────────────────────────────────────
 export function calcOhaengBalanceScore(bal: OhaengBalance): number {
@@ -299,12 +299,14 @@ export function generateDescription(
 
   // Only Hanja that are actually assigned contribute a meaning sentence.
   const assignedMeanings = nameAnalysis.meanings.filter(m => m !== UNASSIGNED_MEANING);
+  // R4 audit P1: the glosses come from the pre-R4 table without a documented source, so the
+  // sentence reports them as recorded (출처 미확인), never as verified meanings. Text only.
   const hanjaSentence = assignedMeanings.length === 0
     ? ''
-    : `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})은 ` + assignedMeanings
+    : `이름 ${nameAnalysis.hanja}(${nameAnalysis.given})의 한자에 기록된 뜻은 ` + assignedMeanings
       .map(m => m.split(' — ')[1] ?? m)
       .join('·')
-      .substring(0, 20) + '의 뜻을 지닌 한자입니다(뜻은 점수에 반영되지 않음). ';
+      .substring(0, 20) + `입니다(${LEGACY_GLOSS_LABEL}, 점수에 반영되지 않음). `;
 
   return `${balanceText}${styleText}${hanjaSentence}${descs[dominant] ?? '균형 잡힌 사주 구조입니다'}. 전통 명리학·현대 선호도를 함께 고려한 참고 분석입니다.`;
 }

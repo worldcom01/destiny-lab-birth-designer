@@ -4,11 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/hanja/verify-dictionary.mjs --quiet",
     "build": "next build",
+    "postbuild": "node scripts/hanja/check-bundle.mjs .next",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:tz": "TZ=Asia/Seoul vitest run && TZ=UTC vitest run && TZ=America/Los_Angeles vitest run"
+    "test:tz": "TZ=Asia/Seoul vitest run && TZ=UTC vitest run && TZ=America/Los_Angeles vitest run",
+    "hanja:build": "node scripts/hanja/build-dictionary.mjs",
+    "hanja:verify": "node scripts/hanja/verify-dictionary.mjs",
+    "hanja:inventory": "node scripts/hanja/inventory.mjs",
+    "hanja:official": "node scripts/hanja/official-structure.mjs",
+    "hanja:review-tool": "node scripts/hanja/build-review-tool.mjs",
+    "hanja:import-reviews": "node scripts/hanja/import-reviews.mjs",
+    "hanja:check-bundle": "node scripts/hanja/check-bundle.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

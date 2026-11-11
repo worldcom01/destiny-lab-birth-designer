@@ -1,0 +1,5 @@
+{
+ "schemaVersion": 1,
+ "note": "Human legal-review records (R4.1B). Only exact-match decisions made by a person, with official evidence, confirm a character/reading. Machine suggestions are never evidence.",
+ "reviews": []
+}

@@ -1,5 +1,6 @@
 import { GeneratedName, NameCharData, NameCharHanja, NameHanjaModel } from '@/types';
-import { HanjaOption, findSurnameHanja, getHanjaOptions } from '@/data/hanjaDB';
+import { HANJA_DB, HanjaOption, findSurnameHanja, getHanjaOptions } from '@/data/hanjaDB';
+import legalConfirmed from '@/data/hanjaDictionary/legal-confirmed.json';
 import { parseKoreanName } from './nameParser';
 import { validateModeBInput, validateModeCInput } from './inputValidation';
 
@@ -8,6 +9,8 @@ import { validateModeBInput, validateModeCInput } from './inputValidation';
 
 export const UNASSIGNED_MARK = '□';
 export const UNASSIGNED_MEANING = '한자 미지정';
+/** A chosen Hanja whose meaning is not in the app's table (the character itself is kept). */
+export const MEANING_UNAVAILABLE = '뜻 정보 없음';
 
 const HANJA_CHAR = /^[㐀-䶿一-鿿豈-﫿]$/u;
 
@@ -23,6 +26,80 @@ function charFromOption(hangul: string, opt: HanjaOption, status: 'confirmed' | 
     hangul, hanja: opt.hanja, status, meaning: opt.meaning, strokes: opt.strokes,
     jaWonOhaeng: opt.jaWonOhaeng, inDatabase: true,
   };
+}
+
+/** Syllables under which the app's own table lists each Hanja (reading evidence the app has). */
+const APP_READINGS: ReadonlyMap<string, ReadonlySet<string>> = (() => {
+  const m = new Map<string, Set<string>>();
+  for (const [syllable, opts] of Object.entries(HANJA_DB)) for (const o of opts) {
+    if (!m.has(o.hanja)) m.set(o.hanja, new Set());
+    m.get(o.hanja)!.add(syllable);
+  }
+  return m;
+})();
+
+/** CJK compatibility ideograph (U+F900–U+FAFF except the 12 unified ones); never normalised here. */
+const isCompatibilityIdeograph = (ch: string) => /^[\uF900-\uFAFF]$/.test(ch) && !/^\p{Unified_Ideograph}$/u.test(ch);
+
+/**
+ * R4.2: (character, reading) pairs confirmed by a human legal review (generated file; tiny).
+ * The official note-1 initial-sound form of a confirmed reading counts as confirmed too.
+ */
+const CONFIRMED_PAIRS: ReadonlySet<string> = new Set((legalConfirmed as { pairs: [string, string][] }).pairs.map(([c, r]) => `${c}|${r}`));
+const Y_VOWELS = new Set([2, 6, 7, 12, 17, 20]); // ㅑ ㅕ ㅖ ㅛ ㅠ ㅣ (한글 맞춤법 제10–12항)
+function initialSoundForm(reading: string): string | null {
+  if (!/^[가-힣]$/.test(reading)) return null;
+  const o = reading.charCodeAt(0) - 0xac00, i = Math.floor(o / 588), m = Math.floor((o % 588) / 28), f = o % 28;
+  const make = (x: number) => String.fromCharCode(0xac00 + x * 588 + m * 28 + f);
+  if (i === 5) return make(Y_VOWELS.has(m) ? 11 : 2);
+  if (i === 2 && Y_VOWELS.has(m)) return make(11);
+  return null;
+}
+/** A human-reviewed legal confirmation exists for this character with this reading. */
+export function isLegallyConfirmedReading(hanja: string, reading: string): boolean {
+  if (CONFIRMED_PAIRS.has(`${hanja}|${reading}`)) return true;
+  for (const key of CONFIRMED_PAIRS) {
+    const [c, r] = key.split('|');
+    if (c === hanja && initialSoundForm(r) === reading) return true;
+  }
+  return false;
+}
+
+export type StoredSelectionKind =
+  | 'offered'            // an option the app offers for this syllable (every value this app has saved)
+  | 'verified-reading'   // not in the legacy table, but this reading is legally confirmed by human review
+  | 'reading-mismatch'   // the app's table lists it only under other syllables (verified incompatible here)
+  | 'compatibility-form' // a CJK compatibility code point (e.g. U+F914 樂): kept as stored, not folded
+  | 'unknown-reading'    // a Han character the app has no reading evidence for (ambiguous)
+  | 'invalid';           // not a single Han character
+
+/** R4.1A: classifies a STORED given-name selection for one syllable. Pure; reads no storage. */
+export function classifyStoredSelection(hangul: string, hanja: string): StoredSelectionKind {
+  if (!isHanjaChar(hanja)) return 'invalid';
+  if (getHanjaOptions(hangul).some(o => o.hanja === hanja)) return 'offered';
+  if (isLegallyConfirmedReading(hanja, hangul)) return 'verified-reading';
+  if (APP_READINGS.has(hanja)) return 'reading-mismatch';
+  return isCompatibilityIdeograph(hanja) ? 'compatibility-form' : 'unknown-reading';
+}
+
+/**
+ * R4.1 compatibility adapter for a STORED confirmed selection (R3.2 document, unchanged).
+ * - 'offered': the full record (as before);
+ * - 'reading-mismatch' / 'invalid': outside the name position's boundary — not applied
+ *   (as before; the stored value itself is left untouched);
+ * - 'compatibility-form' / 'unknown-reading': kept exactly as stored (same code point),
+ *   shown as the user's confirmed choice but marked readingUnverified, with meaning,
+ *   strokes and 자원오행 unknown. Never replaced by another character or a variant, never
+ *   given borrowed data, never presented as verified.
+ * New selections still use confirmedChar.
+ */
+export function storedSelectionChar(hangul: string, hanja: string): NameCharHanja | null {
+  const kind = classifyStoredSelection(hangul, hanja);
+  if (kind === 'offered') return confirmedChar(hangul, hanja);
+  if (kind === 'reading-mismatch' || kind === 'invalid') return null;
+  // legally confirmed reading: kept and shown as confirmed; meaning/strokes stay unknown (never borrowed)
+  if (kind === 'verified-reading') return { hangul, hanja, status: 'confirmed', meaning: null, strokes: null, jaWonOhaeng: null, inDatabase: false };
+  return { hangul, hanja, status: 'confirmed', meaning: null, strokes: null, jaWonOhaeng: null, inDatabase: false, readingUnverified: true };
 }
 
 /** Confirmed char for a user selection, or null when `hanja` is not an option for `hangul`. */
@@ -78,7 +155,7 @@ export function formatFullHanja(model: NameHanjaModel): string {
 }
 
 export function givenMeanings(model: NameHanjaModel): string[] {
-  return model.given.map(c => (c.hanja && c.meaning) ? c.meaning : UNASSIGNED_MEANING);
+  return model.given.map(c => (!c.hanja ? UNASSIGNED_MEANING : c.meaning || MEANING_UNAVAILABLE));
 }
 
 /** Sum of strokes, or null when any character's strokes are unknown. */
@@ -93,13 +170,32 @@ export function totalStrokes(chars: NameCharHanja[]): number | null {
 
 export function hanjaStatusLabel(model: NameHanjaModel): string {
   if (model.given.some(c => c.status === 'unassigned')) return '한자 미지정 포함';
-  if (model.given.every(c => c.status === 'confirmed')) return '확정 한자';
+  if (model.given.every(c => c.status === 'confirmed')) return model.given.some(c => c.readingUnverified) ? '확정 한자(음 미확인 포함)' : '확정 한자';
   return '추천 한자';
 }
 
 export const STATUS_LABEL: Record<NameCharHanja['status'], string> = {
   confirmed: '확정', suggested: '추천', unassigned: '미지정',
 };
+
+/**
+ * R4.2 selection eligibility of a character for one syllable (picker). Only 'legacy-offered'
+ * and 'verified-reading' are selectable; the others can be found by search but not chosen.
+ */
+export type SelectionEligibility = 'legacy-offered' | 'verified-reading' | 'reading-mismatch' | 'unknown-reading' | 'invalid';
+export function selectionEligibility(hangul: string, hanja: string): SelectionEligibility {
+  const k = classifyStoredSelection(hangul, hanja);
+  return k === 'offered' ? 'legacy-offered' : k === 'compatibility-form' ? 'unknown-reading' : k;
+}
+export const isSelectableEligibility = (e: SelectionEligibility) => e === 'legacy-offered' || e === 'verified-reading';
+
+/** Label for a legacy gloss: it comes from the pre-R4 table and has no documented source. */
+export const LEGACY_GLOSS_LABEL = '출처 미확인';
+
+/** Status label of one character; a stored character the app cannot verify says so (R4.1A). */
+export function charStatusLabel(c: NameCharHanja): string {
+  return c.readingUnverified ? `${STATUS_LABEL[c.status]}·음 미확인` : STATUS_LABEL[c.status];
+}
 
 // ─── User selections ─────────────────────────────────────────────────────────
 
@@ -113,7 +209,7 @@ export function applySelectionToName(name: GeneratedName, selection: (string | n
   const given = name.hanja.given.map((c, i) => {
     const h = selection[i];
     if (!h || (c.status === 'confirmed' && c.hanja === h)) return c;
-    const next = confirmedChar(c.hangul, h);
+    const next = storedSelectionChar(c.hangul, h);
     if (!next) return c;
     changed = true;
     return next;

@@ -17,6 +17,12 @@ Helpers live in `src/lib/hanjaModel.ts`. Tests: `src/lib/__tests__/hanja.test.ts
   `jaWonOhaeng` are `null` and the UI/PDF show "획수 미확인". Data is never borrowed
   from another character.
 - Nothing uses `HANJA_DB[hangul][0]` as a fallback.
+- R4.1: a STORED confirmed selection whose character is not (or no longer) offered for
+  its syllable is still shown as that exact character, `confirmed`, with meaning,
+  strokes and jaWon `null` ("뜻 정보 없음", "획수 미확인") — `storedSelectionChar`. It
+  is never dropped, replaced by another character or folded to a variant. New
+  selections still come only from the offered options (`confirmedChar`). See
+  `docs/hanja-dictionary.md`.
 - Single-syllable surnames in the surname table get their representative Hanja as a
   suggestion. Compound surnames stay unassigned (no data, no guessing).
 - `char1`/`char2` are syllable scoring profiles. Their `hanja`/`meaning` mirror the

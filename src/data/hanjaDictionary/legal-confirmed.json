@@ -1,0 +1,4 @@
+{
+ "note": "GENERATED from legal-reviews.json by scripts/hanja/import-reviews.mjs (and checked by tests/hanja:verify). Human-confirmed (character, reading) pairs; the only basis for selecting a Hanja outside the legacy option table.",
+ "pairs": []
+}

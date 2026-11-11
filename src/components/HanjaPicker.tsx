@@ -7,6 +7,9 @@ import { X, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { openModal } from './modalStack';
 import { OhaengType, OHAENG_COLORS } from '@/types';
 import { HanjaOption, getHanjaOptions, getSuriOhaeng, explainRecommendedHanja, recommendationReasonText } from '@/data/hanjaDB';
+import { LEGACY_GLOSS_LABEL, isLegallyConfirmedReading } from '@/lib/hanjaModel';
+import { LEGAL_LABEL } from '@/lib/hanjaSearch';
+import HanjaSearchPanel from './HanjaSearchPanel';
 
 interface Props {
   hangul: string;
@@ -20,6 +23,10 @@ interface Props {
    * (when it still exists). Defaults to the element focused when the picker opened.
    */
   returnFocusTo?: HTMLElement | null;
+  /** R4.2: show dictionary search (result cards). */
+  searchable?: boolean;
+  /** R4.2: select a legally confirmed character that is not in the legacy option list. */
+  onSelectChar?: (hanja: string) => void;
 }
 
 function OhaengBadge({ ohaeng, label }: { ohaeng: OhaengType; label?: string }) {
@@ -57,7 +64,8 @@ function Overlay({ children }: { children: ReactNode }) {
   return typeof document === 'undefined' ? <>{children}</> : createPortal(children, document.body);
 }
 
-export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, recommendedOhaeng, label, returnFocusTo }: Props) {
+export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, recommendedOhaeng, label, returnFocusTo, searchable = false, onSelectChar }: Props) {
+  const [searching, setSearching] = useState(false);
   const options = useMemo(() => getHanjaOptions(hangul), [hangul]);
   const explanation = useMemo(
     () => explainRecommendedHanja(hangul, recommendedOhaeng ?? null),
@@ -86,7 +94,8 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
     });
   }, []);
 
-  if (options.length === 0) {
+  // R4 audit S1: search availability does not depend on the legacy list; each result has its own eligibility
+  if (options.length === 0 && !searchable) {
     return (
       <Overlay>
       <div ref={overlayRef} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
@@ -125,7 +134,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
               {label ?? `'${hangul}' 한자 선택`}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {options.length}가지 한자 · 자원오행과 수리오행 포함 분석
+              {options.length ? `${options.length}가지 한자 · 자원오행과 수리오행 포함 분석` : '기존 목록에 후보가 없습니다 · 검색으로 찾기'}
             </p>
           </div>
           <button type="button" aria-label="닫기" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
@@ -136,6 +145,18 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
         {/* One scroll region for everything below the header: explanation texts of any
             length can never push the last candidate or the cancel action out of reach. */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain" data-testid="hanja-picker-scroll">
+        {searchable && (
+          <HanjaSearchPanel
+            hangul={hangul}
+            onSearchingChange={setSearching}
+            onChoose={(hanja, r) => {
+              // the exact character is passed on; nothing is normalised or remapped
+              if (r.eligibility === 'legacy-offered') { const opt = options.find(o => o.hanja === hanja); if (opt) { onSelect(opt); onClose(); } }
+              else if (r.eligibility === 'verified-reading' && onSelectChar) { onSelectChar(hanja); onClose(); }
+            }}
+          />
+        )}
+        {!searching && <>
         <p className="mx-5 mt-3 text-[11px] text-slate-500" data-testid="hanja-score-note">
           {HANJA_SELECTION_NOTE}
         </p>
@@ -152,6 +173,11 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
 
         {/* 한자 목록 */}
         <div className="p-5 space-y-3">
+          {options.length === 0 && (
+            <p className="text-sm text-slate-600" data-testid="hanja-no-legacy-options">
+              {`'${hangul}'에는 기존 목록의 한자 후보가 없습니다. 위 검색으로 찾을 수 있지만, 인명용 여부가 공식 확인된 한자만 선택할 수 있습니다.`}
+            </p>
+          )}
           {options.map(opt => {
             const isSelected = selectedHanja === opt.hanja;
             const isRecommended = recommended?.hanja === opt.hanja;
@@ -195,9 +221,16 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
                       )}
                     </div>
 
-                    {/* 뜻 */}
-                    <p className="font-bold text-sm text-slate-800">{opt.meaning}</p>
+                    {/* 뜻: pre-R4 table values without a documented source (R4.2 labels them) */}
+                    <p className="font-bold text-sm text-slate-800">
+                      {opt.meaning} <span className="ml-1 rounded bg-slate-100 px-1 text-[10px] font-normal text-slate-500" data-testid="legacy-gloss-label">{LEGACY_GLOSS_LABEL}</span>
+                    </p>
                     <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{opt.fullMeaning}</p>
+                    <p className="text-[10px] mt-0.5" data-testid="option-legal" data-legal={isLegallyConfirmedReading(opt.hanja, hangul) ? 'CONFIRMED' : 'NOT_CONFIRMED'}>
+                      {isLegallyConfirmedReading(opt.hanja, hangul)
+                        ? <span className="text-emerald-700">{LEGAL_LABEL.CONFIRMED}</span>
+                        : <span className="text-amber-800">{LEGAL_LABEL.NOT_CONFIRMED} · 출생신고 전 공식 확인 필요</span>}
+                    </p>
 
                     {/* 오행 뱃지 */}
                     <div className="flex items-center gap-1.5 mt-2 flex-wrap">
@@ -230,6 +263,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
             선택하지 않음 (기본값 유지)
           </button>
         </div>
+        </>}
         </div>
       </div>
     </div>

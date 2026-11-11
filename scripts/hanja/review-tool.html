@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>인명용 한자 검토</title>
+<style>
+  :root { --fg:#1e293b; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --card:#fff; --accent:#4338ca; --warn:#b45309; --ok:#047857; }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 14px/1.5 -apple-system, "Apple SD Gothic Neo", sans-serif; color:var(--fg); background:var(--bg); }
+  header { padding:12px 16px; background:var(--card); border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; }
+  header h1 { font-size:16px; margin:0; }
+  .muted { color:var(--muted); font-size:12px; }
+  main { display:grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 60px); }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+  nav { border-right:1px solid var(--line); background:var(--card); overflow:auto; max-height: calc(100vh - 60px); }
+  nav .item { padding:6px 12px; border-bottom:1px solid var(--line); cursor:pointer; display:flex; justify-content:space-between; gap:8px; }
+  nav .item[aria-current="true"] { background:#eef2ff; }
+  nav .item .st { font-size:11px; }
+  section#detail { padding:16px; overflow:auto; max-height: calc(100vh - 60px); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+  .glyph { font-family: "AppleMyungjo", "Songti TC", "Hiragino Mincho ProN", serif; }
+  .big { font-size:96px; line-height:1; }
+  .official { width:130px; height:130px; image-rendering: pixelated; border:1px solid var(--line); background:#fff; }
+  .grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .tile { border:2px solid var(--line); border-radius:8px; padding:6px; background:#fff; cursor:pointer; text-align:center; font-size:11px; }
+  .tile[aria-pressed="true"] { border-color:var(--accent); background:#eef2ff; }
+  .tile img { width:72px; height:72px; image-rendering: pixelated; display:block; }
+  .cand .glyph { font-size:56px; display:block; line-height:1.1; }
+  .tag { display:inline-block; font-size:11px; padding:0 6px; border-radius:999px; background:#fef3c7; color:var(--warn); }
+  .tag.compat { background:#fee2e2; color:#b91c1c; }
+  button { font:inherit; padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  label.row { display:flex; gap:6px; align-items:center; margin:4px 0; }
+  input[type=text], input[type=date], select, textarea { font:inherit; padding:4px 6px; border:1px solid var(--line); border-radius:6px; }
+  .compare { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  .notice { border-left:4px solid var(--warn); padding:6px 10px; background:#fffbeb; margin:8px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>인명용 한자 검토 (사람 검토 전용)</h1>
+  <label class="row">검토자 ID <input type="text" id="reviewer" size="12" placeholder="예: rev-01"></label>
+  <label class="row">대상 <select id="filter">
+    <option value="t1">1단계: 앱 한자 118쌍</option><option value="t2">2단계: 신고된 한자</option><option value="t3">3단계: 추천 프로필</option>
+    <option value="t4">4단계: 앱 음의 공식 이미지</option><option value="t5">5단계: 나머지 공식 이미지</option></select></label>
+  <button id="export">검토 기록 내보내기(JSON)</button>
+  <label class="row"><input type="file" id="import" accept="application/json"> 가져오기</label>
+  <span class="muted" id="progress"></span>
+</header>
+<div id="storage" role="alert" hidden style="padding:8px 16px;background:#fef2f2;color:#991b1b;border-bottom:1px solid #fecaca"></div>
+<main>
+  <nav id="list" aria-label="검토 목록"></nav>
+  <section id="detail" aria-live="polite"></section>
+</main>
+<script>
+const DATA = /*__DATA__*/null;
+const KEY = 'hanja-legal-review-records-v1';
+// R4 audit R3: storage that never reports a save it cannot confirm.
+// state: 'ok' | 'empty' | 'unreadable' (stored text kept untouched; writes disabled)
+//        | 'unavailable' (storage access throws; writes disabled)
+const store = {
+  state: 'empty', raw: null, unsaved: 0, lastError: null,
+  load() {
+    let text;
+    try { text = localStorage.getItem(KEY); } catch (e) { this.state = 'unavailable'; this.lastError = String(e && e.name || e); return []; }
+    if (text === null) { this.state = 'empty'; return []; }
+    try {
+      const v = JSON.parse(text);
+      if (!Array.isArray(v)) throw new Error('not an array');
+      this.state = 'ok'; return v;
+    } catch (e) { this.state = 'unreadable'; this.raw = text; this.lastError = String(e && e.message || e); return []; }
+  },
+  /** Persists all records; true only when the stored value was read back identically. */
+  save(recs) {
+    if (this.state === 'unreadable' || this.state === 'unavailable') { this.unsaved = recs.length; return false; }
+    const text = JSON.stringify(recs);
+    try {
+      localStorage.setItem(KEY, text);
+      if (localStorage.getItem(KEY) !== text) throw new Error('read-back mismatch');
+      this.state = 'ok'; this.unsaved = 0; this.lastError = null; return true;
+    } catch (e) { this.unsaved = recs.length; this.lastError = String(e && e.name || e); return false; }
+  },
+};
+let records = store.load();
+window.__reviewStore = store; // inspection by the reviewer / tool tests (offline tool, not the app)
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const cp = ch => 'U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
+const isHan = ch => typeof ch === 'string' && [...ch].length === 1 && /^\p{Script=Han}$/u.test(ch);
+const imgSrc = id => `img/${id}${DATA.imageExt[id] || '.bmp'}`;
+function renderStorage() {
+  const b = $('#storage');
+  const msg = {
+    unreadable: `저장된 검토 기록을 읽을 수 없습니다(${esc(store.lastError)}). 기존 저장 내용은 지우거나 덮어쓰지 않았고, 새 결정은 이 화면에만 있습니다. "손상된 원문 내보내기"와 "검토 기록 내보내기"로 파일을 만들어 두세요.`,
+    unavailable: `브라우저 저장소를 사용할 수 없습니다(${esc(store.lastError)}). 새 결정은 이 화면에만 있으며 새로고침하면 사라집니다. "검토 기록 내보내기"로 파일을 만들어 두세요.`,
+  }[store.state];
+  const unsaved = store.unsaved ? `저장되지 않은 결정이 있습니다(${store.unsaved}건 중 마지막 저장 실패: ${esc(store.lastError || '')}). "다시 저장"을 누르거나 "검토 기록 내보내기"로 파일을 만들어 두세요. 파일 다운로드가 끝났는지는 직접 확인해야 합니다.` : '';
+  const text = msg || unsaved;
+  b.hidden = !text;
+  b.innerHTML = text ? `<span>${text}</span> <button id="retrySave">다시 저장</button> ${store.raw ? '<button id="exportRaw">손상된 원문 내보내기</button>' : ''}` : '';
+  if (text) {
+    $('#retrySave').onclick = () => { const ok = store.save(records); renderStorage(); renderList(); alert(ok ? '저장됨 (브라우저 저장 확인)' : '여전히 저장하지 못했습니다. 검토 기록을 내보내 주세요.'); };
+    if (store.raw) $('#exportRaw').onclick = () => download(new Blob([store.raw], { type: 'text/plain' }), 'hanja-review-storage-raw.txt');
+  }
+}
+try { $('#reviewer').value = localStorage.getItem(KEY + ':reviewer') || ''; } catch {}
+$('#reviewer').addEventListener('change', e => { try { localStorage.setItem(KEY + ':reviewer', e.target.value.trim()); } catch {} });
+
+function tasks(filter) {
+  if (filter === 't1' || filter === 't2' || filter === 't3') return DATA.targets.filter(t => `t${t.tier}` === filter).map(t => ({ kind: 'target', key: `T:${t.char}|${t.reading}`, t }));
+  const tier = filter === 't4' ? 4 : 5;
+  return DATA.imageTasks.filter(t => t.tier === tier).map(t => ({ kind: 'image', key: `I:${t.image}`, t }));
+}
+function statusOf(task) {
+  const rs = records.filter(r => task.kind === 'image' ? r.evidence?.image === task.t.image
+    : (r.char === task.t.char && (r.reading === task.t.reading || task.t.tableReadings.includes(r.reading))));
+  if (!rs.length) return '미검토';
+  return rs.map(r => ({ 'exact-match': '일치', ambiguous: '모호', 'unable-to-identify': '식별불가' }[r.decision])).join('/');
+}
+let current = null;
+function renderList() {
+  const list = tasks($('#filter').value);
+  $('#list').innerHTML = list.slice(0, 2000).map((x, i) => `<div class="item" data-i="${i}" ${current === x.key ? 'aria-current="true"' : ''}>
+    <span>${x.kind === 'target' ? `<span class="glyph">${esc(x.t.char)}</span> ${esc(x.t.reading)}` : `${esc(x.t.image)} · ${esc(x.t.readings.join('/'))}`}</span>
+    <span class="st muted">${statusOf(x)}</span></div>`).join('') + (list.length > 2000 ? `<div class="item muted">… ${list.length - 2000} more</div>` : '');
+  $('#list').onclick = e => { const it = e.target.closest('.item[data-i]'); if (it) { const x = list[+it.dataset.i]; current = x.key; renderList(); renderDetail(x); } };
+  $('#progress').textContent = `검토 기록 ${records.length}건(${store.unsaved ? `미저장 ${store.unsaved}건` : store.state === 'ok' || store.state === 'empty' ? '브라우저 저장됨' : '저장 불가'}) · 목록 ${list.length}건 · 데이터셋 ${DATA.datasetVersion}`;
+}
+
+// ── record creation (schema = src/lib/hanjaDictionary/legalReviews.ts LegalReview) ──
+function newRecord(fields) {
+  const reviewer = $('#reviewer').value.trim();
+  if (!reviewer) { alert('검토자 ID를 먼저 입력하세요.'); return null; }
+  return { id: `${reviewer}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, reviewer, reviewedAt: new Date().toISOString(), notes: '', machineSuggestion: null, ...fields };
+}
+function commit(rec) {
+  if (!rec) return;
+  records.push(rec); // kept in memory even when persistence fails
+  const ok = store.save(records);
+  renderStorage(); renderList();
+  alert(ok ? `저장됨: ${rec.decision} ${rec.char ?? ''} ${rec.reading}` : `저장되지 않았습니다(${store.lastError}). 결정은 이 화면에만 있습니다. "검토 기록 내보내기"로 파일을 만들어 두세요.`);
+}
+function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); }
+function imageEvidence(image, reading) {
+  return { kind: 'appendix1-image', source: 'court-rule-3151-appendix1', fileSha256: DATA.source.fileSha256, image, officialReading: reading };
+}
+
+function decisionBar(onDecide, needsChar) {
+  return `<div class="card"><label class="row"><input type="checkbox" id="iSaw"> 공식 이미지와 선택한 글자가 <b>정확히 같은 글자(같은 자형·코드포인트)</b>임을 직접 확인했습니다.</label>
+    <label class="row">메모 <input type="text" id="note" size="50" placeholder="모호함·충돌 사유 등"></label>
+    <button class="primary" id="dExact" ${needsChar ? 'disabled' : ''}>정확히 일치로 저장</button>
+    <button id="dAmb">모호함으로 저장</button> <button id="dUnable">식별 불가로 저장</button></div>`;
+}
+
+function renderDetail(x) {
+  const d = $('#detail');
+  if (x.kind === 'target') return renderTarget(d, x.t);
+  return renderImage(d, x.t);
+}
+
+function renderTarget(d, t) {
+  const order = [...t.suggestionOrder].sort((a, b) => (b[1] ?? -1) - (a[1] ?? -1));
+  const routeText = { appendix1: '[별표 1] 해당 음 칸의 공식 이미지 중에서 찾으세요.', 'basic-or-lookup': 'Unihan 기준 교육용 기초한자(E)입니다. [별표 1]에는 없으므로 전자가족관계등록시스템에서 직접 조회해 기록하세요.', 'lookup-only': '해당 음의 공식 표 칸이 없습니다. 전자가족관계등록시스템에서 직접 조회하세요.' }[t.route];
+  d.innerHTML = `<div class="card"><div class="compare"><span class="glyph big">${esc(t.char)}</span><div>
+      <div><b>${esc(t.codePoint)}</b> · 음 <b>${esc(t.reading)}</b> · ${t.tier}단계 (${esc(t.reason)})</div>
+      <div class="muted">표 음: ${esc(t.tableReadings.join(', ') || '없음')} · Unihan(보조 지표): ${esc(t.unihanFlags || '없음')}</div>
+      <div class="notice">${routeText}</div>
+      <div class="muted">출처: ${esc(DATA.source.version)} · sha256 ${esc(DATA.source.fileSha256.slice(0, 12))}…</div></div></div></div>
+    ${t.images.length ? `<div class="card"><div class="muted">공식 이미지 (<b>검증되지 않은 기계 유사도 순서</b> — 순서일 뿐 근거가 아닙니다). 대상과 정확히 같은 이미지를 고르세요.</div>
+      <div class="grid" id="imgs">${order.map(([id, s]) => `<button class="tile" aria-pressed="false" data-id="${esc(id)}"><img src="${imgSrc(id)}" alt="${esc(id)}">${esc(id)}<br><span class="muted">${s == null ? '-' : s.toFixed(2)}</span></button>`).join('')}</div></div>` : ''}
+    <div class="card"><b>법원 조회 기록</b> (사람이 브라우저에서 직접 조회; 자동 조회 금지)
+      <label class="row">조회 페이지 URL <input type="text" id="lkUrl" size="50" value="https://efamily.scourt.go.kr/"></label>
+      <label class="row">조회일 <input type="date" id="lkDate"></label>
+      <label class="row">표시된 음 <input type="text" id="lkReading" size="3" value="${esc(t.reading)}"></label>
+      <label class="row">표시 <select id="lkMark"><option value="">선택</option><option>인명용</option><option>표시 없음</option><option>기타</option></select></label>
+      <button id="saveLookup">조회 결과 저장</button></div>
+    ${decisionBar(null, true)}`;
+  let picked = null;
+  d.querySelectorAll('.tile').forEach(b => b.onclick = () => {
+    d.querySelectorAll('.tile').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true'); picked = b.dataset.id; $('#dExact').disabled = false; $('#iSaw').checked = false;
+  });
+  const readingOf = id => (DATA.imageTasks.find(x => x.image === id)?.readings || []).find(r => t.tableReadings.includes(r)) || t.reading;
+  const suggestionOf = id => { const s = t.suggestionOrder.find(([i]) => i === id); return s && s[1] != null ? { char: t.char, score: s[1] } : null; };
+  $('#dExact').onclick = () => {
+    if (!picked) return; if (!$('#iSaw').checked) { alert('직접 확인 체크가 필요합니다.'); return; }
+    const reading = readingOf(picked);
+    commit(newRecord({ decision: 'exact-match', char: t.char, codePoint: cp(t.char), reading, evidence: imageEvidence(picked, reading), notes: $('#note').value, machineSuggestion: suggestionOf(picked) }));
+  };
+  const neg = decision => () => {
+    const reading = picked ? readingOf(picked) : t.reading;
+    commit(newRecord({ decision, char: t.char, codePoint: cp(t.char), reading,
+      evidence: picked ? imageEvidence(picked, reading) : { kind: 'court-lookup', source: 'efamily-lookup', url: $('#lkUrl').value, lookedUpAt: $('#lkDate').value, shownReading: $('#lkReading').value, shownMark: $('#lkMark').value },
+      notes: $('#note').value }));
+  };
+  $('#dAmb').onclick = neg('ambiguous'); $('#dUnable').onclick = neg('unable-to-identify');
+  $('#saveLookup').onclick = () => {
+    const mark = $('#lkMark').value, date = $('#lkDate').value;
+    if (!mark || !date) { alert('조회일과 표시를 입력하세요.'); return; }
+    if (mark === '인명용' && !$('#iSaw').checked) { alert('직접 확인 체크가 필요합니다.'); return; }
+    commit(newRecord({ decision: mark === '인명용' ? 'exact-match' : 'unable-to-identify', char: t.char, codePoint: cp(t.char), reading: $('#lkReading').value.trim(),
+      evidence: { kind: 'court-lookup', source: 'efamily-lookup', url: $('#lkUrl').value.trim(), lookedUpAt: date, shownReading: $('#lkReading').value.trim(), shownMark: mark }, notes: $('#note').value }));
+  };
+}
+
+function renderImage(d, t) {
+  const sug = new Map(t.suggestions);
+  const cands = [...t.candidates].sort((a, b) => (sug.get(b.c) ?? -1) - (sug.get(a.c) ?? -1));
+  d.innerHTML = `<div class="card"><div class="compare"><img class="official" src="${imgSrc(t.image)}" alt="${esc(t.image)}">
+      <div><div>공식 이미지 <b>${esc(t.image)}</b> · 표 음 <b>${esc(t.readings.join(' / '))}</b> · ${t.tier}단계</div>
+      <div class="muted">출처: ${esc(DATA.source.version)} · sha256 ${esc(DATA.source.fileSha256.slice(0, 12))}…</div>
+      <div class="compare" style="margin-top:8px"><span class="muted">선택 비교:</span> <img class="official" src="${imgSrc(t.image)}" alt=""> <span class="glyph big" id="cmp">?</span> <span id="cmpCp" class="muted"></span></div></div></div></div>
+    <div class="card"><div class="muted">후보 = 같은 음의 Unicode 문자 (<b>검증되지 않은 제안</b>; 숫자는 기계 유사도). 호환 한자는 별개 코드포인트입니다.</div>
+      <div class="grid" id="cands">${cands.map(c => `<button class="tile cand" aria-pressed="false" data-c="${esc(c.c)}"><span class="glyph">${esc(c.c)}</span>${esc(c.cp)}<br><span class="muted">${esc(c.f)}${sug.has(c.c) ? ` · ${sug.get(c.c).toFixed(2)}` : ''}</span>${c.compat ? '<br><span class="tag compat">호환 한자</span>' : ''}</button>`).join('')}</div>
+      <label class="row">직접 입력 <input type="text" id="manual" size="3" placeholder="字"></label></div>
+    ${decisionBar(null, true)}`;
+  let picked = null;
+  const pick = ch => { picked = isHan(ch) ? ch : null; $('#cmp').textContent = picked || '?'; $('#cmpCp').textContent = picked ? cp(picked) : ''; $('#dExact').disabled = !picked; $('#iSaw').checked = false; };
+  d.querySelectorAll('.cand').forEach(b => b.onclick = () => { d.querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); pick(b.dataset.c); });
+  $('#manual').oninput = e => { d.querySelectorAll('.cand').forEach(x => x.setAttribute('aria-pressed', 'false')); pick(e.target.value.trim()); };
+  const reading = () => t.readings.length === 1 ? t.readings[0] : prompt(`이 이미지는 ${t.readings.join('/')} 두 음에 실려 있습니다. 검토하는 음을 입력하세요.`, t.readings[0]);
+  $('#dExact').onclick = () => {
+    if (!picked) return; if (!$('#iSaw').checked) { alert('직접 확인 체크가 필요합니다.'); return; }
+    const r = reading(); if (!t.readings.includes(r)) return;
+    commit(newRecord({ decision: 'exact-match', char: picked, codePoint: cp(picked), reading: r, evidence: imageEvidence(t.image, r), notes: $('#note').value,
+      machineSuggestion: sug.has(picked) ? { char: picked, score: sug.get(picked) } : null }));
+  };
+  const neg = decision => () => { const r = reading(); if (!t.readings.includes(r)) return;
+    commit(newRecord({ decision, char: picked, codePoint: picked ? cp(picked) : null, reading: r, evidence: imageEvidence(t.image, r), notes: $('#note').value })); };
+  $('#dAmb').onclick = neg('ambiguous'); $('#dUnable').onclick = neg('unable-to-identify');
+}
+
+$('#filter').onchange = () => { current = null; $('#detail').innerHTML = ''; renderList(); };
+$('#export').onclick = () => {
+  download(new Blob([JSON.stringify({ schemaVersion: 1, exportedAt: new Date().toISOString(), source: DATA.source, reviews: records }, null, 1)], { type: 'application/json' }),
+    `hanja-legal-reviews-${new Date().toISOString().slice(0, 10)}.json`);
+  alert(`내보내기 파일(${records.length}건)을 만들었습니다. 다운로드 폴더에 파일이 생겼는지 확인해 주세요.`);
+};
+// Same identity rule as scripts/hanja/import-core.mjs: stable JSON with sorted object keys.
+const canonical = v => Array.isArray(v) ? `[${v.map(canonical).join(',')}]`
+  : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${canonical(v[k])}`).join(',')}}`
+  : JSON.stringify(v);
+/**
+ * R4 re-audit R2-b: validates the WHOLE incoming file before anything changes. Every id
+ * (stored or earlier in the same file) is checked as it is seen: identical content is skipped,
+ * different content rejects the entire file. Returns { add, skipped } or { error }.
+ */
+function planToolImport(j) {
+  if (!j || typeof j !== 'object' || Array.isArray(j) || j.schemaVersion !== 1 || !Array.isArray(j.reviews)
+    || j.source?.id !== DATA.source.id || j.source?.fileSha256 !== DATA.source.fileSha256) {
+    return { error: '형식이나 공식 출처가 다른 파일입니다. 아무것도 가져오지 않았습니다.' };
+  }
+  const seen = new Map(records.map(r => [r.id, canonical(r)]));
+  const add = [], conflicts = [];
+  let skipped = 0;
+  for (const r of j.reviews) {
+    if (!r || typeof r !== 'object' || Array.isArray(r) || typeof r.id !== 'string' || !r.id) return { error: 'ID가 없는 기록이 있습니다. 아무것도 가져오지 않았습니다.' };
+    const c = canonical(r);
+    if (seen.has(r.id)) { if (seen.get(r.id) === c) skipped++; else conflicts.push(r.id); continue; }
+    seen.set(r.id, c); // new ids are recorded at once, so a later duplicate in the same file is compared too
+    add.push(r);
+  }
+  if (conflicts.length) return { error: `같은 ID에 다른 내용이 있어 파일 전체를 가져오지 않았습니다: ${[...new Set(conflicts)].join(', ')}` };
+  return { add, skipped };
+}
+$('#import').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  let j;
+  try { j = JSON.parse(await f.text()); } catch { alert('JSON을 읽지 못했습니다. 아무것도 가져오지 않았습니다.'); return; }
+  const plan = planToolImport(j);
+  if (plan.error) { alert(plan.error); return; }
+  records = records.concat(plan.add); // only after the whole file passed
+  const ok = store.save(records);
+  renderStorage(); renderList();
+  const dup = plan.skipped ? ` (중복 ${plan.skipped}건 건너뜀)` : '';
+  alert(ok ? `${plan.add.length}건 가져와 저장했습니다.${dup}` : `${plan.add.length}건을 화면에 가져왔지만 저장하지 못했습니다(${store.lastError}).${dup}`);
+};
+renderStorage();
+renderList();
+</script>
+</body>
+</html>

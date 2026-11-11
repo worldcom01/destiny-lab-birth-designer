@@ -8,7 +8,7 @@ import HanjaDisplay from './HanjaDisplay';
 import HanjaPicker from './HanjaPicker';
 import { isModalOpen } from './modalStack';
 import HanjaQuickSelect from './HanjaQuickSelect';
-import { hanjaSaveFailureMessage, hanjaStatusLabel } from '@/lib/hanjaModel';
+import { LEGACY_GLOSS_LABEL, hanjaSaveFailureMessage, hanjaStatusLabel } from '@/lib/hanjaModel';
 import type { HanjaSaveState } from './HanjaSaveFeedback';
 import { buildSajuReading } from '@/lib/sajuReading';
 import { componentByKey } from '@/lib/scoreComponents';
@@ -101,8 +101,11 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
               </span>
             </div>
 
-            {/* 한자 의미 */}
-            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+            {/* 한자 의미: pre-R4 glosses have no documented source (R4.2 label) */}
+            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed" data-testid="card-meanings">
+              {result.name.hanja.given.some(c => c.hanja && c.meaning) && (
+                <span className="mr-1 rounded bg-slate-100 px-1 text-[10px] text-slate-500">뜻 {LEGACY_GLOSS_LABEL}</span>
+              )}
               {result.nameAnalysis.meanings.map((m, i) => (
                 <span key={i}>
                   {m.split(' — ')[1] ?? m}
@@ -147,7 +150,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
           <span className="font-semibold">이름과의 관계</span> · {buildSajuReading(result).nameRelation}
         </p>
 
-        {selectable && <HanjaQuickSelect model={result.name.hanja} onOpen={openPicker} describedBy={feedback ? feedbackId : undefined} disabled={selectionLocked}
+        {selectable && <HanjaQuickSelect model={result.name.hanja} onOpen={openPicker} describedBy={feedback ? feedbackId : undefined} disabled={selectionLocked} searchable
           buttonRef={registerHanjaButton ? (i, el) => registerHanjaButton(result.name.full, i, el) : undefined} />}
         {feedback && (
           // Not a live region: the page-level status/alert announces once; this text is
@@ -211,6 +214,9 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
           selectedHanja={pickerChar.hanja ?? undefined}
           // HanjaPicker calls onSelect then onClose once per confirmed choice: one save.
           onSelect={opt => { setAttempts(a => a + 1); onHanjaSelect(result.name.full, pickerIndex, opt.hanja); }}
+          // R4.2: search; a legally confirmed character outside the legacy list uses the same single save
+          searchable
+          onSelectChar={hanja => { setAttempts(a => a + 1); onHanjaSelect(result.name.full, pickerIndex, hanja); }}
           onClose={closePicker}
           recommendedOhaeng={weakestOhaeng}
           label={`'${pickerChar.hangul}' 한자 선택`}

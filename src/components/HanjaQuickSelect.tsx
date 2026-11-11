@@ -2,7 +2,7 @@
 
 import { NameHanjaModel } from '@/types';
 import { getHanjaOptions } from '@/data/hanjaDB';
-import { STATUS_LABEL, UNASSIGNED_MARK } from '@/lib/hanjaModel';
+import { charStatusLabel, UNASSIGNED_MARK } from '@/lib/hanjaModel';
 
 export const NO_HANJA_CANDIDATES = '현재 제공되는 한자 후보가 없습니다.';
 const NONE_SELECTABLE = '이 이름의 글자에는 현재 제공되는 한자 후보가 없어 한자를 선택할 수 없습니다.';
@@ -36,7 +36,7 @@ const STATUS_CHIP: Record<string, string> = {
  * canonical Hanja model, which the page updates only after a verified save.
  * Surname Hanja are not selectable and are not listed.
  */
-export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled = false, buttonRef }: {
+export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled = false, buttonRef, searchable = false }: {
   model: NameHanjaModel;
   onOpen: (index: number, trigger: HTMLElement) => void;
   /** id of the card's save-feedback text, read with the buttons (U4). */
@@ -45,6 +45,8 @@ export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled 
   disabled?: boolean;
   /** R3.2: exposes each syllable's button (focus destination after a legacy adoption). */
   buttonRef?: (index: number, el: HTMLButtonElement | null) => void;
+  /** R4 audit S1: a syllable without legacy candidates can still open the picker's search. */
+  searchable?: boolean;
 }) {
   const chars = model.given.map(c => ({ c, available: getHanjaOptions(c.hangul).length > 0 }));
   const anyAvailable = chars.some(x => x.available);
@@ -64,7 +66,7 @@ export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled 
                 ref={buttonRef ? el => { buttonRef(i, el); } : undefined}
                 data-hanja-quick={i}
                 data-quick-status={c.status}
-                aria-label={`'${c.hangul}' 한자 선택 (현재: ${c.hanja ? `${c.hanja} ${STATUS_LABEL[c.status]}` : '미지정'})`}
+                aria-label={`'${c.hangul}' 한자 선택 (현재: ${c.hanja ? `${c.hanja} ${charStatusLabel(c)}` : '미지정'})`}
                 aria-describedby={describedBy}
                 // aria-disabled (not the disabled attribute): the button keeps focus, so the
                 // picker can return focus to it while a save is running (R3.2)
@@ -74,7 +76,7 @@ export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled 
               >
                 <span className="text-sm font-bold text-slate-800">{c.hangul}</span>
                 <span className={`text-lg font-black leading-none ${c.hanja ? 'text-slate-900' : 'text-slate-300'}`}>{c.hanja ?? UNASSIGNED_MARK}</span>
-                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIP[c.status]}`}>{STATUS_LABEL[c.status]}</span>
+                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIP[c.status]}`}>{charStatusLabel(c)}</span>
               </button>
             ) : (
               <div data-hanja-quick-unavailable={i} data-syllable={c.hangul} data-quick-status={c.status}
@@ -82,8 +84,17 @@ export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled 
                 <span className="text-sm font-bold text-slate-500">{c.hangul}</span>
                 {/* the canonical value is shown as it is (suggested ≠ unassigned) */}
                 <span className={`text-lg font-black leading-none ${c.hanja ? 'text-slate-700' : 'text-slate-300'}`}>{c.hanja ?? UNASSIGNED_MARK}</span>
-                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIP[c.status]}`}>{STATUS_LABEL[c.status]}</span>
+                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIP[c.status]}`}>{charStatusLabel(c)}</span>
                 <span className="text-[10px] text-slate-500">{NO_HANJA_CANDIDATES}</span>
+                {searchable && (
+                  <button type="button" data-hanja-search={i}
+                    aria-label={`'${c.hangul}' 한자 검색 (기존 목록에 후보 없음, 현재: ${c.hanja ? `${c.hanja} ${charStatusLabel(c)}` : '미지정'})`}
+                    aria-describedby={describedBy} aria-disabled={disabled || undefined}
+                    onClick={e => { if (!disabled) onOpen(i, e.currentTarget); }}
+                    className="rounded-md border border-indigo-200 bg-white px-2 py-1 text-[10px] font-bold text-indigo-700 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+                    한자 검색
+                  </button>
+                )}
               </div>
             )}
           </li>

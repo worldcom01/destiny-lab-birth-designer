@@ -1,0 +1,61 @@
+// R4.1 source registry. Every record of the Hanja dictionary cites one of these.
+// Research notes and licensing analysis: docs/hanja-dictionary.md.
+import type { SourceRef } from '@/lib/hanjaDictionary/types';
+
+export const HANJA_DICTIONARY_SOURCES: SourceRef[] = [
+  {
+    id: 'unihan',
+    publisher: 'Unicode, Inc.',
+    title: 'Unicode Han Database (Unihan), UAX #38',
+    locator: 'https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip (sha256 4c93ea9c1f636451729a840978f1667a53886af37ba854fdcce109721c63d43e)',
+    version: 'Unicode 18.0.0 (Unihan files dated 2026-07-31; UAX #38 revision 41)',
+    retrieved: '2026-11-11',
+    license: 'Unicode License v3 (notice: src/data/hanjaDictionary/UNICODE-LICENSE.txt)',
+    licenseStatus: 'cleared',
+    kind: 'standard-data',
+  },
+  {
+    id: 'court-rule-3151-appendix1',
+    publisher: '대법원 (법원행정처 가족관계등록과), 국가법령정보센터 게시',
+    title: '가족관계의 등록 등에 관한 규칙 [별표 1] 인명용추가한자표 (개정 2024. 5. 30.)',
+    locator: 'https://www.law.go.kr/BYL/grtFile/law0105692024053003151KC_000100E.hwpx (sha256 66e8005ad0843f92bfae5854b9403611799e3c543518d950a0c2a77395c3daed)',
+    version: '대법원규칙 제3151호, 2024. 5. 30. 일부개정, 시행 2024. 6. 11.; unchanged by 제3220호 (2025. 6. 26., 시행 2025. 7. 19.)',
+    retrieved: '2026-11-11',
+    license: 'court rule text, not a protected work (저작권법 제7조); file not redistributed here',
+    licenseStatus: 'cleared',
+    kind: 'official-legal',
+  },
+  {
+    id: 'court-rule-3151-appendix2',
+    publisher: '대법원 (법원행정처 가족관계등록과), 국가법령정보센터 게시',
+    title: '가족관계의 등록 등에 관한 규칙 [별표 2] 인명용한자허용자체표 (개정 2024. 5. 30.)',
+    locator: 'https://www.law.go.kr/LSW/flDownload.do?bylClsCd=110201&flSeq=153523507 (sha256 5ea97665c33910daf6b6459624c33ec4b1ca30878ccec16a9bd49862232f22df)',
+    version: '대법원규칙 제3151호, 2024. 5. 30. 일부개정, 시행 2024. 6. 11.; unchanged by 제3220호',
+    retrieved: '2026-11-11',
+    license: 'court rule text, not a protected work (저작권법 제7조); file not redistributed here',
+    licenseStatus: 'cleared',
+    kind: 'official-legal',
+  },
+  {
+    id: 'efamily-lookup',
+    publisher: '대법원 전자가족관계등록시스템',
+    title: '인명용 한자 조회 (manual, per character)',
+    locator: 'https://efamily.scourt.go.kr/ (robots.txt: Disallow / — automated access not permitted; human browser lookups only)',
+    version: 'live service; each review records its lookup date',
+    retrieved: '2026-11-11',
+    license: 'official public information; individual facts recorded by a human reviewer, no content copied',
+    licenseStatus: 'cleared',
+    kind: 'official-legal',
+  },
+  {
+    id: 'legacy-hanjadb',
+    publisher: 'this application',
+    title: 'src/data/hanjaDB.ts (HANJA_DB, pre-R4)',
+    locator: 'src/data/hanjaDB.ts @ 5599b6ae19af35bd4dd0a5e6aaa3f62d698d85b9',
+    version: 'R3.2 release',
+    retrieved: '2026-11-11',
+    license: 'project-internal',
+    licenseStatus: 'cleared',
+    kind: 'legacy-app',
+  },
+];

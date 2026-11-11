@@ -7,7 +7,7 @@ import { getDisplayHour, getHourLabel, getSijinLabel } from '@/lib/saju';
 import { formatTimeSlot } from '@/lib/schedule';
 import { buildSajuReading } from '@/lib/sajuReading';
 import { getSuriOhaeng } from '@/data/hanjaDB';
-import { STATUS_LABEL, UNASSIGNED_MARK, formatFullHanja, hanjaStatusLabel, totalStrokes } from '@/lib/hanjaModel';
+import { LEGACY_GLOSS_LABEL, charStatusLabel, UNASSIGNED_MARK, formatFullHanja, hanjaStatusLabel, totalStrokes } from '@/lib/hanjaModel';
 
 interface Props {
   result: AnalysisResult;
@@ -59,10 +59,10 @@ function HanjaCharCard({ caption, char }: { caption: string; char: NameCharHanja
       </div>
       <div style={{ fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>{caption}</div>
       <div style={{ fontSize: '9px', fontWeight: 700, color: char.status === 'confirmed' ? '#4F46E5' : '#94A3B8', marginBottom: '4px' }}>
-        {STATUS_LABEL[char.status]}
+        {charStatusLabel(char)}
       </div>
       <div style={{ fontSize: '10px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>
-        {char.hanja ? (char.meaning ?? '뜻 정보 없음') : '한자 미지정'}
+        {char.hanja ? (char.meaning ? `${char.meaning} (${LEGACY_GLOSS_LABEL})` : '확인된 뜻 없음') : '한자 미지정'}
       </div>
       {char.hanja && (
         <div style={{ fontSize: '10px', color: '#94A3B8' }}>{char.strokes != null ? `${char.strokes}획` : '획수 미확인'}</div>

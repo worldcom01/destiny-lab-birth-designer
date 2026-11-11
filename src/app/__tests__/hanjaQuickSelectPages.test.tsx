@@ -153,7 +153,7 @@ describe('missing Hanja data (actual dataset)', () => {
     for (const s of ['시', '정', '훈']) expect(getHanjaOptions(s)).toHaveLength(0);
   });
 
-  it('full, partial and zero coverage are shown honestly; no button without candidates', async () => {
+  it('full, partial and zero coverage are shown honestly; no SELECTION button without candidates (R4: search entry only)', async () => {
     localStorage.setItem('dlbd_mode_c', JSON.stringify(C_INPUT));
     render(<ModeCResults />);
     const full = quick(await cardOf('김민서'));
@@ -161,7 +161,9 @@ describe('missing Hanja data (actual dataset)', () => {
     expect(within(full).queryByText(NO_HANJA_CANDIDATES)).toBeNull();
 
     const partial = quick(await cardOf('강시우'));
-    expect(within(partial).getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual([expect.stringMatching(/^'우' 한자 선택/)]);
+    expect(within(partial).getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual([
+      expect.stringMatching(/^'시' 한자 검색 \(기존 목록에 후보 없음/), expect.stringMatching(/^'우' 한자 선택/),
+    ]);
     const si = partial.querySelector('[data-hanja-quick-unavailable="0"]')!;
     expect(si.textContent).toContain('시');
     expect(si.textContent).toContain(NO_HANJA_CANDIDATES);
@@ -170,7 +172,11 @@ describe('missing Hanja data (actual dataset)', () => {
 
     const noneCard = await cardOf('김정훈');
     const none = quick(noneCard);
-    expect(within(none).queryAllByRole('button')).toHaveLength(0);
+    // no candidate-selection button; one search entry per syllable (R4 audit S1)
+    expect(within(none).queryAllByRole('button', { name: /한자 선택/ })).toHaveLength(0);
+    expect(within(none).getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual([
+      expect.stringMatching(/^'정' 한자 검색 \(기존 목록에 후보 없음/), expect.stringMatching(/^'훈' 한자 검색 \(기존 목록에 후보 없음/),
+    ]);
     expect(within(none).getAllByText(NO_HANJA_CANDIDATES)).toHaveLength(2);
     const jh = analyzeModeCNames({ ...C_INPUT, names: ['김정훈'] }).results[0];
     expect(within(none).getByTestId('hanja-quick-none').textContent).toBe(noCandidatesNote(jh.name.hanja));

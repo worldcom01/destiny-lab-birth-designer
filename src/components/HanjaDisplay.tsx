@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { NameCharHanja, NameHanjaModel, OHAENG_COLORS } from '@/types';
 import { getHanjaOptions, getSuriOhaeng } from '@/data/hanjaDB';
-import { STATUS_LABEL, UNASSIGNED_MARK, formatFullHanja, totalStrokes } from '@/lib/hanjaModel';
+import { charStatusLabel, LEGACY_GLOSS_LABEL, UNASSIGNED_MARK, formatFullHanja, totalStrokes } from '@/lib/hanjaModel';
 
 interface Props {
   model: NameHanjaModel;
@@ -59,10 +59,10 @@ export function HanjaCharCard({
         {char.hanja ?? UNASSIGNED_MARK}
       </span>
       <span className={`order-3 inline-block text-[9px] px-1.5 py-0.5 rounded-full font-bold mt-1 ${STATUS_STYLE[char.status]}`}>
-        {STATUS_LABEL[char.status]}
+        {charStatusLabel(char)}
       </span>
       <span className="order-4 block text-[10px] text-slate-500 mt-0.5 leading-tight">
-        {char.hanja ? (char.meaning ?? '뜻 정보 없음') : '한자를 선택하지 않았습니다'}
+        {char.hanja ? (char.meaning ? `${char.meaning} (${LEGACY_GLOSS_LABEL})` : '확인된 뜻 없음') : '한자를 선택하지 않았습니다'}
       </span>
       {char.hanja && (
         <span className="order-5 block text-[10px] text-slate-400 mt-1">{char.strokes != null ? `${char.strokes}획` : '획수 미확인'}</span>

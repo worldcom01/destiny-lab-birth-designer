@@ -106,6 +106,8 @@ export interface NameCharHanja {
   strokes: number | null;       // strokes of exactly this hanja (null if unknown)
   jaWonOhaeng: OhaengType | null;
   inDatabase: boolean;          // exact hanja found in the bundled hanja tables
+  /** R4.1A: a stored character the app cannot verify for this syllable (shown, never verified) */
+  readingUnverified?: true;
 }
 
 export interface NameHanjaModel {

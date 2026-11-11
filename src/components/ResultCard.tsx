@@ -6,6 +6,7 @@ import { AnalysisResult, GRADE_CONFIG, OHAENG_COLORS, IMAGE_LABELS } from '@/typ
 import { getDisplayHour, getHourLabel, getSijinLabel } from '@/lib/saju';
 import { formatKoreanDate } from '@/lib/analysis';
 import { formatTimeSlot } from '@/lib/schedule';
+import { LEGACY_GLOSS_LABEL } from '@/lib/hanjaModel';
 import { buildSajuReading } from '@/lib/sajuReading';
 import SajuReadingBlock from './SajuReadingBlock';
 import OhaengChart from './OhaengChart';
@@ -59,8 +60,11 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
               {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)}
               <span className="text-xs text-slate-400 ml-2">{result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getSijinLabel(result.hour)}</span>
             </p>
-            {/* 한자 의미 */}
-            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+            {/* 한자 의미: pre-R4 glosses without a documented source (R4 audit P1) */}
+            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed" data-testid="card-meanings">
+              {result.name.hanja.given.some(c => c.hanja && c.meaning) && (
+                <span className="mr-1 rounded bg-slate-100 px-1 text-[10px] text-slate-500">뜻 {LEGACY_GLOSS_LABEL}</span>
+              )}
               {result.nameAnalysis.meanings.map((m, i) => (
                 <span key={i}>{m.split(' — ')[1] ?? m}{i < result.nameAnalysis.meanings.length - 1 ? ' · ' : ''}</span>
               ))}

@@ -1,0 +1,3468 @@
+{
+ "unihan": {
+  "version": "18.0.0",
+  "date": "2026-07-31 00:00:00 GMT",
+  "entriesWithKoreanReading": 8525
+ },
+ "summary": {
+  "hanjaDb": {
+   "syllables": 48,
+   "records": 118,
+   "uniqueCharacters": 118,
+   "duplicateWithinSyllable": [],
+   "sameCharacterUnderSeveralSyllables": [],
+   "meaningsPerRecord": 1,
+   "provenanceDocumented": 0,
+   "notInUnihan": 0,
+   "readingNotListedInUnihan": [
+    "빛/光",
+    "빛/炳",
+    "린/琳"
+   ],
+   "readingWithoutNameIndicator": [
+    "율/律",
+    "율/栗",
+    "연/蓮",
+    "예/禮",
+    "나/羅"
+   ],
+   "strokesDifferFromUnihanTotal": [
+    {
+     "hanja": "珉",
+     "legacy": 10,
+     "unihanTotal": 9
+    },
+    {
+     "hanja": "道",
+     "legacy": 12,
+     "unihanTotal": 13
+    },
+    {
+     "hanja": "爀",
+     "legacy": 17,
+     "unihanTotal": 18
+    },
+    {
+     "hanja": "成",
+     "legacy": 6,
+     "unihanTotal": 7
+    },
+    {
+     "hanja": "健",
+     "legacy": 11,
+     "unihanTotal": 10
+    },
+    {
+     "hanja": "芝",
+     "legacy": 7,
+     "unihanTotal": 6
+    },
+    {
+     "hanja": "祥",
+     "legacy": 10,
+     "unihanTotal": 11
+    },
+    {
+     "hanja": "蓮",
+     "legacy": 15,
+     "unihanTotal": 13
+    },
+    {
+     "hanja": "藝",
+     "legacy": 19,
+     "unihanTotal": 18
+    },
+    {
+     "hanja": "熙",
+     "legacy": 13,
+     "unihanTotal": 14
+    },
+    {
+     "hanja": "娜",
+     "legacy": 10,
+     "unihanTotal": 9
+    },
+    {
+     "hanja": "彆",
+     "legacy": 18,
+     "unihanTotal": 14
+    }
+   ]
+  },
+  "surnameDb": {
+   "records": 29,
+   "notInUnihan": 0
+  },
+  "nameCharProfiles": {
+   "records": 62,
+   "hanjaNotInHanjaDb": 16
+  },
+  "strokeDiffCount": 12,
+  "hyeon": [
+   {
+    "table": "HANJA_DB",
+    "hangul": "현",
+    "hanja": "鉉",
+    "codePoint": "U+9249",
+    "legacyMeaning": "쇠줄 현",
+    "legacyFullMeaning": "굳건하고 의연한 성품",
+    "legacyStrokes": 13,
+    "radical": "金",
+    "unihan": {
+     "readings": [
+      "현:0N"
+     ],
+     "totalStrokes": 13,
+     "definition": "device for carrying a tripod",
+     "koreanNameList": [
+      "2015"
+     ],
+     "readingListed": true,
+     "readingNameIndicator": true,
+     "strokesEqualLegacy": true
+    }
+   }
+  ]
+ },
+ "hanjaDb": [
+  {
+   "table": "HANJA_DB",
+   "hangul": "준",
+   "hanja": "俊",
+   "codePoint": "U+4FCA",
+   "legacyMeaning": "뛰어날 준",
+   "legacyFullMeaning": "재능이 뛰어나고 빼어난 인물",
+   "legacyStrokes": 9,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "준:0E"
+    ],
+    "totalStrokes": 9,
+    "definition": "talented, capable; handsome",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "준",
+   "hanja": "峻",
+   "codePoint": "U+5CFB",
+   "legacyMeaning": "높을 준",
+   "legacyFullMeaning": "산처럼 높고 굳건한 기상",
+   "legacyStrokes": 10,
+   "radical": "山",
+   "unihan": {
+    "readings": [
+     "준:0N"
+    ],
+    "totalStrokes": 10,
+    "definition": "high, steep, towering; stern",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "준",
+   "hanja": "準",
+   "codePoint": "U+6E96",
+   "legacyMeaning": "기준 준",
+   "legacyFullMeaning": "올바른 기준과 원칙을 세움",
+   "legacyStrokes": 13,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "준:0E"
+    ],
+    "totalStrokes": 13,
+    "definition": "rule, guideline, standard",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "준",
+   "hanja": "駿",
+   "codePoint": "U+99FF",
+   "legacyMeaning": "준마 준",
+   "legacyFullMeaning": "빠르고 뛰어난 준마처럼",
+   "legacyStrokes": 17,
+   "radical": "馬",
+   "unihan": {
+    "readings": [
+     "준:0N"
+    ],
+    "totalStrokes": 17,
+    "definition": "excellent horse, noble steed",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "민",
+   "hanja": "珉",
+   "codePoint": "U+73C9",
+   "legacyMeaning": "옥돌 민",
+   "legacyFullMeaning": "옥처럼 고귀하고 맑은 품성",
+   "legacyStrokes": 10,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "민:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "stone resembling jade",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "민",
+   "hanja": "敏",
+   "codePoint": "U+654F",
+   "legacyMeaning": "민첩할 민",
+   "legacyFullMeaning": "총명하고 민첩한 지혜",
+   "legacyStrokes": 11,
+   "radical": "攴",
+   "unihan": {
+    "readings": [
+     "민:0E"
+    ],
+    "totalStrokes": 11,
+    "definition": "fast, quick, clever, smart",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "민",
+   "hanja": "旼",
+   "codePoint": "U+65FC",
+   "legacyMeaning": "부드러울 민",
+   "legacyFullMeaning": "온화하고 부드러운 품성",
+   "legacyStrokes": 8,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "민:0N"
+    ],
+    "totalStrokes": 8,
+    "definition": "gentle and affable",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "민",
+   "hanja": "旻",
+   "codePoint": "U+65FB",
+   "legacyMeaning": "하늘 민",
+   "legacyFullMeaning": "드넓은 하늘처럼 큰 기상",
+   "legacyStrokes": 8,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "민:0N"
+    ],
+    "totalStrokes": 8,
+    "definition": "heaven",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "민",
+   "hanja": "民",
+   "codePoint": "U+6C11",
+   "legacyMeaning": "백성 민",
+   "legacyFullMeaning": "사람들과 함께하는 넓은 마음",
+   "legacyStrokes": 5,
+   "radical": "氏",
+   "unihan": {
+    "readings": [
+     "민:0E"
+    ],
+    "totalStrokes": 5,
+    "definition": "people, subjects, citizens",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "서",
+   "hanja": "瑞",
+   "codePoint": "U+745E",
+   "legacyMeaning": "상서로울 서",
+   "legacyFullMeaning": "상서로운 기운이 가득함",
+   "legacyStrokes": 13,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "서:0N"
+    ],
+    "totalStrokes": 13,
+    "definition": "felicitous omen; auspicious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "서",
+   "hanja": "書",
+   "codePoint": "U+66F8",
+   "legacyMeaning": "글 서",
+   "legacyFullMeaning": "학문과 지식을 사랑하는",
+   "legacyStrokes": 10,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "서:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "book, letter, document; writings",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "서",
+   "hanja": "緖",
+   "codePoint": "U+7DD6",
+   "legacyMeaning": "실마리 서",
+   "legacyFullMeaning": "모든 일의 실마리를 찾는",
+   "legacyStrokes": 15,
+   "radical": "糸",
+   "unihan": {
+    "readings": [
+     "서:0E"
+    ],
+    "totalStrokes": 15,
+    "definition": "end of thread; thread, clue",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "현",
+   "hanja": "賢",
+   "codePoint": "U+8CE2",
+   "legacyMeaning": "어질 현",
+   "legacyFullMeaning": "덕과 지혜를 겸비한 인물",
+   "legacyStrokes": 15,
+   "radical": "貝",
+   "unihan": {
+    "readings": [
+     "현:0E"
+    ],
+    "totalStrokes": 15,
+    "definition": "virtuous, worthy, good; able",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "현",
+   "hanja": "炫",
+   "codePoint": "U+70AB",
+   "legacyMeaning": "빛날 현",
+   "legacyFullMeaning": "불꽃처럼 빛나는 재능",
+   "legacyStrokes": 9,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "현:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "shine, glitter; show off, flaunt",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "현",
+   "hanja": "玄",
+   "codePoint": "U+7384",
+   "legacyMeaning": "검을 현",
+   "legacyFullMeaning": "깊고 오묘한 지혜",
+   "legacyStrokes": 5,
+   "radical": "玄",
+   "unihan": {
+    "readings": [
+     "현:0E"
+    ],
+    "totalStrokes": 5,
+    "definition": "deep, profound, abstruse; Kangxi radical 95",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "현",
+   "hanja": "鉉",
+   "codePoint": "U+9249",
+   "legacyMeaning": "쇠줄 현",
+   "legacyFullMeaning": "굳건하고 의연한 성품",
+   "legacyStrokes": 13,
+   "radical": "金",
+   "unihan": {
+    "readings": [
+     "현:0N"
+    ],
+    "totalStrokes": 13,
+    "definition": "device for carrying a tripod",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "우",
+   "hanja": "宇",
+   "codePoint": "U+5B87",
+   "legacyMeaning": "집 우",
+   "legacyFullMeaning": "온 세상을 품는 넓은 기상",
+   "legacyStrokes": 6,
+   "radical": "宀",
+   "unihan": {
+    "readings": [
+     "우:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "house; building, structure; eaves",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "우",
+   "hanja": "佑",
+   "codePoint": "U+4F51",
+   "legacyMeaning": "도울 우",
+   "legacyFullMeaning": "남을 돕고 베푸는 마음",
+   "legacyStrokes": 7,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "우:0N"
+    ],
+    "totalStrokes": 7,
+    "definition": "help, protect, bless",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "우",
+   "hanja": "羽",
+   "codePoint": "U+7FBD",
+   "legacyMeaning": "깃 우",
+   "legacyFullMeaning": "높이 날아오르는 기상",
+   "legacyStrokes": 6,
+   "radical": "羽",
+   "unihan": {
+    "readings": [
+     "우:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "feather, plume; wings; Kangxi radical 124",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "도",
+   "hanja": "道",
+   "codePoint": "U+9053",
+   "legacyMeaning": "길 도",
+   "legacyFullMeaning": "올바른 길을 걷는 삶",
+   "legacyStrokes": 12,
+   "radical": "辵",
+   "unihan": {
+    "readings": [
+     "도:0E"
+    ],
+    "totalStrokes": 13,
+    "definition": "path, road, street; method, way",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "도",
+   "hanja": "導",
+   "codePoint": "U+5C0E",
+   "legacyMeaning": "이끌 도",
+   "legacyFullMeaning": "많은 이를 이끄는 리더",
+   "legacyStrokes": 15,
+   "radical": "寸",
+   "unihan": {
+    "readings": [
+     "도:0E"
+    ],
+    "totalStrokes": 15,
+    "definition": "direct, guide, lead, conduct",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "진",
+   "hanja": "眞",
+   "codePoint": "U+771E",
+   "legacyMeaning": "참 진",
+   "legacyFullMeaning": "진실되고 거짓없는 성품",
+   "legacyStrokes": 10,
+   "radical": "目",
+   "unihan": {
+    "readings": [
+     "진:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "real, actual, true, genuine",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "진",
+   "hanja": "珍",
+   "codePoint": "U+73CD",
+   "legacyMeaning": "보배 진",
+   "legacyFullMeaning": "귀하고 소중한 존재",
+   "legacyStrokes": 9,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "진:0E"
+    ],
+    "totalStrokes": 9,
+    "definition": "precious, valuable, rare",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "진",
+   "hanja": "振",
+   "codePoint": "U+632F",
+   "legacyMeaning": "떨칠 진",
+   "legacyFullMeaning": "기운차게 기상을 떨침",
+   "legacyStrokes": 10,
+   "radical": "手",
+   "unihan": {
+    "readings": [
+     "진:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "raise, excite, arouse action",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "진",
+   "hanja": "晉",
+   "codePoint": "U+6649",
+   "legacyMeaning": "나아갈 진",
+   "legacyFullMeaning": "발전하고 앞으로 나아감",
+   "legacyStrokes": 10,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "진:0N"
+    ],
+    "totalStrokes": 10,
+    "definition": "advance, increase; promote; hexagram ䷢",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "재",
+   "hanja": "才",
+   "codePoint": "U+624D",
+   "legacyMeaning": "재주 재",
+   "legacyFullMeaning": "타고난 재능과 능력",
+   "legacyStrokes": 3,
+   "radical": "手",
+   "unihan": {
+    "readings": [
+     "재:0E"
+    ],
+    "totalStrokes": 3,
+    "definition": "talent, ability; just, only",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "재",
+   "hanja": "宰",
+   "codePoint": "U+5BB0",
+   "legacyMeaning": "재상 재",
+   "legacyFullMeaning": "큰 뜻을 품은 지도자",
+   "legacyStrokes": 10,
+   "radical": "宀",
+   "unihan": {
+    "readings": [
+     "재:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "to slaughter; to rule",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "재",
+   "hanja": "在",
+   "codePoint": "U+5728",
+   "legacyMeaning": "있을 재",
+   "legacyFullMeaning": "존재감있는 당당한 인물",
+   "legacyStrokes": 6,
+   "radical": "土",
+   "unihan": {
+    "readings": [
+     "재:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "be at, in, on; consist in, rest",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "혁",
+   "hanja": "赫",
+   "codePoint": "U+8D6B",
+   "legacyMeaning": "빛날 혁",
+   "legacyFullMeaning": "찬란히 빛나는 명성",
+   "legacyStrokes": 14,
+   "radical": "赤",
+   "unihan": {
+    "readings": [
+     "혁:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "bright, radiant, glowing",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "혁",
+   "hanja": "爀",
+   "codePoint": "U+7200",
+   "legacyMeaning": "빛날 혁",
+   "legacyFullMeaning": "불처럼 타오르는 열정",
+   "legacyStrokes": 17,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "혁:0N"
+    ],
+    "totalStrokes": 18,
+    "definition": null,
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "성",
+   "hanja": "誠",
+   "codePoint": "U+8AA0",
+   "legacyMeaning": "성실할 성",
+   "legacyFullMeaning": "진실하고 성실한 삶의 자세",
+   "legacyStrokes": 13,
+   "radical": "言",
+   "unihan": {
+    "readings": [
+     "성:0EN"
+    ],
+    "totalStrokes": 13,
+    "definition": "sincere, honest; true, real",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "성",
+   "hanja": "聖",
+   "codePoint": "U+8056",
+   "legacyMeaning": "성인 성",
+   "legacyFullMeaning": "높은 덕성을 지닌 인물",
+   "legacyStrokes": 13,
+   "radical": "耳",
+   "unihan": {
+    "readings": [
+     "성:0EN"
+    ],
+    "totalStrokes": 13,
+    "definition": "holy, sacred; sage, saint",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "성",
+   "hanja": "成",
+   "codePoint": "U+6210",
+   "legacyMeaning": "이룰 성",
+   "legacyFullMeaning": "모든 일을 이루어내는",
+   "legacyStrokes": 6,
+   "radical": "戈",
+   "unihan": {
+    "readings": [
+     "성:0EN"
+    ],
+    "totalStrokes": 7,
+    "definition": "completed, finished, fixed",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "호",
+   "hanja": "昊",
+   "codePoint": "U+660A",
+   "legacyMeaning": "넓은 하늘 호",
+   "legacyFullMeaning": "하늘처럼 드넓은 기상",
+   "legacyStrokes": 8,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "호:0N"
+    ],
+    "totalStrokes": 8,
+    "definition": "summer time; sky; heaven",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "호",
+   "hanja": "浩",
+   "codePoint": "U+6D69",
+   "legacyMeaning": "넓을 호",
+   "legacyFullMeaning": "물처럼 넓고 깊은 마음",
+   "legacyStrokes": 10,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "호:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "great, numerous, vast, abundant",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "찬",
+   "hanja": "燦",
+   "codePoint": "U+71E6",
+   "legacyMeaning": "빛날 찬",
+   "legacyFullMeaning": "찬란히 빛나는 성품",
+   "legacyStrokes": 17,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "찬:0N"
+    ],
+    "totalStrokes": 17,
+    "definition": "vivid, illuminating; bright",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "찬",
+   "hanja": "瓚",
+   "codePoint": "U+74DA",
+   "legacyMeaning": "옥잔 찬",
+   "legacyFullMeaning": "고귀하고 빛나는 가치",
+   "legacyStrokes": 23,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "찬:0N"
+    ],
+    "totalStrokes": 23,
+    "definition": "ceremonial libation cup",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "건",
+   "hanja": "健",
+   "codePoint": "U+5065",
+   "legacyMeaning": "건강할 건",
+   "legacyFullMeaning": "건강하고 씩씩한 기상",
+   "legacyStrokes": 11,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "건:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "strong, robust, healthy; strength",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "건",
+   "hanja": "乾",
+   "codePoint": "U+4E7E",
+   "legacyMeaning": "하늘 건",
+   "legacyFullMeaning": "하늘처럼 강건한 기상",
+   "legacyStrokes": 11,
+   "radical": "乙",
+   "unihan": {
+    "readings": [
+     "건:0E"
+    ],
+    "totalStrokes": 11,
+    "definition": "dry; warming principle of the sun, penetrating and fertilizing, heavenly generative principle (male); trigram ☰; hexagram ䷀",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "승",
+   "hanja": "昇",
+   "codePoint": "U+6607",
+   "legacyMeaning": "오를 승",
+   "legacyFullMeaning": "높이 오르는 기운",
+   "legacyStrokes": 8,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "승:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "rise, ascent; peaceful; peace",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "승",
+   "hanja": "承",
+   "codePoint": "U+627F",
+   "legacyMeaning": "이을 승",
+   "legacyFullMeaning": "전통과 뜻을 이어받음",
+   "legacyStrokes": 8,
+   "radical": "手",
+   "unihan": {
+    "readings": [
+     "승:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "inherit, receive; succeed",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "승",
+   "hanja": "勝",
+   "codePoint": "U+52DD",
+   "legacyMeaning": "이길 승",
+   "legacyFullMeaning": "뛰어난 능력으로 성취",
+   "legacyStrokes": 12,
+   "radical": "力",
+   "unihan": {
+    "readings": [
+     "승:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "victory; excel, be better than",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "태",
+   "hanja": "泰",
+   "codePoint": "U+6CF0",
+   "legacyMeaning": "클 태",
+   "legacyFullMeaning": "물처럼 넉넉하고 큰 인물",
+   "legacyStrokes": 10,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "태:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "great, exalted, superior; big; hexagram ䷊",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "태",
+   "hanja": "太",
+   "codePoint": "U+592A",
+   "legacyMeaning": "클 태",
+   "legacyFullMeaning": "크고 당당한 기상",
+   "legacyStrokes": 4,
+   "radical": "大",
+   "unihan": {
+    "readings": [
+     "태:0E"
+    ],
+    "totalStrokes": 4,
+    "definition": "very, too, much; big; extreme",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "원",
+   "hanja": "源",
+   "codePoint": "U+6E90",
+   "legacyMeaning": "근원 원",
+   "legacyFullMeaning": "모든 것의 근원이 되는 힘",
+   "legacyStrokes": 13,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "원:0E"
+    ],
+    "totalStrokes": 13,
+    "definition": "spring; source, head; surname",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "원",
+   "hanja": "元",
+   "codePoint": "U+5143",
+   "legacyMeaning": "으뜸 원",
+   "legacyFullMeaning": "으뜸가는 능력과 품성",
+   "legacyStrokes": 4,
+   "radical": "儿",
+   "unihan": {
+    "readings": [
+     "원:0E"
+    ],
+    "totalStrokes": 4,
+    "definition": "first; dollar; origin; head",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "원",
+   "hanja": "遠",
+   "codePoint": "U+9060",
+   "legacyMeaning": "멀 원",
+   "legacyFullMeaning": "원대한 꿈을 향해 나아감",
+   "legacyStrokes": 13,
+   "radical": "辵",
+   "unihan": {
+    "readings": [
+     "원:0E"
+    ],
+    "totalStrokes": 13,
+    "definition": "distant, remote, far; profound",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "선",
+   "hanja": "善",
+   "codePoint": "U+5584",
+   "legacyMeaning": "착할 선",
+   "legacyFullMeaning": "선하고 착한 마음씨",
+   "legacyStrokes": 12,
+   "radical": "口",
+   "unihan": {
+    "readings": [
+     "선:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "good, virtuous, charitable, kind",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "선",
+   "hanja": "宣",
+   "codePoint": "U+5BA3",
+   "legacyMeaning": "펼칠 선",
+   "legacyFullMeaning": "뜻을 널리 펼치는 인물",
+   "legacyStrokes": 9,
+   "radical": "宀",
+   "unihan": {
+    "readings": [
+     "선:0E"
+    ],
+    "totalStrokes": 9,
+    "definition": "declare, announce, proclaim",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "인",
+   "hanja": "仁",
+   "codePoint": "U+4EC1",
+   "legacyMeaning": "어질 인",
+   "legacyFullMeaning": "어진 덕을 갖춘 인물",
+   "legacyStrokes": 4,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "인:0E"
+    ],
+    "totalStrokes": 4,
+    "definition": "humaneness, benevolence, kindness",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "인",
+   "hanja": "印",
+   "codePoint": "U+5370",
+   "legacyMeaning": "도장 인",
+   "legacyFullMeaning": "확실하고 분명한 존재감",
+   "legacyStrokes": 6,
+   "radical": "卩",
+   "unihan": {
+    "readings": [
+     "인:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "print, seal, stamp, chop, mark",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "석",
+   "hanja": "碩",
+   "codePoint": "U+78A9",
+   "legacyMeaning": "클 석",
+   "legacyFullMeaning": "크고 훌륭한 학자의 기질",
+   "legacyStrokes": 14,
+   "radical": "石",
+   "unihan": {
+    "readings": [
+     "석:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "great, eminent; large, big",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "석",
+   "hanja": "錫",
+   "codePoint": "U+932B",
+   "legacyMeaning": "주석 석",
+   "legacyFullMeaning": "귀하고 쓸모있는 인재",
+   "legacyStrokes": 16,
+   "radical": "金",
+   "unihan": {
+    "readings": [
+     "석:0N"
+    ],
+    "totalStrokes": 16,
+    "definition": "tin (element 50, Sn); bestow, confer",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "석",
+   "hanja": "晳",
+   "codePoint": "U+6673",
+   "legacyMeaning": "밝을 석",
+   "legacyFullMeaning": "총명하고 밝은 지혜",
+   "legacyStrokes": 12,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "석:0N"
+    ],
+    "totalStrokes": 12,
+    "definition": "fair; white; clear; discriminate",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "창",
+   "hanja": "昌",
+   "codePoint": "U+660C",
+   "legacyMeaning": "창성할 창",
+   "legacyFullMeaning": "번창하고 성대한 기운",
+   "legacyStrokes": 8,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "창:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "light of sun; good, proper",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "창",
+   "hanja": "彰",
+   "codePoint": "U+5F70",
+   "legacyMeaning": "나타날 창",
+   "legacyFullMeaning": "재능이 드러나는 인물",
+   "legacyStrokes": 14,
+   "radical": "彡",
+   "unihan": {
+    "readings": [
+     "창:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "clear, manifest, obvious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "윤",
+   "hanja": "潤",
+   "codePoint": "U+6F64",
+   "legacyMeaning": "윤택할 윤",
+   "legacyFullMeaning": "넉넉하고 풍요로운 삶",
+   "legacyStrokes": 15,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "윤:0E"
+    ],
+    "totalStrokes": 15,
+    "definition": "soft, moist; sleek; freshen",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "윤",
+   "hanja": "允",
+   "codePoint": "U+5141",
+   "legacyMeaning": "진실 윤",
+   "legacyFullMeaning": "진실되고 믿음직한 성품",
+   "legacyStrokes": 4,
+   "radical": "儿",
+   "unihan": {
+    "readings": [
+     "윤:0N"
+    ],
+    "totalStrokes": 4,
+    "definition": "to grant, to allow, to consent",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "규",
+   "hanja": "奎",
+   "codePoint": "U+594E",
+   "legacyMeaning": "별 규",
+   "legacyFullMeaning": "빛나는 별자리같은 존재",
+   "legacyStrokes": 9,
+   "radical": "大",
+   "unihan": {
+    "readings": [
+     "규:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "stride of man; 15th lunar mansion, determinative star η Andromedae",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "규",
+   "hanja": "圭",
+   "codePoint": "U+572D",
+   "legacyMeaning": "옥 규",
+   "legacyFullMeaning": "옥처럼 귀하고 고운 성품",
+   "legacyStrokes": 6,
+   "radical": "土",
+   "unihan": {
+    "readings": [
+     "규:0N"
+    ],
+    "totalStrokes": 6,
+    "definition": "jade pointed at top",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "율",
+   "hanja": "律",
+   "codePoint": "U+5F8B",
+   "legacyMeaning": "법칙 율",
+   "legacyFullMeaning": "바른 도리를 지키는 인물",
+   "legacyStrokes": 9,
+   "radical": "彳",
+   "unihan": {
+    "readings": [
+     "률:0E",
+     "율:0"
+    ],
+    "totalStrokes": 9,
+    "definition": "statute, principle, regulation",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "율",
+   "hanja": "栗",
+   "codePoint": "U+6817",
+   "legacyMeaning": "밤나무 율",
+   "legacyFullMeaning": "굳건하고 알찬 생명력",
+   "legacyStrokes": 10,
+   "radical": "木",
+   "unihan": {
+    "readings": [
+     "률:0E",
+     "율:0"
+    ],
+    "totalStrokes": 10,
+    "definition": "chestnut tree, chestnuts; surname",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "하",
+   "hanja": "夏",
+   "codePoint": "U+590F",
+   "legacyMeaning": "여름 하",
+   "legacyFullMeaning": "활기차고 풍성한 기운",
+   "legacyStrokes": 10,
+   "radical": "夂",
+   "unihan": {
+    "readings": [
+     "하:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "summer; great, grand, big",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "하",
+   "hanja": "河",
+   "codePoint": "U+6CB3",
+   "legacyMeaning": "강 하",
+   "legacyFullMeaning": "유유히 흐르는 큰 강처럼",
+   "legacyStrokes": 8,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "하:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "river; stream; the Yellow River",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "하",
+   "hanja": "賀",
+   "codePoint": "U+8CC0",
+   "legacyMeaning": "축하 하",
+   "legacyFullMeaning": "기쁨과 축복이 가득한 삶",
+   "legacyStrokes": 12,
+   "radical": "貝",
+   "unihan": {
+    "readings": [
+     "하:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "congratulate; send present",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "지",
+   "hanja": "智",
+   "codePoint": "U+667A",
+   "legacyMeaning": "지혜 지",
+   "legacyFullMeaning": "총명하고 지혜로운 성품",
+   "legacyStrokes": 12,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "지:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "wisdom, knowledge, intelligence",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "지",
+   "hanja": "志",
+   "codePoint": "U+5FD7",
+   "legacyMeaning": "뜻 지",
+   "legacyFullMeaning": "큰 뜻과 포부를 가진",
+   "legacyStrokes": 7,
+   "radical": "心",
+   "unihan": {
+    "readings": [
+     "지:0E"
+    ],
+    "totalStrokes": 7,
+    "definition": "purpose, will, determination; annals",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "지",
+   "hanja": "芝",
+   "codePoint": "U+829D",
+   "legacyMeaning": "지초 지",
+   "legacyFullMeaning": "상서로운 풀처럼 복된 기운",
+   "legacyStrokes": 7,
+   "radical": "艹",
+   "unihan": {
+    "readings": [
+     "지:0N"
+    ],
+    "totalStrokes": 6,
+    "definition": "sesame; a purplish or brown mushroom thought to have miraculous powers; 'a divine and felicitous plant' (Karlgren)",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "수",
+   "hanja": "秀",
+   "codePoint": "U+79C0",
+   "legacyMeaning": "빼어날 수",
+   "legacyFullMeaning": "뛰어나고 출중한 재능",
+   "legacyStrokes": 7,
+   "radical": "禾",
+   "unihan": {
+    "readings": [
+     "수:0E"
+    ],
+    "totalStrokes": 7,
+    "definition": "ear of grain; flowering, luxuriant; refined, elegant, graceful",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "수",
+   "hanja": "洙",
+   "codePoint": "U+6D19",
+   "legacyMeaning": "물가 수",
+   "legacyFullMeaning": "맑은 물가처럼 청아한",
+   "legacyStrokes": 9,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "수:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "name of a river in Shandong",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "수",
+   "hanja": "受",
+   "codePoint": "U+53D7",
+   "legacyMeaning": "받을 수",
+   "legacyFullMeaning": "복을 받아들이는",
+   "legacyStrokes": 8,
+   "radical": "又",
+   "unihan": {
+    "readings": [
+     "수:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "receive, accept, get; bear, stand",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "빛",
+   "hanja": "光",
+   "codePoint": "U+5149",
+   "legacyMeaning": "빛 광",
+   "legacyFullMeaning": "밝게 빛나는 존재",
+   "legacyStrokes": 6,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "광:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "light, brilliant, shine; only",
+    "koreanNameList": [],
+    "readingListed": false,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "빛",
+   "hanja": "炳",
+   "codePoint": "U+70B3",
+   "legacyMeaning": "빛날 병",
+   "legacyFullMeaning": "불처럼 밝게 빛나는",
+   "legacyStrokes": 9,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "병:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "bright, luminous; glorious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": false,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "온",
+   "hanja": "溫",
+   "codePoint": "U+6EAB",
+   "legacyMeaning": "따뜻할 온",
+   "legacyFullMeaning": "따뜻하고 온화한 성품",
+   "legacyStrokes": 13,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "온:0E"
+    ],
+    "totalStrokes": 13,
+    "definition": "lukewarm, warm; tepid, mild",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "빈",
+   "hanja": "彬",
+   "codePoint": "U+5F6C",
+   "legacyMeaning": "빛날 빈",
+   "legacyFullMeaning": "문채나고 빛나는 성품",
+   "legacyStrokes": 11,
+   "radical": "彡",
+   "unihan": {
+    "readings": [
+     "빈:0N"
+    ],
+    "totalStrokes": 11,
+    "definition": "cultivated, well-bred",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "빈",
+   "hanja": "斌",
+   "codePoint": "U+658C",
+   "legacyMeaning": "빛날 빈",
+   "legacyFullMeaning": "문무를 겸비한 인물",
+   "legacyStrokes": 12,
+   "radical": "文",
+   "unihan": {
+    "readings": [
+     "빈:0N"
+    ],
+    "totalStrokes": 12,
+    "definition": "refined, having both appearance",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "한",
+   "hanja": "翰",
+   "codePoint": "U+7FF0",
+   "legacyMeaning": "깃 한",
+   "legacyFullMeaning": "높이 날아오르는 큰 꿈",
+   "legacyStrokes": 16,
+   "radical": "羽",
+   "unihan": {
+    "readings": [
+     "한:0N"
+    ],
+    "totalStrokes": 16,
+    "definition": "writing brush, pen, pencil",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "한",
+   "hanja": "漢",
+   "codePoint": "U+6F22",
+   "legacyMeaning": "한수 한",
+   "legacyFullMeaning": "한강처럼 넓고 큰 기상",
+   "legacyStrokes": 14,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "한:0E"
+    ],
+    "totalStrokes": 14,
+    "definition": "the Chinese people, Chinese language",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "상",
+   "hanja": "祥",
+   "codePoint": "U+7965",
+   "legacyMeaning": "상서 상",
+   "legacyFullMeaning": "좋은 조짐과 복된 기운",
+   "legacyStrokes": 10,
+   "radical": "示",
+   "unihan": {
+    "readings": [
+     "상:0E"
+    ],
+    "totalStrokes": 11,
+    "definition": "good luck, good omen; happiness",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "상",
+   "hanja": "尙",
+   "codePoint": "U+5C19",
+   "legacyMeaning": "오히려 상",
+   "legacyFullMeaning": "높고 고상한 기품",
+   "legacyStrokes": 8,
+   "radical": "小",
+   "unihan": {
+    "readings": [
+     "상:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "still, yet; even; fairly, rather",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "아",
+   "hanja": "雅",
+   "codePoint": "U+96C5",
+   "legacyMeaning": "아름다울 아",
+   "legacyFullMeaning": "우아하고 고상한 기품",
+   "legacyStrokes": 12,
+   "radical": "隹",
+   "unihan": {
+    "readings": [
+     "아:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "elegant, graceful, refined",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "아",
+   "hanja": "娥",
+   "codePoint": "U+5A25",
+   "legacyMeaning": "예쁠 아",
+   "legacyFullMeaning": "달처럼 아름다운 자태",
+   "legacyStrokes": 10,
+   "radical": "女",
+   "unihan": {
+    "readings": [
+     "아:0N"
+    ],
+    "totalStrokes": 10,
+    "definition": "be beautiful; good; surname",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "연",
+   "hanja": "蓮",
+   "codePoint": "U+84EE",
+   "legacyMeaning": "연꽃 연",
+   "legacyFullMeaning": "청아하고 고운 연꽃처럼",
+   "legacyStrokes": 15,
+   "radical": "艹",
+   "unihan": {
+    "readings": [
+     "련:0E",
+     "연:0"
+    ],
+    "totalStrokes": 13,
+    "definition": "lotus, water lily; paradise",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "연",
+   "hanja": "燕",
+   "codePoint": "U+71D5",
+   "legacyMeaning": "제비 연",
+   "legacyFullMeaning": "제비처럼 자유롭고 활발한",
+   "legacyStrokes": 16,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "연:0E"
+    ],
+    "totalStrokes": 16,
+    "definition": "swallow (bird); comfort, enjoy",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "연",
+   "hanja": "妍",
+   "codePoint": "U+598D",
+   "legacyMeaning": "고울 연",
+   "legacyFullMeaning": "아름답고 고운 자태",
+   "legacyStrokes": 7,
+   "radical": "女",
+   "unihan": {
+    "readings": [
+     "연:N"
+    ],
+    "totalStrokes": 7,
+    "definition": "beautiful, handsome; seductive",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "은",
+   "hanja": "恩",
+   "codePoint": "U+6069",
+   "legacyMeaning": "은혜 은",
+   "legacyFullMeaning": "은혜를 베풀고 받는 기운",
+   "legacyStrokes": 10,
+   "radical": "心",
+   "unihan": {
+    "readings": [
+     "은:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "kindness, mercy, charity",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "은",
+   "hanja": "銀",
+   "codePoint": "U+9280",
+   "legacyMeaning": "은 은",
+   "legacyFullMeaning": "은처럼 귀하고 빛나는",
+   "legacyStrokes": 14,
+   "radical": "金",
+   "unihan": {
+    "readings": [
+     "은:0E"
+    ],
+    "totalStrokes": 14,
+    "definition": "silver (element 47, Ag); cash, money, wealth",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "은",
+   "hanja": "殷",
+   "codePoint": "U+6BB7",
+   "legacyMeaning": "성할 은",
+   "legacyFullMeaning": "풍성하고 번성하는 기운",
+   "legacyStrokes": 10,
+   "radical": "殳",
+   "unihan": {
+    "readings": [
+     "은:0N"
+    ],
+    "totalStrokes": 10,
+    "definition": "many, great; abundant, flourishing",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "유",
+   "hanja": "侑",
+   "codePoint": "U+4F91",
+   "legacyMeaning": "도울 유",
+   "legacyFullMeaning": "도움을 주고 나누는 마음",
+   "legacyStrokes": 8,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "유:0N"
+    ],
+    "totalStrokes": 8,
+    "definition": "help, assist, repay kindness",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "유",
+   "hanja": "柔",
+   "codePoint": "U+67D4",
+   "legacyMeaning": "부드러울 유",
+   "legacyFullMeaning": "부드럽고 유연한 성품",
+   "legacyStrokes": 9,
+   "radical": "木",
+   "unihan": {
+    "readings": [
+     "유:0E"
+    ],
+    "totalStrokes": 9,
+    "definition": "soft; gentle, pliant",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "유",
+   "hanja": "瑜",
+   "codePoint": "U+745C",
+   "legacyMeaning": "옥빛 유",
+   "legacyFullMeaning": "옥처럼 빛나는 아름다움",
+   "legacyStrokes": 13,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "유:0N"
+    ],
+    "totalStrokes": 13,
+    "definition": "flawless gem or jewel",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "채",
+   "hanja": "彩",
+   "codePoint": "U+5F69",
+   "legacyMeaning": "채색 채",
+   "legacyFullMeaning": "다채롭고 아름다운 재능",
+   "legacyStrokes": 11,
+   "radical": "彡",
+   "unihan": {
+    "readings": [
+     "채:0E"
+    ],
+    "totalStrokes": 11,
+    "definition": "hue, color; variegated colors",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "채",
+   "hanja": "菜",
+   "codePoint": "U+83DC",
+   "legacyMeaning": "나물 채",
+   "legacyFullMeaning": "자연처럼 싱그럽고 건강한",
+   "legacyStrokes": 12,
+   "radical": "艹",
+   "unihan": {
+    "readings": [
+     "채:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "vegetables; dish, order; food",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "미",
+   "hanja": "美",
+   "codePoint": "U+7F8E",
+   "legacyMeaning": "아름다울 미",
+   "legacyFullMeaning": "아름답고 뛰어난 품성",
+   "legacyStrokes": 9,
+   "radical": "羊",
+   "unihan": {
+    "readings": [
+     "미:0E"
+    ],
+    "totalStrokes": 9,
+    "definition": "beautiful, pretty; pleasing",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "미",
+   "hanja": "渼",
+   "codePoint": "U+6E3C",
+   "legacyMeaning": "물결 미",
+   "legacyFullMeaning": "물결처럼 아름다운",
+   "legacyStrokes": 12,
+   "radical": "水",
+   "unihan": {
+    "readings": [
+     "미:0N"
+    ],
+    "totalStrokes": 12,
+    "definition": "ripples",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "혜",
+   "hanja": "慧",
+   "codePoint": "U+6167",
+   "legacyMeaning": "지혜로울 혜",
+   "legacyFullMeaning": "총명하고 지혜로운 성품",
+   "legacyStrokes": 15,
+   "radical": "心",
+   "unihan": {
+    "readings": [
+     "혜:0E"
+    ],
+    "totalStrokes": 15,
+    "definition": "bright, intelligent; intelligence",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "혜",
+   "hanja": "惠",
+   "codePoint": "U+60E0",
+   "legacyMeaning": "은혜 혜",
+   "legacyFullMeaning": "사랑과 은혜가 넘치는",
+   "legacyStrokes": 12,
+   "radical": "心",
+   "unihan": {
+    "readings": [
+     "혜:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "favor, benefit, confer kindness",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "예",
+   "hanja": "藝",
+   "codePoint": "U+85DD",
+   "legacyMeaning": "재주 예",
+   "legacyFullMeaning": "뛰어난 예술적 재능",
+   "legacyStrokes": 19,
+   "radical": "艹",
+   "unihan": {
+    "readings": [
+     "예:0E"
+    ],
+    "totalStrokes": 18,
+    "definition": "art; talent, ability; craft",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "예",
+   "hanja": "禮",
+   "codePoint": "U+79AE",
+   "legacyMeaning": "예의 예",
+   "legacyFullMeaning": "예의바르고 고상한 성품",
+   "legacyStrokes": 18,
+   "radical": "示",
+   "unihan": {
+    "readings": [
+     "례:0E",
+     "예:0"
+    ],
+    "totalStrokes": 18,
+    "definition": "social custom; manners; courtesy; rites",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "예",
+   "hanja": "睿",
+   "codePoint": "U+777F",
+   "legacyMeaning": "밝을 예",
+   "legacyFullMeaning": "총명하고 빛나는 지혜",
+   "legacyStrokes": 14,
+   "radical": "目",
+   "unihan": {
+    "readings": [
+     "예:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "shrewd, astute, clever, keen",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "희",
+   "hanja": "熙",
+   "codePoint": "U+7199",
+   "legacyMeaning": "빛날 희",
+   "legacyFullMeaning": "따뜻하게 빛나는 성품",
+   "legacyStrokes": 13,
+   "radical": "火",
+   "unihan": {
+    "readings": [
+     "희:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "bright, splendid, glorious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "희",
+   "hanja": "喜",
+   "codePoint": "U+559C",
+   "legacyMeaning": "기쁠 희",
+   "legacyFullMeaning": "기쁨이 가득한 삶",
+   "legacyStrokes": 12,
+   "radical": "口",
+   "unihan": {
+    "readings": [
+     "희:0E"
+    ],
+    "totalStrokes": 12,
+    "definition": "like, love, enjoy; joyful thing",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "주",
+   "hanja": "珠",
+   "codePoint": "U+73E0",
+   "legacyMeaning": "구슬 주",
+   "legacyFullMeaning": "구슬처럼 빛나는 귀한 존재",
+   "legacyStrokes": 10,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "주:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "precious stone, gem, jewel, pearl",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "주",
+   "hanja": "朱",
+   "codePoint": "U+6731",
+   "legacyMeaning": "붉을 주",
+   "legacyFullMeaning": "따뜻하고 열정적인 기운",
+   "legacyStrokes": 6,
+   "radical": "木",
+   "unihan": {
+    "readings": [
+     "주:0E"
+    ],
+    "totalStrokes": 6,
+    "definition": "cinnabar, vermilion; surname",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "주",
+   "hanja": "株",
+   "codePoint": "U+682A",
+   "legacyMeaning": "그루 주",
+   "legacyFullMeaning": "굳건하게 뿌리내린 기운",
+   "legacyStrokes": 10,
+   "radical": "木",
+   "unihan": {
+    "readings": [
+     "주:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "numerary adjunct for trees; root",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "소",
+   "hanja": "素",
+   "codePoint": "U+7D20",
+   "legacyMeaning": "본바탕 소",
+   "legacyFullMeaning": "순수하고 꾸밈없는 마음",
+   "legacyStrokes": 10,
+   "radical": "糸",
+   "unihan": {
+    "readings": [
+     "소:0E"
+    ],
+    "totalStrokes": 10,
+    "definition": "white (silk); plain; vegetarian; formerly; normally",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "소",
+   "hanja": "昭",
+   "codePoint": "U+662D",
+   "legacyMeaning": "밝을 소",
+   "legacyFullMeaning": "밝고 환한 빛처럼",
+   "legacyStrokes": 9,
+   "radical": "日",
+   "unihan": {
+    "readings": [
+     "소:0E",
+     "조:N"
+    ],
+    "totalStrokes": 9,
+    "definition": "bright, luminous; illustrious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "린",
+   "hanja": "琳",
+   "codePoint": "U+7433",
+   "legacyMeaning": "옥 림",
+   "legacyFullMeaning": "옥처럼 맑고 고운 성품",
+   "legacyStrokes": 12,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "림:0N"
+    ],
+    "totalStrokes": 12,
+    "definition": "beautiful jade, gem",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": false,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "린",
+   "hanja": "麟",
+   "codePoint": "U+9E9F",
+   "legacyMeaning": "기린 린",
+   "legacyFullMeaning": "상서로운 기린처럼 귀한",
+   "legacyStrokes": 23,
+   "radical": "鹿",
+   "unihan": {
+    "readings": [
+     "린:0N",
+     "인:0"
+    ],
+    "totalStrokes": 23,
+    "definition": "female of Chinese unicorn",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "슬",
+   "hanja": "瑟",
+   "codePoint": "U+745F",
+   "legacyMeaning": "거문고 슬",
+   "legacyFullMeaning": "아름다운 선율처럼 조화로운",
+   "legacyStrokes": 13,
+   "radical": "玉",
+   "unihan": {
+    "readings": [
+     "슬:0N"
+    ],
+    "totalStrokes": 13,
+    "definition": "large stringed musical instrument; dignified, massive; sound of wind",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "나",
+   "hanja": "娜",
+   "codePoint": "U+5A1C",
+   "legacyMeaning": "아름다울 나",
+   "legacyFullMeaning": "아름답고 사랑스러운 모습",
+   "legacyStrokes": 10,
+   "radical": "女",
+   "unihan": {
+    "readings": [
+     "나:0N"
+    ],
+    "totalStrokes": 9,
+    "definition": "elegant, graceful, delicate",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "나",
+   "hanja": "羅",
+   "codePoint": "U+7F85",
+   "legacyMeaning": "비단 나",
+   "legacyFullMeaning": "곱고 부드러운 비단처럼",
+   "legacyStrokes": 19,
+   "radical": "网",
+   "unihan": {
+    "readings": [
+     "나:0",
+     "라:0E"
+    ],
+    "totalStrokes": 19,
+    "definition": "net for catching birds; gauze",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": false,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "가",
+   "hanja": "佳",
+   "codePoint": "U+4F73",
+   "legacyMeaning": "아름다울 가",
+   "legacyFullMeaning": "아름답고 훌륭한 성품",
+   "legacyStrokes": 8,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "가:0E"
+    ],
+    "totalStrokes": 8,
+    "definition": "good, auspicious; beautiful; delightful",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "가",
+   "hanja": "嘉",
+   "codePoint": "U+5609",
+   "legacyMeaning": "아름다울 가",
+   "legacyFullMeaning": "아름답고 훌륭하여 칭찬받음",
+   "legacyStrokes": 14,
+   "radical": "口",
+   "unihan": {
+    "readings": [
+     "가:0N"
+    ],
+    "totalStrokes": 14,
+    "definition": "excellent; joyful; auspicious",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "이",
+   "hanja": "怡",
+   "codePoint": "U+6021",
+   "legacyMeaning": "기쁠 이",
+   "legacyFullMeaning": "기쁨을 나누는 밝은 성품",
+   "legacyStrokes": 8,
+   "radical": "心",
+   "unihan": {
+    "readings": [
+     "이:0N"
+    ],
+    "totalStrokes": 8,
+    "definition": "harmony; pleasure, joy; be glad",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "이",
+   "hanja": "伊",
+   "codePoint": "U+4F0A",
+   "legacyMeaning": "저 이",
+   "legacyFullMeaning": "아름다운 존재 그 자체",
+   "legacyStrokes": 6,
+   "radical": "人",
+   "unihan": {
+    "readings": [
+     "이:0N"
+    ],
+    "totalStrokes": 6,
+    "definition": "third person pronoun; he, she, this, that",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "별",
+   "hanja": "別",
+   "codePoint": "U+5225",
+   "legacyMeaning": "특별할 별",
+   "legacyFullMeaning": "특별하고 고유한 존재",
+   "legacyStrokes": 7,
+   "radical": "刀",
+   "unihan": {
+    "readings": [
+     "별:0E"
+    ],
+    "totalStrokes": 7,
+    "definition": "separate, other; do not",
+    "koreanNameList": [],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": true
+   }
+  },
+  {
+   "table": "HANJA_DB",
+   "hangul": "별",
+   "hanja": "彆",
+   "codePoint": "U+5F46",
+   "legacyMeaning": "굽을 별",
+   "legacyFullMeaning": "굽히지 않는 곧은 기상",
+   "legacyStrokes": 18,
+   "radical": "弓",
+   "unihan": {
+    "readings": [
+     "별:1N"
+    ],
+    "totalStrokes": 14,
+    "definition": "awkward",
+    "koreanNameList": [
+     "2015"
+    ],
+    "readingListed": true,
+    "readingNameIndicator": true,
+    "strokesEqualLegacy": false
+   }
+  }
+ ],
+ "surnames": [
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "김",
+   "hanja": "金",
+   "legacyMeaning": "쇠 금",
+   "legacyStrokes": 8,
+   "unihan": {
+    "readings": [
+     "금:0E",
+     "김:0N"
+    ],
+    "totalStrokes": 8
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "이",
+   "hanja": "李",
+   "legacyMeaning": "오얏 이",
+   "legacyStrokes": 7,
+   "unihan": {
+    "readings": [
+     "리:0E",
+     "이:0"
+    ],
+    "totalStrokes": 7
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "박",
+   "hanja": "朴",
+   "legacyMeaning": "박 박",
+   "legacyStrokes": 6,
+   "unihan": {
+    "readings": [
+     "박:0E"
+    ],
+    "totalStrokes": 6
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "최",
+   "hanja": "崔",
+   "legacyMeaning": "높을 최",
+   "legacyStrokes": 11,
+   "unihan": {
+    "readings": [
+     "최:0N"
+    ],
+    "totalStrokes": 11
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "정",
+   "hanja": "鄭",
+   "legacyMeaning": "정나라 정",
+   "legacyStrokes": 15,
+   "unihan": {
+    "readings": [
+     "정:0N"
+    ],
+    "totalStrokes": 15
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "강",
+   "hanja": "姜",
+   "legacyMeaning": "생강 강",
+   "legacyStrokes": 9,
+   "unihan": {
+    "readings": [
+     "강:0N"
+    ],
+    "totalStrokes": 9
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "조",
+   "hanja": "趙",
+   "legacyMeaning": "나라 조",
+   "legacyStrokes": 14,
+   "unihan": {
+    "readings": [
+     "조:0N"
+    ],
+    "totalStrokes": 14
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "윤",
+   "hanja": "尹",
+   "legacyMeaning": "다스릴 윤",
+   "legacyStrokes": 4,
+   "unihan": {
+    "readings": [
+     "윤:0N"
+    ],
+    "totalStrokes": 4
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "장",
+   "hanja": "張",
+   "legacyMeaning": "베풀 장",
+   "legacyStrokes": 11,
+   "unihan": {
+    "readings": [
+     "장:0E"
+    ],
+    "totalStrokes": 11
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "임",
+   "hanja": "林",
+   "legacyMeaning": "수풀 림",
+   "legacyStrokes": 8,
+   "unihan": {
+    "readings": [
+     "림:0E",
+     "임:0"
+    ],
+    "totalStrokes": 8
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "한",
+   "hanja": "韓",
+   "legacyMeaning": "나라 한",
+   "legacyStrokes": 17,
+   "unihan": {
+    "readings": [
+     "한:0E"
+    ],
+    "totalStrokes": 17
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "오",
+   "hanja": "吳",
+   "legacyMeaning": "나라 오",
+   "legacyStrokes": 7,
+   "unihan": {
+    "readings": [
+     "오:0N"
+    ],
+    "totalStrokes": 7
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "서",
+   "hanja": "徐",
+   "legacyMeaning": "천천히 서",
+   "legacyStrokes": 10,
+   "unihan": {
+    "readings": [
+     "서:0E"
+    ],
+    "totalStrokes": 10
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "신",
+   "hanja": "申",
+   "legacyMeaning": "납 신",
+   "legacyStrokes": 5,
+   "unihan": {
+    "readings": [
+     "신:0E"
+    ],
+    "totalStrokes": 5
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "권",
+   "hanja": "權",
+   "legacyMeaning": "권세 권",
+   "legacyStrokes": 22,
+   "unihan": {
+    "readings": [
+     "권:0E"
+    ],
+    "totalStrokes": 21
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "황",
+   "hanja": "黃",
+   "legacyMeaning": "누를 황",
+   "legacyStrokes": 12,
+   "unihan": {
+    "readings": [
+     "황:0E"
+    ],
+    "totalStrokes": 12
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "안",
+   "hanja": "安",
+   "legacyMeaning": "편안 안",
+   "legacyStrokes": 6,
+   "unihan": {
+    "readings": [
+     "안:0E"
+    ],
+    "totalStrokes": 6
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "송",
+   "hanja": "宋",
+   "legacyMeaning": "나라 송",
+   "legacyStrokes": 7,
+   "unihan": {
+    "readings": [
+     "송:0N"
+    ],
+    "totalStrokes": 7
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "류",
+   "hanja": "柳",
+   "legacyMeaning": "버드나무 류",
+   "legacyStrokes": 9,
+   "unihan": {
+    "readings": [
+     "류:0E",
+     "유:0"
+    ],
+    "totalStrokes": 9
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "홍",
+   "hanja": "洪",
+   "legacyMeaning": "넓을 홍",
+   "legacyStrokes": 9,
+   "unihan": {
+    "readings": [
+     "홍:0E"
+    ],
+    "totalStrokes": 9
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "전",
+   "hanja": "全",
+   "legacyMeaning": "온전 전",
+   "legacyStrokes": 6,
+   "unihan": {
+    "readings": [
+     "전:0E"
+    ],
+    "totalStrokes": 6
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "고",
+   "hanja": "高",
+   "legacyMeaning": "높을 고",
+   "legacyStrokes": 10,
+   "unihan": {
+    "readings": [
+     "고:0E"
+    ],
+    "totalStrokes": 10
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "문",
+   "hanja": "文",
+   "legacyMeaning": "글 문",
+   "legacyStrokes": 4,
+   "unihan": {
+    "readings": [
+     "문:0E"
+    ],
+    "totalStrokes": 4
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "양",
+   "hanja": "梁",
+   "legacyMeaning": "들보 양",
+   "legacyStrokes": 11,
+   "unihan": {
+    "readings": [
+     "량:0E",
+     "양:0"
+    ],
+    "totalStrokes": 11
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "손",
+   "hanja": "孫",
+   "legacyMeaning": "손자 손",
+   "legacyStrokes": 10,
+   "unihan": {
+    "readings": [
+     "손:0E"
+    ],
+    "totalStrokes": 10
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "배",
+   "hanja": "裵",
+   "legacyMeaning": "성씨 배",
+   "legacyStrokes": 14,
+   "unihan": {
+    "readings": [
+     "배:0N"
+    ],
+    "totalStrokes": 14
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "백",
+   "hanja": "白",
+   "legacyMeaning": "흰 백",
+   "legacyStrokes": 5,
+   "unihan": {
+    "readings": [
+     "백:0E"
+    ],
+    "totalStrokes": 5
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "허",
+   "hanja": "許",
+   "legacyMeaning": "허락 허",
+   "legacyStrokes": 11,
+   "unihan": {
+    "readings": [
+     "허:0E"
+    ],
+    "totalStrokes": 11
+   }
+  },
+  {
+   "table": "SURNAME_HANJA_DB",
+   "hangul": "남",
+   "hanja": "南",
+   "legacyMeaning": "남쪽 남",
+   "legacyStrokes": 9,
+   "unihan": {
+    "readings": [
+     "남:0E"
+    ],
+    "totalStrokes": 9
+   }
+  }
+ ],
+ "profiles": [
+  {
+   "hangul": "준",
+   "hanja": "俊",
+   "meaning": "뛰어날 준",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "서",
+   "hanja": "瑞",
+   "meaning": "상서로울 서",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "우",
+   "hanja": "宇",
+   "meaning": "넓은 우",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "윤",
+   "hanja": "潤",
+   "meaning": "윤택할 윤",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "지",
+   "hanja": "智",
+   "meaning": "지혜 지",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "하",
+   "hanja": "夏",
+   "meaning": "여름 하",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "시",
+   "hanja": "時",
+   "meaning": "때 시·아름다울",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "아",
+   "hanja": "雅",
+   "meaning": "우아할 아",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "민",
+   "hanja": "珉",
+   "meaning": "옥돌 민",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "도",
+   "hanja": "道",
+   "meaning": "길 도",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "현",
+   "hanja": "炫",
+   "meaning": "빛날 현",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "예",
+   "hanja": "睿",
+   "meaning": "밝을 예",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "채",
+   "hanja": "彩",
+   "meaning": "채색 채",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "은",
+   "hanja": "恩",
+   "meaning": "은혜 은",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "유",
+   "hanja": "柔",
+   "meaning": "부드러울 유",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "온",
+   "hanja": "溫",
+   "meaning": "따뜻할 온",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "율",
+   "hanja": "律",
+   "meaning": "법칙 율",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "린",
+   "hanja": "琳",
+   "meaning": "옥 림",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "찬",
+   "hanja": "燦",
+   "meaning": "빛날 찬",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "빈",
+   "hanja": "彬",
+   "meaning": "빛날 빈",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "가",
+   "hanja": "佳",
+   "meaning": "아름다울 가",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "이",
+   "hanja": "怡",
+   "meaning": "기쁠 이",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "슬",
+   "hanja": "瑟",
+   "meaning": "거문고 슬",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "진",
+   "hanja": "眞",
+   "meaning": "참 진",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "재",
+   "hanja": "才",
+   "meaning": "재주 재",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "연",
+   "hanja": "蓮",
+   "meaning": "연꽃 연",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "소",
+   "hanja": "素",
+   "meaning": "본바탕 소",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "나",
+   "hanja": "娜",
+   "meaning": "아름다울 나",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "원",
+   "hanja": "媛",
+   "meaning": "미인 원",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "성",
+   "hanja": "誠",
+   "meaning": "성실 성",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "선",
+   "hanja": "善",
+   "meaning": "착할 선",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "인",
+   "hanja": "仁",
+   "meaning": "어질 인",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "건",
+   "hanja": "健",
+   "meaning": "건강 건",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "승",
+   "hanja": "昇",
+   "meaning": "오를 승",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "태",
+   "hanja": "泰",
+   "meaning": "클 태",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "주",
+   "hanja": "珠",
+   "meaning": "구슬 주",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "희",
+   "hanja": "熙",
+   "meaning": "빛날 희",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "혜",
+   "hanja": "慧",
+   "meaning": "지혜 혜",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "수",
+   "hanja": "秀",
+   "meaning": "빼어날 수",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "상",
+   "hanja": "祥",
+   "meaning": "상서 상",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "미",
+   "hanja": "美",
+   "meaning": "아름다울 미",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "영",
+   "hanja": "榮",
+   "meaning": "영화 영",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "한",
+   "hanja": "翰",
+   "meaning": "깃 한",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "기",
+   "hanja": "基",
+   "meaning": "기초 기",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "별",
+   "hanja": "別",
+   "meaning": "특별할 별",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "혁",
+   "hanja": "赫",
+   "meaning": "빛날 혁",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "호",
+   "hanja": "昊",
+   "meaning": "넓은 하늘 호",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "규",
+   "hanja": "奎",
+   "meaning": "별 규",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "환",
+   "hanja": "煥",
+   "meaning": "빛날 환",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "경",
+   "hanja": "景",
+   "meaning": "경치 경",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "후",
+   "hanja": "厚",
+   "meaning": "두터울 후",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "훈",
+   "hanja": "勳",
+   "meaning": "공훈 훈",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "석",
+   "hanja": "碩",
+   "meaning": "클 석",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "창",
+   "hanja": "昌",
+   "meaning": "창성 창",
+   "inHanjaDb": true
+  },
+  {
+   "hangul": "범",
+   "hanja": "汎",
+   "meaning": "넓을 범",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "강",
+   "hanja": "剛",
+   "meaning": "굳셀 강",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "솔",
+   "hanja": "率",
+   "meaning": "거느릴 솔",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "완",
+   "hanja": "完",
+   "meaning": "완전할 완",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "형",
+   "hanja": "亨",
+   "meaning": "형통할 형",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "무",
+   "hanja": "武",
+   "meaning": "굳셀 무",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "철",
+   "hanja": "哲",
+   "meaning": "밝을 철",
+   "inHanjaDb": false
+  },
+  {
+   "hangul": "윤2",
+   "hanja": "允",
+   "meaning": "진실 윤",
+   "inHanjaDb": false
+  }
+ ]
+}
