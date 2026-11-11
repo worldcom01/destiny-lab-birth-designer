@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
 // R3.1: Hanja selection is visible and operable directly from the collapsed
 // result card (Mode B and Mode C), through one picker per card and the
-// existing single save path.
+// existing single save path. R3.2: saves go to the persistence backend
+// (in-memory here, IndexedDB in the browser); they are asynchronous.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { ModeBInput, ModeCInput } from '@/types';
-import { HANJA_SELECTION_KEYS, analysisScope, loadHanjaSelections } from '@/lib/hanjaModel';
+import { HANJA_SELECTION_KEYS, analysisScope } from '@/lib/hanjaModel';
+import { committedNames, installMemoryHanjaBackend } from '@/test-utils/hanjaTestBackend';
 import { validateModeBInput, validateModeCInput } from '@/lib/inputValidation';
 import { analyzeModeCNames } from '@/lib/analysis';
 import { getHanjaOptions } from '@/data/hanjaDB';
@@ -27,24 +29,22 @@ const scopeB = (i: ModeBInput = B_INPUT) => { const v = validateModeBInput(i); i
 const scopeC = (i: ModeCInput = C_INPUT) => { const v = validateModeCInput(i); if (!v.ok) throw new Error('invalid'); return analysisScope(v.value); };
 const store = (scope: string, names: object) => JSON.stringify({ version: 2, scopes: { [scope]: { updatedAt: 1, names } } });
 
-/** The collapsed card of `name` (details never opened). */
+const be = installMemoryHanjaBackend();
+const persistenceStatus = () => screen.queryByTestId('hanja-persistence-status')?.getAttribute('data-status') ?? 'idle';
+/** The collapsed card of `name` (details never opened), once persistence finished initialising. */
 async function cardOf(name: string) {
   const heading = await screen.findByRole('heading', { name }, { timeout: 15000 });
+  await waitFor(() => expect(persistenceStatus()).not.toBe('initializing'));
   return heading.closest('div.bg-white') as HTMLElement;
 }
 const quick = (card: HTMLElement) => within(card).getByTestId('hanja-quick-select');
 const quickButton = (card: HTMLElement, syllable: string) =>
   within(quick(card)).getByRole('button', { name: new RegExp(`^'${syllable}' 한자 선택`) });
-/** Picks `hanja` in the (single) open picker dialog. */
-const choose = (hanja: string) => {
+/** Picks `hanja` in the (single) open picker dialog and waits until the save settled. */
+const choose = async (hanja: string) => {
   const dialog = screen.getByRole('dialog');
   fireEvent.click(within(dialog).getAllByRole('button').find(b => b.textContent?.trim().startsWith(hanja))!);
-};
-const setItemCalls = () => {
-  const real = Storage.prototype.setItem;
-  const calls: string[] = [];
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, k: string, v: string) { calls.push(k); return real.call(this, k, v); });
-  return calls;
+  await waitFor(() => expect(persistenceStatus()).not.toBe('saving'));
 };
 
 beforeEach(() => { localStorage.clear(); push.mockClear(); });
@@ -57,17 +57,17 @@ describe('picker access from a collapsed card', () => {
     const card = await cardOf('김민서');
     expect(within(card).queryByRole('button', { name: /닫기/ })).toBeNull(); // details still collapsed
     expect(within(quick(card)).getByRole('heading', { name: '한자 선택' })).toBeTruthy();
-    const calls = setItemCalls();
+    const commits = be().commits;
     fireEvent.click(quickButton(card, '민'));
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
-    choose('敏');
+    await choose('敏');
     expect(screen.queryByRole('dialog')).toBeNull();
-    expect(calls.filter(k => k === KEY_B)).toHaveLength(1); // exactly one save
+    expect(be().commits - commits).toBe(1); // exactly one committed save
     expect(screen.getByTestId('hanja-save-status').textContent).toContain('김민서');
     const btn = quickButton(card, '민');
     expect(btn.getAttribute('data-quick-status')).toBe('confirmed');
     expect(btn.textContent).toContain('敏');
-    expect(loadHanjaSelections(KEY_B, scopeB())).toEqual({ 김민서: ['敏'] });
+    expect(committedNames(be(), KEY_B, scopeB())).toEqual({ 김민서: ['敏'] });
     cleanup();
     render(<ModeBResults />); // reload
     const again = quickButton(await cardOf('김민서'), '민');
@@ -80,10 +80,11 @@ describe('picker access from a collapsed card', () => {
     render(<ModeCResults />);
     const card = await cardOf('김민서');
     fireEvent.click(quickButton(card, '서'));
-    choose('書');
+    await choose('書');
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
-    expect(loadHanjaSelections(KEY_C, scopeC())).toEqual({ 김민서: [null, '書'] });
-    expect(localStorage.getItem(KEY_B)).toBeNull();
+    expect(committedNames(be(), KEY_C, scopeC())).toEqual({ 김민서: [null, '書'] });
+    expect(be().documents.get(KEY_B)).toBeUndefined();
+    expect(localStorage.getItem(KEY_B)).toBeNull(); // legacy storage is never written
     cleanup();
     render(<ModeCResults />);
     expect(quickButton(await cardOf('김민서'), '서').textContent).toContain('書');
@@ -107,8 +108,8 @@ describe('stored, recovered and failed selections', () => {
     localStorage.setItem('dlbd_mode_c', JSON.stringify(C_INPUT));
     render(<ModeCResults />);
     fireEvent.click(quickButton(await cardOf('김민서'), '민'));
-    choose('敏');
-    expect(loadHanjaSelections(KEY_C, scopeC())).toEqual({ 김민서: ['敏', '書'] });
+    await choose('敏');
+    expect(committedNames(be(), KEY_C, scopeC())).toEqual({ 김민서: ['敏', '書'] });
   }, 60000);
 
   it('legacy duplicate-style selections recovered read-only are shown as they are applied', async () => {
@@ -131,16 +132,16 @@ describe('stored, recovered and failed selections', () => {
     const card = await cardOf('김민서');
     const before = quickButton(card, '서').textContent;
     const alt = getHanjaOptions('서').find(o => o.hanja !== '書')!.hanja;
-    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('full', 'QuotaExceededError'); });
+    be().failNext = 'quota';
     fireEvent.click(quickButton(card, '서'));
-    choose(alt);
+    await choose(alt);
     expect(screen.getByRole('alert').textContent).toContain('브라우저 저장 공간이 부족합니다');
     expect(screen.queryByTestId('hanja-save-status')).toBeNull();
     expect(quickButton(card, '서').textContent).toBe(before);
     expect(quickButton(card, '서').getAttribute('data-quick-status')).toBe('confirmed');
-    spy.mockRestore();
+    expect(committedNames(be(), KEY_B, scopeB())).toEqual({ 김민서: [null, '書'] }); // nothing committed
     fireEvent.click(quickButton(card, '서'));
-    choose(alt);
+    await choose(alt);
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
     expect(quickButton(card, '서').textContent).toContain(alt);
   }, 60000);
@@ -187,7 +188,6 @@ describe('missing Hanja data (actual dataset)', () => {
 
 describe('accessibility and a single coordinated picker', () => {
   it('semantic buttons, dialog semantics, Escape closes, focus returns to the trigger', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
     localStorage.setItem('dlbd_mode_c', JSON.stringify(C_INPUT));
     render(<ModeCResults />);
     const btn = quickButton(await cardOf('김민서'), '민');
@@ -207,9 +207,8 @@ describe('accessibility and a single coordinated picker', () => {
     expect(document.activeElement).toBe(dialog);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).toBeNull();
-    await act(async () => { vi.runAllTimers(); });
+    // focus returns synchronously through the shared modal stack (R3.1)
     expect(document.activeElement).toBe(quickButton(await cardOf('김민서'), '민'));
-    vi.useRealTimers();
   }, 60000);
 
   it('the expanded detailed analysis still works, uses buttons and the same single picker', async () => {
@@ -226,7 +225,7 @@ describe('accessibility and a single coordinated picker', () => {
     expect(chars[0].tagName).toBe('DIV'); // surname: not interactive
     expect(chars[1].tagName).toBe('BUTTON');
     expect(chars[1].getAttribute('aria-label')).toBe("'민' 한자 선택");
-    const calls = setItemCalls();
+    const commits = be().commits;
     fireEvent.click(quickButton(card, '민'));
     fireEvent.click(chars[2]); // background request while a picker is open: ignored (U2), still one picker
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
@@ -234,9 +233,9 @@ describe('accessibility and a single coordinated picker', () => {
     fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
     fireEvent.click(chars[2]); // the detail view opens the same single picker
     expect(screen.getByRole('dialog').getAttribute('aria-label')).toBe("'서' 한자 선택");
-    choose('書');
-    expect(calls.filter(k => k === KEY_B)).toHaveLength(1);
-    expect(loadHanjaSelections(KEY_B, scopeB())).toEqual({ 김민서: [null, '書'] });
+    await choose('書');
+    expect(be().commits - commits).toBe(1);
+    expect(committedNames(be(), KEY_B, scopeB())).toEqual({ 김민서: [null, '書'] });
     // detail view and collapsed section reflect the same saved state
     expect(card.querySelectorAll<HTMLElement>('[data-hanja-status]')[2].dataset.hanjaChar).toBe('書');
     expect(quickButton(card, '서').textContent).toContain('書');

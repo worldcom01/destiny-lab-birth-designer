@@ -7,7 +7,8 @@
 // behaviour is checked separately in a browser.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useState } from 'react';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { installMemoryHanjaBackend } from '@/test-utils/hanjaTestBackend';
 import { ModeBInput, ModeCInput } from '@/types';
 import { runModeBAnalysis, analyzeModeCNames } from '@/lib/analysis';
 import { HanjaOption, getHanjaOptions } from '@/data/hanjaDB';
@@ -26,9 +27,14 @@ const B_INPUT: ModeBInput = {
 };
 const C_INPUT: ModeCInput = { birthDate: '2027-07-04', birthHour: 9, sijinVersion: 2, gender: '남', names: ['김민서', '강시우', '김정훈'] };
 
+const be = installMemoryHanjaBackend(); // R3.2: result pages persist through the (in-memory) backend
+const persistenceStatus = () => screen.queryByTestId('hanja-persistence-status')?.getAttribute('data-status') ?? 'idle';
 async function cardOf(name: string) {
-  return (await screen.findByRole('heading', { name }, { timeout: 15000 })).closest('div.bg-white') as HTMLElement;
+  const heading = await screen.findByRole('heading', { name }, { timeout: 15000 });
+  await waitFor(() => expect(persistenceStatus()).not.toBe('initializing'));
+  return heading.closest('div.bg-white') as HTMLElement;
 }
+const settled = () => waitFor(() => expect(persistenceStatus()).not.toBe('saving'));
 const quickButton = (card: HTMLElement, syllable: string) =>
   within(within(card).getByTestId('hanja-quick-select')).getByRole('button', { name: new RegExp(`^'${syllable}' 한자 선택`) });
 const flush = () => act(async () => { await new Promise(r => setTimeout(r, 0)); });
@@ -162,23 +168,25 @@ describe('U4: save feedback is shown at the card that was edited', () => {
     const before = btn.textContent;
     const scrolled: Element[] = [];
     Element.prototype.scrollIntoView = function (this: Element) { scrolled.push(this); };
-    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('full', 'QuotaExceededError'); });
+    be().failNext = 'quota';
     fireEvent.click(btn);
     fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button').find(b => /^[一-鿿]/.test(b.textContent!.trim()))!);
-    const local = within(card).getByTestId('hanja-card-feedback');
+    await settled();
+    // the page applies the save result one microtask after the persistence state; effects run after commit
+    const local = await waitFor(() => within(card).getByTestId('hanja-card-feedback'));
     expect(local.textContent).toContain(name);
     expect(local.textContent).toContain('저장하지 못했습니다');
     expect(local.dataset.state).toBe('error');
     expect(card.querySelector<HTMLElement>('[data-hanja-quick]')!.textContent).toBe(before); // not shown as confirmed
     expect(btn.getAttribute('aria-describedby')).toBe(local.id);
-    expect(scrolled).toContain(local); // brought into view where the user is working
+    await waitFor(() => expect(scrolled).toContain(local)); // brought into view where the user is working
     expect(screen.getByRole('alert').textContent).toContain(name); // page-level announcement agrees
     // other cards carry no feedback
     expect(cards.filter(c => c !== card).some(c => c.querySelector('[data-testid=hanja-card-feedback]'))).toBe(false);
-    spy.mockRestore();
     fireEvent.click(card.querySelector<HTMLElement>('[data-hanja-quick]')!);
     fireEvent.click(within(screen.getByRole('dialog')).getAllByRole('button').find(b => /^[一-鿿]/.test(b.textContent!.trim()))!);
-    const after = within(card).getByTestId('hanja-card-feedback');
+    await settled();
+    const after = await waitFor(() => { const el = within(card).getByTestId('hanja-card-feedback'); expect(el.dataset.state).toBe('ok'); return el; });
     expect(after.dataset.state).toBe('ok');
     expect(Number(after.dataset.attempt)).toBe(Number(local.dataset.attempt) + 1); // a new attempt re-renders the message
     expect(after.textContent).toContain(name);

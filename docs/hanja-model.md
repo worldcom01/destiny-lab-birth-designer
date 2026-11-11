@@ -170,11 +170,197 @@ All writes of confirmed Hanja go through one fail-closed path
 Display reads use the same strict reader. Mode B reports `unreadable` /
 `skipped(size)` and Mode C a read notice instead of showing "no selection".
 
-### Remaining risk: concurrent tabs
+### Concurrent tabs (superseded by R3.2)
 
-`localStorage` has no transactions. Two tabs saving at the same time can still
-interleave read → write so that the later write does not contain the earlier
-tab's change to *another* name or scope (last writer wins for the whole key).
-Within one tab, every save re-reads the stored record immediately before
-writing, so a change made in another tab earlier is kept. Cross-tab locking
-(e.g. Web Locks API or a `storage` event re-check) is not implemented.
+`localStorage` has no transactions, and in Chromium each tab reads its own
+asynchronously updated copy. Measured with two real tabs, a whole-key
+read-modify-write lost updates even when every update held an exclusive Web
+Lock. Since R3.2 Hanja selections are therefore persisted in IndexedDB (below);
+the localStorage functions above remain only as the strict reader of legacy
+data and for their own tests. Result pages never write Hanja selections to
+localStorage.
+
+## R3.2 multi-tab persistence contract (IndexedDB)
+
+Scope: one browser profile, one origin. Nothing is synchronised between
+browsers or devices (no server). Preview and Production are different origins.
+
+### 1. Schema (database `dlbd_hanja`, version 1)
+
+- Object store `documents`: key = the existing storage key
+  (`dlbd_mode_b_hanja_v2` / `dlbd_mode_c_hanja_v2`), value = the **unchanged v2
+  JSON text** (`{"version":2,"scopes":{...}}`). All existing validation applies
+  to it: strict lossless reader, 1,000,000-character limit, finite `updatedAt`,
+  canonical analysis scope (C1), name/position fit (H2/C2), at most 20 scopes.
+- Object store `metadata`: same key, value =
+  `{ protocol: 1, status: 'complete', generation, revision, epoch, seq,
+  nextIncarnation, scopes: { [scope]: { incarnation, order, positions:
+  { ["name#index"]: revision } } }, source: { kind, digest, length },
+  externalAcks: [{ scope, digest }] }`.
+  - `generation`: random id of this initialisation. A new database (e.g. after
+    eviction) has a new generation, so every older token is invalid.
+  - `revision`: +1 per committed document change. `seq`: commit sequence used
+    for retention order. `epoch`: +1 whenever a scope is evicted.
+  - `scopes` has exactly the scopes of the document (invariant). `positions`
+    holds only positions that were changed since import (bounded by the
+    document: at most 20 scopes × names × 3).
+  - `source`: what was imported (`missing` or `v2`), its digest and length.
+    Digests are a deterministic 53-bit cyrb53 hash plus the text length
+    (`<hex>:<length>`): change detection only — not a security hash and never
+    a conflict authority. An oversized text (> 1,000,000 characters) is never
+    scanned: its identity is `oversize:<length>:<digest of the first 4,096
+    characters>`.
+  - `externalAcks`: per analysis scope, the digest of the legacy snapshot the
+    user dismissed there (newest last, at most 20). No per-save history is kept.
+- Metadata validation is strict and fail-closed: exact keys at every level,
+  canonical position keys (`<2–5 Hangul>#<0–2>`) that exist in the document,
+  position revisions within the document revision, unique incarnations and
+  orders, `nextIncarnation` above every incarnation, `seq` at least the scope
+  count, a well-formed generation and digests, a bounded `externalAcks` list
+  and at most 200,000 serialised characters. Anything else is `corrupt`
+  (read-only; never repaired or deleted).
+- The v2 payload never contains metadata. Every initialisation, save and
+  metadata change uses **one readwrite transaction over both stores**.
+
+### 2. Atomic, idempotent initialisation (per key)
+
+1. The page enters `initializing`; no Hanja save is possible.
+2. Outside any transaction the localStorage v2 text is read without modifying
+   it and classified: `missing`, `inaccessible` (getItem threw / no storage),
+   `too-large` (> 1,000,000), `malformed`/`invalid` (strict reader),
+   `over-retention` (> 20 scopes) or `valid`. Nothing is normalised or dropped;
+   a valid text is imported verbatim (records that later fail C2 stay as they
+   are and are refused on save, exactly as before).
+3. One readwrite transaction reads `documents[key]` and `metadata[key]`:
+   - both present and valid → use them; **never overwrite** (a second, stale
+     initialiser loses no data and imports nothing);
+   - exactly one present, or invalid → `corrupt`: read-only, nothing written,
+     nothing deleted or recreated;
+   - both absent → only a `missing` or `valid` source is imported (missing →
+     explicit empty v2 document). Any other source class stops with a read-only
+     error; a failed read never becomes an empty store.
+4. Document and metadata are put in the same transaction; the page becomes
+   `ready` only after `complete`.
+5. localStorage v2/v1 and every legacy record are left untouched.
+6. Retention order of an imported document: `updatedAt` descending, then scope
+   string ascending; the newest gets the highest `order`.
+7. After a first completed import a per-key marker `dlbd_hanja_idb_v1:<key>`
+   (generation) is written to localStorage (new keys; no legacy key is
+   touched). Per key, so initialising one mode never makes the first
+   initialisation of the other mode look like a lost database. If the
+   database record is later missing while its marker exists (eviction / user
+   deletion), the page does **not** re-import automatically: it shows
+   `reimport-confirm`, read-only, and imports the (possibly older) legacy
+   snapshot only after explicit confirmation. If the marker is gone as well,
+   earlier use cannot be detected (documented limitation).
+
+### 3. Old-version tabs (no automatic merge)
+
+After initialisation localStorage is a legacy external source only. On
+`storage` events for the key, page visibility/focus and reload, the page reads
+the legacy text once (bounded by 1,000,000 characters; bursts of events are
+debounced into one check). If its digest equals the imported source, or the
+snapshot dismissed **for the current scope**, nothing happens. Otherwise:
+- unreadable/invalid → a read-only notice (nothing changes);
+- valid → for the **current analysis scope only**, positions whose legacy value
+  is a valid, fitting Hanja that differs from the IndexedDB value are listed
+  (name, syllable, current value, legacy value). Missing, empty, `{}` or `null`
+  legacy values are never treated as deletions. `updatedAt` is never used to
+  decide.
+- The user may adopt a listed value; adoption goes through the page's normal
+  save handler (an ordinary conditional save with the latest token), so
+  success, conflict, quota, aborted and unknown outcomes get the same named
+  feedback as a normal selection. Dismissing records the digest for the
+  current scope only; candidates of other scopes stay visible there. The whole
+  document is never replaced. The notice asks the user to reload older
+  application tabs.
+
+### 4. Target tokens and conflicts
+
+A snapshot carries, per scope, `{ generation, epoch, incarnation }` (incarnation
+0 = the scope had no record) and per position `{ revision, value }` where value
+is the effective confirmed value (own record, or the R36-recovered value when
+the scope has no record; system suggestions and unassigned are `null`, never
+confirmed). A save request carries the token of the target position.
+
+Inside one readwrite transaction:
+1. document + metadata are strictly validated (invariants included);
+2. scope (C1), name and position (H2/C2) are validated as before;
+3. `generation` or `epoch` differ, or the scope's incarnation differs from a
+   non-zero expected incarnation → `reload-required` (typed conflict, no write);
+4. base selections = the scope's record, or — without a record — the R36
+   recovery recomputed **from the latest document** (never the screen's copy);
+5. if the target already holds the requested value → idempotent success, no
+   write, no retention change;
+6. if the target revision or value differs from the token → `conflict` with
+   the current value, no write (first committed writer wins; ABA such as
+   A→B→A is detected by the revision);
+7. otherwise exactly one position is patched on the latest document; the
+   position revision, document revision and `seq`/`order` are incremented; a
+   new scope gets a new incarnation; retention keeps the saved scope and the 19
+   highest `order` scopes; an eviction increments `epoch` (stale tokens of
+   every scope must reload, so an evicted scope cannot be resurrected);
+8. output size, schema, scope fit and invariants are re-validated, then both
+   records are put.
+Different names, positions and scopes therefore never overwrite each other.
+
+### 5. Transaction lifecycle and failures
+
+- The database is opened (with a timeout) before any transaction; random ids
+  and digests are computed before the transaction. Inside the transaction only
+  synchronous validation runs between the `get` results and the `put`s; no
+  awaits, timers or network.
+- Transactions request `{ durability: 'strict' }`. The observed
+  `transaction.durability` is reported as a capability (`strict`, `relaxed`,
+  `default` or `unknown` when the browser does not expose it). Strict
+  durability lowers power-loss risk; it is not a backup and does not prevent
+  eviction or user deletion. Browsers without the hint still commit normally.
+  The `durability` option/attribute is available from Chrome/Edge 82,
+  Firefox 126 and Safari 15; older or option-ignoring browsers commit with
+  their default (reported as `unknown`/`default`) — saving stays enabled there
+  and this residual power-loss risk is accepted and documented, not hidden.
+- Success is reported only on `complete`. Results: `success`, `conflict`,
+  `reload-required`, validation failure, `quota`, `aborted`, `unavailable`,
+  `blocked-upgrade`, `unknown-outcome`. A transaction whose `complete`/`abort`
+  is not observed within the timeout is `unknown-outcome`: neither saved nor
+  rolled back is claimed; the page offers a re-check that reloads the snapshot.
+- A later read that differs because another tab committed afterwards never
+  turns a completed save into a failure.
+- `versionchange` closes the connection and disables saving
+  (`blocked-upgrade`); `blocked` on open is reported the same way. A damaged
+  database is never deleted or recreated automatically.
+- IndexedDB unavailable / open failure → `read-only-error`: verified legacy
+  localStorage selections are shown read-only, saving is disabled with an
+  explanation and a retry. There is no localStorage write fallback.
+
+### 6. Page states (Mode B / Mode C)
+
+`initializing → ready ⇄ saving → ready | conflict | unknown-outcome`, plus
+`read-only-error`, `blocked-upgrade` and `reimport-confirm`. Before `ready`
+and while `saving`, every Hanja control is disabled (one save at a time per
+page); results are rendered without confirmed selections or with the
+read-only legacy ones, never with an empty record presented as confirmed.
+Success applies the returned canonical snapshot (quick selection, detailed
+analysis and PDF input use the same results). Conflict refreshes the snapshot
+and names the name, syllable and both values. Stale responses are ignored by
+operation id; unmount/StrictMode never claims an outcome. R3.1 modal, focus
+and card feedback behaviour is unchanged.
+
+### 7. Verification
+
+The pure decision functions are unit-tested; pages are tested in jsdom with an
+in-memory serialising backend (`src/test-utils/memoryHanjaBackend.ts`, never
+imported by application code; injected through the module-scope
+`overrideHanjaBackend`). **Cross-tab safety is only claimed from real Chrome
+runs with two same-origin tabs.**
+
+Production code contains no test instrumentation (audit F1): no global
+callbacks, no harness object, no test abort path; the production bundle is
+checked for their absence. The real-browser tests instead instrument
+IndexedDB inside the test browser only (scripts injected through the
+DevTools protocol before the page loads): the deterministic barrier blocks a
+transaction's read step with a synchronous request until the other tab's
+transaction exists, and an abort after `put` is injected by wrapping
+`IDBObjectStore.put`. Direct API runs use a separately built, test-only
+bundle of the unchanged persistence module served next to the app on a test
+proxy origin.

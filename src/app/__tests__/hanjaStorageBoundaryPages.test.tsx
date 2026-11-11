@@ -2,10 +2,13 @@
 // R3 storage boundary fixes on the real result pages: H1 (saved choice must
 // survive a reload even with future-dated scopes) and H4 (no stale error
 // notice next to a verified success).
+// R3.2: saves are committed to the persistence backend (in-memory here); legacy
+// localStorage is imported once and then only read.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { committedNames, installMemoryHanjaBackend } from '@/test-utils/hanjaTestBackend';
 import { ModeBInput, ModeCInput } from '@/types';
-import { HANJA_SELECTION_KEYS, analysisScope, loadHanjaSelections } from '@/lib/hanjaModel';
+import { HANJA_SELECTION_KEYS, analysisScope } from '@/lib/hanjaModel';
 import { validateModeBInput, validateModeCInput } from '@/lib/inputValidation';
 
 const push = vi.fn();
@@ -26,13 +29,19 @@ const futureStore = (scopes: string[]) => {
 };
 const august = (i: number) => `2027-08-${String(i + 1).padStart(2, '0')}`;
 
+const be = installMemoryHanjaBackend();
+const persistenceStatus = () => screen.queryByTestId('hanja-persistence-status')?.getAttribute('data-status') ?? 'idle';
+const whenSettled = () => waitFor(() => expect(['initializing', 'saving']).not.toContain(persistenceStatus()));
+
 async function pick(name: string, position: number, hanja: string) {
   const heading = await screen.findByRole('heading', { name }, { timeout: 15000 });
+  await whenSettled();
   const card = heading.closest('div.bg-white') as HTMLElement;
   fireEvent.click(within(card).getByRole('button', { name: /세부 분석 보기/ }));
   fireEvent.click(within(card).getByRole('button', { name: /한자 분석/ }));
   fireEvent.click(card.querySelectorAll<HTMLElement>('[data-hanja-status]')[position]);
   fireEvent.click(screen.getAllByRole('button').find(b => b.textContent?.trim().startsWith(hanja))!);
+  await whenSettled();
   return heading;
 }
 
@@ -46,10 +55,13 @@ describe('H1: a choice shown as saved survives a reload (20 future-dated scopes)
     render(<ModeBResults />);
     await pick('김민서', 1, '敏');
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
-    expect(loadHanjaSelections(HANJA_SELECTION_KEYS.modeB, scopeB())).toEqual({ 김민서: ['敏'] });
+    expect(committedNames(be(), HANJA_SELECTION_KEYS.modeB, scopeB())).toEqual({ 김민서: ['敏'] });
+    expect(Object.keys(JSON.parse(be().documents.get(HANJA_SELECTION_KEYS.modeB)!).scopes)).toHaveLength(20); // retention size unchanged
     cleanup();
-    render(<ModeBResults />);
-    expect((await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 })).parentElement!.textContent).toContain('敏');
+    render(<ModeBResults />); // reload
+    const reloaded = await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 });
+    await whenSettled();
+    expect(reloaded.parentElement!.textContent).toContain('敏');
   }, 60000);
 
   it('Mode C', async () => {
@@ -58,10 +70,12 @@ describe('H1: a choice shown as saved survives a reload (20 future-dated scopes)
     render(<ModeCResults />);
     await pick('김민서', 1, '敏');
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
-    expect(loadHanjaSelections(HANJA_SELECTION_KEYS.modeC, scopeC())['김민서']?.[0]).toBe('敏');
+    expect(committedNames(be(), HANJA_SELECTION_KEYS.modeC, scopeC())?.['김민서']?.[0]).toBe('敏');
     cleanup();
-    render(<ModeCResults />);
-    expect((await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 })).parentElement!.textContent).toContain('敏');
+    render(<ModeCResults />); // reload
+    const reloaded = await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 });
+    await whenSettled();
+    expect(reloaded.parentElement!.textContent).toContain('敏');
   }, 60000);
 });
 
@@ -82,7 +96,9 @@ describe('H4: after a verified save the stale "cannot read / will not save" noti
     const fix = brokenUntilFixed(HANJA_SELECTION_KEYS.modeB);
     render(<ModeBResults />);
     expect((await screen.findByTestId('hanja-recovery-notice', {}, { timeout: 15000 })).textContent).toContain('불러오지 못했습니다');
+    await waitFor(() => expect(persistenceStatus()).toBe('read-only-error')); // nothing saved while the source is unreadable
     fix();
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' })); // R3.2: initialisation is retried explicitly
     await pick('김민서', 1, '敏');
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
     expect(screen.queryByTestId('hanja-recovery-notice')).toBeNull();
@@ -93,19 +109,29 @@ describe('H4: after a verified save the stale "cannot read / will not save" noti
     const fix = brokenUntilFixed(HANJA_SELECTION_KEYS.modeC);
     render(<ModeCResults />);
     expect((await screen.findByTestId('hanja-read-notice', {}, { timeout: 15000 })).textContent).toContain('불러오지 못했습니다');
+    await waitFor(() => expect(persistenceStatus()).toBe('read-only-error'));
     fix();
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     await pick('김민서', 1, '敏');
     expect(screen.getByTestId('hanja-save-status')).toBeTruthy();
     expect(screen.queryByTestId('hanja-read-notice')).toBeNull();
   }, 60000);
 
-  it('a failed save keeps the read notice (it is still accurate)', async () => {
+  it('while the source stays unreadable no save is possible and the read notice stays (it is still accurate)', async () => {
     localStorage.setItem('dlbd_mode_b', JSON.stringify(B_INPUT));
     brokenUntilFixed(HANJA_SELECTION_KEYS.modeB); // never fixed
     render(<ModeBResults />);
     await screen.findByTestId('hanja-recovery-notice', {}, { timeout: 15000 });
-    await pick('김민서', 1, '敏');
-    expect(screen.getByRole('alert')).toBeTruthy();
+    await waitFor(() => expect(persistenceStatus()).toBe('read-only-error'));
+    const heading = await screen.findByRole('heading', { name: '김민서' });
+    const card = heading.closest('div.bg-white') as HTMLElement;
+    const quick = within(card).getAllByRole('button', { name: /'민' 한자 선택/ })[0];
+    expect(quick.getAttribute('aria-disabled')).toBe('true');
+    fireEvent.click(quick);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' })); // retry while still broken
+    await waitFor(() => expect(persistenceStatus()).toBe('read-only-error'));
     expect(screen.getByTestId('hanja-recovery-notice')).toBeTruthy();
+    expect(be().documents.size).toBe(0); // no store was created from an unreadable source
   }, 60000);
 });

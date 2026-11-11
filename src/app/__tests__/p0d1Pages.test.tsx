@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { installMemoryHanjaBackend } from '@/test-utils/hanjaTestBackend';
 import { ModeBInput } from '@/types';
 import { analysisScope } from '@/lib/hanjaModel';
 import { validateModeBInput } from '@/lib/inputValidation';
@@ -11,6 +12,7 @@ import { HANJA_DB } from '@/data/hanjaDB';
 const push = vi.fn();
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push, replace: vi.fn(), back: vi.fn() }) }));
 
+const hanjaBackend = installMemoryHanjaBackend();
 const ModeBResults = (await import('@/app/mode-b/results/page')).default;
 const ModeAResults = (await import('@/app/mode-a/results/page')).default;
 const ModeCResults = (await import('@/app/mode-c/results/page')).default;
@@ -41,6 +43,8 @@ afterEach(() => {
 /** Row text of the 김민서 card (header shows name + nameAnalysis.hanja). */
 async function minseoHanja(): Promise<string> {
   const heading = await screen.findByRole('heading', { name: '김민서' });
+  // R3.2: stored selections are applied once the persistence initialisation completed
+  await waitFor(() => expect(screen.queryByTestId('hanja-persistence-status')?.getAttribute('data-status')).not.toBe('initializing'));
   return heading.parentElement!.textContent!;
 }
 
@@ -146,13 +150,14 @@ describe('H04 page-level: input persistence failures', () => {
     localStorage.setItem('dlbd_mode_b', JSON.stringify(MIN_MIN));
     render(<ModeBResults />);
     const heading = await screen.findByRole('heading', { name: '김민서' });
+    await waitFor(() => expect(screen.queryByTestId('hanja-persistence-status')).toBeNull()); // persistence ready
     const card = heading.closest('div.bg-white') as HTMLElement;
     fireEvent.click(within(card).getByRole('button', { name: /세부 분석 보기/ }));
     fireEvent.click(within(card).getByRole('button', { name: /한자 분석/ }));
     const seoCard = card.querySelectorAll<HTMLElement>('[data-hanja-status]')[2]; // 金, 敏, 瑞
     expect(seoCard.dataset.hanjaChar).toBe('瑞');
     fireEvent.click(seoCard);
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('fail', 'QuotaExceededError'); });
+    hanjaBackend().failNext = 'quota'; // R3.2: the save is one IndexedDB transaction (in-memory backend here)
     const alt = HANJA_DB['서'].find(o => o.hanja !== '瑞')!.hanja;
     fireEvent.click(screen.getAllByRole('button').find(b => b.textContent?.startsWith(alt))!);
     // Data-safety hotfix: quota failure is surfaced and the unsaved choice is not applied on screen.

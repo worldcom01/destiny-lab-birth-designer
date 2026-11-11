@@ -23,13 +23,17 @@ const GRADE_RING: Record<string, string> = {
 };
 
 
-export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback }: {
+export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback, selectionLocked = false, registerHanjaButton }: {
   result: AnalysisResult;
   rank?: number;
   /** Lifts a Hanja choice to the page-level selection state (persisted there). */
   onHanjaSelect?: (fullName: string, index: number, hanja: string) => void;
   /** The page's latest save result when it concerns this name (shown at the card, U4). */
   saveFeedback?: HanjaSaveState;
+  /** R3.2: Hanja controls are disabled while persistence is not ready or a save is running. */
+  selectionLocked?: boolean;
+  /** R3.2: registers the card's "한자 선택" buttons by name and syllable index (page focus handling). */
+  registerHanjaButton?: (fullName: string, index: number, el: HTMLButtonElement | null) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   // The card's single Hanja picker (R3.1): opened from the visible "한자 선택"
@@ -40,7 +44,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
   const selectable = !!onHanjaSelect;
   // Only one active picker on the page (U2): a request while any dialog is open is ignored.
   // Focus returns to `trigger` through the shared modal stack (U5).
-  const openPicker = (index: number, trigger: HTMLElement) => { if (!isModalOpen()) setPicker({ index, trigger }); };
+  const openPicker = (index: number, trigger: HTMLElement) => { if (!selectionLocked && !isModalOpen()) setPicker({ index, trigger }); };
   const closePicker = () => setPicker(null);
   const pickerIndex = picker?.index ?? null;
   // Number of confirmations made from this card; re-keys the local feedback so a
@@ -50,9 +54,10 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
   const feedback = selectable && saveFeedback && saveFeedback.fullName === result.name.full ? saveFeedback : null;
   // After a confirmation from this card, keep its result visible where the user is
   // working (a low-ranked card may be far below the page-level message).
+  // R3.2: the result of an asynchronous save arrives later, so this also runs when it changes.
   useEffect(() => {
-    if (attempts > 0) document.getElementById(feedbackId)?.scrollIntoView?.({ block: 'nearest' });
-  }, [attempts, feedbackId]);
+    if (attempts > 0 && feedback) document.getElementById(feedbackId)?.scrollIntoView?.({ block: 'nearest' });
+  }, [attempts, feedback, feedbackId]);
   const pickerChar = pickerIndex !== null ? result.name.hanja.given[pickerIndex] : undefined;
   const weakestOhaeng: OhaengType | null = (() => {
     const b = result.sajuOhaengBalance;
@@ -142,7 +147,8 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
           <span className="font-semibold">이름과의 관계</span> · {buildSajuReading(result).nameRelation}
         </p>
 
-        {selectable && <HanjaQuickSelect model={result.name.hanja} onOpen={openPicker} describedBy={feedback ? feedbackId : undefined} />}
+        {selectable && <HanjaQuickSelect model={result.name.hanja} onOpen={openPicker} describedBy={feedback ? feedbackId : undefined} disabled={selectionLocked}
+          buttonRef={registerHanjaButton ? (i, el) => registerHanjaButton(result.name.full, i, el) : undefined} />}
         {feedback && (
           // Not a live region: the page-level status/alert announces once; this text is
           // the visible result at the card and the description of its Hanja buttons.
@@ -152,7 +158,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
             }`}>
             {feedback.ok
               ? `${feedback.fullName}의 한자 선택을 브라우저에 저장했습니다.`
-              : hanjaSaveFailureMessage(feedback.fullName, feedback.reason)}
+              : feedback.message ?? hanjaSaveFailureMessage(feedback.fullName, feedback.reason)}
           </p>
         )}
 
@@ -183,7 +189,7 @@ export default function NameRankCard({ result, rank, onHanjaSelect, saveFeedback
         <div className="border-t border-slate-100 p-5 bg-slate-50/50">
           {/* 한자 분석 */}
           <div className="mb-5">
-            <HanjaDisplay model={result.name.hanja} onOpenPicker={selectable ? openPicker : undefined} describedBy={feedback ? feedbackId : undefined} />
+            <HanjaDisplay model={result.name.hanja} onOpenPicker={selectable ? openPicker : undefined} describedBy={feedback ? feedbackId : undefined} disabled={selectionLocked} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

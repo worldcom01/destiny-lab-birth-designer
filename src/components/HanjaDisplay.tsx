@@ -15,6 +15,8 @@ interface Props {
   onOpenPicker?: (index: number, trigger: HTMLElement) => void;
   /** id of the card's save-feedback text (U4). */
   describedBy?: string;
+  /** R3.2: Hanja buttons disabled while persistence is not ready or saving. */
+  disabled?: boolean;
 }
 
 const STATUS_STYLE: Record<NameCharHanja['status'], string> = {
@@ -35,11 +37,14 @@ export function HanjaCharCard({
   caption,
   onOpen,
   describedBy,
+  disabled = false,
 }: {
   char: NameCharHanja;
   caption: string;
   onOpen?: (trigger: HTMLElement) => void;
   describedBy?: string;
+  /** R3.2: while persistence is not ready or saving. */
+  disabled?: boolean;
 }) {
   const selectable = !!onOpen && getHanjaOptions(char.hangul).length > 0;
   const suri = char.strokes != null ? getSuriOhaeng(char.strokes) : null;
@@ -91,8 +96,9 @@ export function HanjaCharCard({
       data-hanja-status={char.status}
       aria-label={`'${char.hangul}' 한자 선택`}
       aria-describedby={describedBy}
-      className={className}
-      onClick={e => onOpen!(e.currentTarget)}
+      aria-disabled={disabled || undefined}
+      className={`${className} aria-disabled:cursor-not-allowed aria-disabled:opacity-60`}
+      onClick={e => { if (!disabled) onOpen!(e.currentTarget); }}
     >
       {body}
     </button>
@@ -103,7 +109,7 @@ export function HanjaCharCard({
   );
 }
 
-export default function HanjaDisplay({ model, onOpenPicker, describedBy }: Props) {
+export default function HanjaDisplay({ model, onOpenPicker, describedBy, disabled = false }: Props) {
   const [expanded, setExpanded] = useState(false);
   const allChars = [...model.surname, ...model.given];
   const strokesSum = totalStrokes(allChars);
@@ -146,6 +152,7 @@ export default function HanjaDisplay({ model, onOpenPicker, describedBy }: Props
                 caption={c.hangul}
                 onOpen={onOpenPicker ? trigger => onOpenPicker(i, trigger) : undefined}
                 describedBy={describedBy}
+                disabled={disabled}
               />
             ))}
           </div>

@@ -36,11 +36,15 @@ const STATUS_CHIP: Record<string, string> = {
  * canonical Hanja model, which the page updates only after a verified save.
  * Surname Hanja are not selectable and are not listed.
  */
-export default function HanjaQuickSelect({ model, onOpen, describedBy }: {
+export default function HanjaQuickSelect({ model, onOpen, describedBy, disabled = false, buttonRef }: {
   model: NameHanjaModel;
   onOpen: (index: number, trigger: HTMLElement) => void;
   /** id of the card's save-feedback text, read with the buttons (U4). */
   describedBy?: string;
+  /** R3.2: while persistence is not ready or saving. */
+  disabled?: boolean;
+  /** R3.2: exposes each syllable's button (focus destination after a legacy adoption). */
+  buttonRef?: (index: number, el: HTMLButtonElement | null) => void;
 }) {
   const chars = model.given.map(c => ({ c, available: getHanjaOptions(c.hangul).length > 0 }));
   const anyAvailable = chars.some(x => x.available);
@@ -57,12 +61,16 @@ export default function HanjaQuickSelect({ model, onOpen, describedBy }: {
             {available ? (
               <button
                 type="button"
+                ref={buttonRef ? el => { buttonRef(i, el); } : undefined}
                 data-hanja-quick={i}
                 data-quick-status={c.status}
                 aria-label={`'${c.hangul}' 한자 선택 (현재: ${c.hanja ? `${c.hanja} ${STATUS_LABEL[c.status]}` : '미지정'})`}
                 aria-describedby={describedBy}
-                onClick={e => onOpen(i, e.currentTarget)}
-                className="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-left transition-colors hover:border-indigo-400 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                // aria-disabled (not the disabled attribute): the button keeps focus, so the
+                // picker can return focus to it while a save is running (R3.2)
+                aria-disabled={disabled || undefined}
+                onClick={e => { if (!disabled) onOpen(i, e.currentTarget); }}
+                className="flex min-h-[44px] items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-left transition-colors hover:border-indigo-400 hover:bg-indigo-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
               >
                 <span className="text-sm font-bold text-slate-800">{c.hangul}</span>
                 <span className={`text-lg font-black leading-none ${c.hanja ? 'text-slate-900' : 'text-slate-300'}`}>{c.hanja ?? UNASSIGNED_MARK}</span>

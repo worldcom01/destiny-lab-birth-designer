@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Filter, Sparkles } from 'lucide-react';
 import { AnalysisResult, ModeBInput, Grade, GRADE_CONFIG } from '@/types';
@@ -8,9 +8,10 @@ import { runModeBAnalysis, formatKoreanDate, applyHanjaSelections } from '@/lib/
 import { validateModeBInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
-import {
-  HANJA_SELECTION_KEYS, HanjaScopeRecovery, HanjaSelections, analysisScope, hanjaRecoveryNotice, loadHanjaSelectionsWithLegacy, saveHanjaSelectionPatch,
-} from '@/lib/hanjaModel';
+import { HANJA_SELECTION_KEYS, analysisScope, hanjaRecoveryNotice } from '@/lib/hanjaModel';
+import { useHanjaPersistence } from '@/lib/useHanjaPersistence';
+import HanjaPersistenceStatus, { hanjaAttemptMessage } from '@/components/HanjaPersistenceStatus';
+import type { ExternalCandidate } from '@/lib/hanjaPersistenceCore';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
 import SajuSummary from '@/components/SajuSummary';
@@ -20,14 +21,12 @@ import { OVERALL_SCORE_EXPLANATION, appliedPreferencesText } from '@/lib/scoreCo
 
 type FG = Grade | 'ALL';
 
-interface ModeBData { results: AnalysisResult[]; selections: HanjaSelections; scope: string; recovery: HanjaScopeRecovery }
+interface ModeBData { results: AnalysisResult[]; scope: string }
 
+// The analysis is synchronous; Hanja selections come from the R3.2 persistence
+// hook (IndexedDB, one transaction per save; legacy localStorage is read-only).
 function runModeB(input: ModeBInput): ModeBData {
-  const scope = analysisScope(input);
-  // Read-only: no stored record (v1 or v2) is deleted when results are opened.
-  // Read-only: an older duplicate-preference scope is used only when provably the same input.
-  const { selections, recovery } = loadHanjaSelectionsWithLegacy(HANJA_SELECTION_KEYS.modeB, scope);
-  return { results: applyHanjaSelections(runModeBAnalysis(input), selections), selections, scope, recovery };
+  return { results: runModeBAnalysis(input), scope: analysisScope(input) };
 }
 
 const EMPTY: AnalysisResult[] = [];
@@ -36,23 +35,37 @@ export default function ModeBResults() {
   const router = useRouter();
   const state = useStoredAnalysis('dlbd_mode_b', validateModeBInput, runModeB);
   const [saveState, setSaveState] = useState<HanjaSaveState>(null);
-  const [edited, setEdited] = useState<ModeBData | null>(null);
-  const current = edited ?? (state.status === 'ready' ? state.data : null);
-  const results = current?.results ?? EMPTY;
+  const base = state.status === 'ready' ? state.data : null;
+  const persistence = useHanjaPersistence(HANJA_SELECTION_KEYS.modeB, base?.scope ?? null, true);
+  const names = persistence.names;
+  // Only the committed canonical snapshot (or read-only legacy data) is applied; quick
+  // selection, detailed analysis and the PDF input all use these same results.
+  const results = useMemo(() => (base ? (names ? applyHanjaSelections(base.results, names) : base.results) : EMPTY), [base, names]);
   const input = state.status === 'ready' ? state.input : null;
   const [filterGrade, setFilterGrade] = useState<FG>('ALL');
   const [showCount, setShowCount] = useState(20);
 
-  const handleHanjaSelect = (fullName: string, index: number, hanja: string) => {
-    if (!current) return;
-    // One strict read + patch of the stored record (fail-closed). The screen shows only
-    // what was actually persisted; a refused save changes neither storage nor the screen.
-    const saved = saveHanjaSelectionPatch(HANJA_SELECTION_KEYS.modeB, current.scope, fullName, index, hanja, current.selections);
-    if (!saved.ok) { setSaveState({ ok: false, fullName, reason: saved.reason }); return; }
-    setSaveState({ ok: true, fullName });
-    // A verified write supersedes any earlier read/recovery notice (H4).
-    setEdited({ ...current, results: applyHanjaSelections(current.results, saved.selections), selections: saved.selections, recovery: { kind: 'none' } });
+  const handleHanjaSelect = async (fullName: string, index: number, hanja: string) => {
+    // One conditional patch in one IndexedDB transaction; the screen changes only after
+    // the transaction completed (a refused or unknown save never shows the new Hanja).
+    setSaveState(null);
+    const attempt = await persistence.save(fullName, index, hanja);
+    if (attempt.ok) { setSaveState({ ok: true, fullName }); return; }
+    const syllable = base?.results.find(r => r.name.full === fullName)?.name.hanja.given[index]?.hangul;
+    setSaveState({ ok: false, fullName, reason: attempt.reason, message: hanjaAttemptMessage(fullName, index, syllable, hanja, attempt) });
   };
+  // R3.2 adoption focus: the card's "한자 선택" button for the adopted syllable, else the save message.
+  const hanjaButtons = useRef(new Map<string, HTMLButtonElement>());
+  const saveMessageRef = useRef<HTMLParagraphElement>(null);
+  const registerHanjaButton = useCallback((fullName: string, index: number, el: HTMLButtonElement | null) => {
+    if (el) hanjaButtons.current.set(`${fullName}#${index}`, el);
+  }, []);
+  const adoptionFocusFallback = useCallback((it: ExternalCandidate | null) => {
+    const quick = it ? hanjaButtons.current.get(`${it.fullName}#${it.index}`) : undefined;
+    return quick?.isConnected && quick.getAttribute('aria-disabled') !== 'true' ? quick : saveMessageRef.current;
+  }, []);
+  const syllableOf = (fullName: string, index: number) => base?.results.find(r => r.name.full === fullName)?.name.hanja.given[index]?.hangul;
+  const recoveryNotice = hanjaRecoveryNotice(persistence.recovery);
 
   const gc = useMemo(() => {
     const c: Record<FG, number> = { ALL: results.length, SS: 0, S: 0, A: 0, B: 0, C: 0 };
@@ -121,9 +134,9 @@ export default function ModeBResults() {
           />
         )}
 
-        {current && hanjaRecoveryNotice(current.recovery) && (
+        {recoveryNotice && (
           <p role="status" data-testid="hanja-recovery-notice" className="text-[11px] text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-            {hanjaRecoveryNotice(current.recovery)}
+            {recoveryNotice}
           </p>
         )}
         {input && (
@@ -163,7 +176,8 @@ export default function ModeBResults() {
           </div>
         </div>
 
-        <HanjaSaveFeedback state={saveState} />
+        <HanjaPersistenceStatus persistence={persistence} syllableOf={syllableOf} onAdopt={it => handleHanjaSelect(it.fullName, it.index, it.legacy)} focusFallback={adoptionFocusFallback} />
+        <HanjaSaveFeedback state={saveState} messageRef={saveMessageRef} />
         {/* 이름 목록 */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -176,7 +190,7 @@ export default function ModeBResults() {
           <div className="space-y-3">
             {filtered.slice(0, showCount).map((r, i) => (
               <div key={r.id} className="fade-up">
-                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} />
+                <NameRankCard result={r} rank={filterGrade === 'ALL' ? r.rank : i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} selectionLocked={!persistence.canSave} registerHanjaButton={registerHanjaButton} />
               </div>
             ))}
             {showCount < filtered.length && (

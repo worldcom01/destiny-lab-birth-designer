@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Sparkles, Trophy } from 'lucide-react';
 import { AnalysisResult, ModeCInput, GRADE_CONFIG } from '@/types';
@@ -8,9 +8,10 @@ import { analyzeModeCNames, applyHanjaSelections, formatKoreanDate, ModeCAnalysi
 import { validateModeCInput } from '@/lib/inputValidation';
 import { useStoredAnalysis } from '@/lib/useStoredAnalysis';
 import AnalysisErrorPanel from '@/components/AnalysisErrorPanel';
-import {
-  HANJA_SELECTION_KEYS, HanjaSelections, analysisScope, hanjaReadFailureNotice, loadHanjaSelectionsChecked, saveHanjaSelectionPatch,
-} from '@/lib/hanjaModel';
+import { HANJA_SELECTION_KEYS, analysisScope } from '@/lib/hanjaModel';
+import { useHanjaPersistence } from '@/lib/useHanjaPersistence';
+import HanjaPersistenceStatus, { hanjaAttemptMessage } from '@/components/HanjaPersistenceStatus';
+import type { ExternalCandidate } from '@/lib/hanjaPersistenceCore';
 import { calculateFourPillars, getSajuOhaengBalance, getDisplayHour } from '@/lib/saju';
 import NameRankCard from '@/components/NameRankCard';
 import SajuSummary from '@/components/SajuSummary';
@@ -18,16 +19,12 @@ import PDFButton from '@/components/PDFButton';
 import HanjaSaveFeedback, { HanjaSaveState } from '@/components/HanjaSaveFeedback';
 import { componentByKey, OVERALL_SCORE_EXPLANATION } from '@/lib/scoreComponents';
 
-interface ModeCData { results: AnalysisResult[]; rejected: ModeCAnalysis['rejected']; selections: HanjaSelections; scope: string; readNotice: string | null }
+interface ModeCData { results: AnalysisResult[]; rejected: ModeCAnalysis['rejected']; scope: string }
 
+// The analysis is synchronous; Hanja selections come from the R3.2 persistence hook.
 function runModeC(input: ModeCInput): ModeCData {
-  const scope = analysisScope(input);
-  // Read-only: no stored record (v1 or v2) is deleted when results are opened.
-  // Strict read: a storage problem is reported, never shown as "no selection".
-  const { selections, failure } = loadHanjaSelectionsChecked(HANJA_SELECTION_KEYS.modeC, scope);
-  const readNotice = failure && failure !== 'no-storage' ? hanjaReadFailureNotice(failure) : null;
   const analysis = analyzeModeCNames(input);
-  return { results: applyHanjaSelections(analysis.results, selections), rejected: analysis.rejected, selections, scope, readNotice };
+  return { results: analysis.results, rejected: analysis.rejected, scope: analysisScope(input) };
 }
 
 const EMPTY: AnalysisResult[] = [];
@@ -36,21 +33,33 @@ export default function ModeCResults() {
   const router = useRouter();
   const state = useStoredAnalysis('dlbd_mode_c', validateModeCInput, runModeC, 40);
   const [saveState, setSaveState] = useState<HanjaSaveState>(null);
-  const [edited, setEdited] = useState<ModeCData | null>(null);
-  const current = edited ?? (state.status === 'ready' ? state.data : null);
-  const results = current?.results ?? EMPTY;
-  const rejected = current?.rejected ?? [];
+  const base = state.status === 'ready' ? state.data : null;
+  const persistence = useHanjaPersistence(HANJA_SELECTION_KEYS.modeC, base?.scope ?? null, false);
+  const names = persistence.names;
+  const results = useMemo(() => (base ? (names ? applyHanjaSelections(base.results, names) : base.results) : EMPTY), [base, names]);
+  const rejected = base?.rejected ?? [];
   const input = state.status === 'ready' ? state.input : null;
+  const readNotice = persistence.snapshot ? null : persistence.readOnly?.readNotice ?? null;
 
-  const handleHanjaSelect = (fullName: string, index: number, hanja: string) => {
-    if (!current) return;
-    // One strict read + patch of the stored record (fail-closed); see Mode B.
-    const saved = saveHanjaSelectionPatch(HANJA_SELECTION_KEYS.modeC, current.scope, fullName, index, hanja, current.selections);
-    if (!saved.ok) { setSaveState({ ok: false, fullName, reason: saved.reason }); return; }
-    setSaveState({ ok: true, fullName });
-    // A verified write supersedes the earlier read notice (H4).
-    setEdited({ ...current, results: applyHanjaSelections(current.results, saved.selections), selections: saved.selections, readNotice: null });
+  const handleHanjaSelect = async (fullName: string, index: number, hanja: string) => {
+    // One conditional patch in one IndexedDB transaction; see Mode B.
+    setSaveState(null);
+    const attempt = await persistence.save(fullName, index, hanja);
+    if (attempt.ok) { setSaveState({ ok: true, fullName }); return; }
+    const syllable = base?.results.find(r => r.name.full === fullName)?.name.hanja.given[index]?.hangul;
+    setSaveState({ ok: false, fullName, reason: attempt.reason, message: hanjaAttemptMessage(fullName, index, syllable, hanja, attempt) });
   };
+  // R3.2 adoption focus: the card's "한자 선택" button for the adopted syllable, else the save message.
+  const hanjaButtons = useRef(new Map<string, HTMLButtonElement>());
+  const saveMessageRef = useRef<HTMLParagraphElement>(null);
+  const registerHanjaButton = useCallback((fullName: string, index: number, el: HTMLButtonElement | null) => {
+    if (el) hanjaButtons.current.set(`${fullName}#${index}`, el);
+  }, []);
+  const adoptionFocusFallback = useCallback((it: ExternalCandidate | null) => {
+    const quick = it ? hanjaButtons.current.get(`${it.fullName}#${it.index}`) : undefined;
+    return quick?.isConnected && quick.getAttribute('aria-disabled') !== 'true' ? quick : saveMessageRef.current;
+  }, []);
+  const syllableOf = (fullName: string, index: number) => base?.results.find(r => r.name.full === fullName)?.name.hanja.given[index]?.hangul;
 
   const sajuData = useMemo(() => {
     if (!input) return null;
@@ -133,10 +142,11 @@ export default function ModeCResults() {
           </div>
         )}
 
-        {current?.readNotice && (
-          <p role="status" data-testid="hanja-read-notice" className="text-[11px] text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">{current.readNotice}</p>
+        {readNotice && (
+          <p role="status" data-testid="hanja-read-notice" className="text-[11px] text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">{readNotice}</p>
         )}
-        <HanjaSaveFeedback state={saveState} />
+        <HanjaPersistenceStatus persistence={persistence} syllableOf={syllableOf} onAdopt={it => handleHanjaSelect(it.fullName, it.index, it.legacy)} focusFallback={adoptionFocusFallback} />
+        <HanjaSaveFeedback state={saveState} messageRef={saveMessageRef} />
         {/* 이름 순위 */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -161,7 +171,7 @@ export default function ModeCResults() {
             <div className="space-y-3">
               {results.map((r, i) => (
                 <div key={r.id} className="fade-up">
-                  <NameRankCard result={r} rank={i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} />
+                  <NameRankCard result={r} rank={i + 1} onHanjaSelect={handleHanjaSelect} saveFeedback={saveState} selectionLocked={!persistence.canSave} registerHanjaButton={registerHanjaButton} />
                 </div>
               ))}
             </div>

@@ -11,6 +11,9 @@ export const UNASSIGNED_MEANING = '한자 미지정';
 
 const HANJA_CHAR = /^[㐀-䶿一-鿿豈-﫿]$/u;
 
+/** True for a single supported Hanja character. */
+export const isHanjaChar = (v: unknown): v is string => typeof v === 'string' && HANJA_CHAR.test(v);
+
 export function unassignedChar(hangul: string): NameCharHanja {
   return { hangul, hanja: null, status: 'unassigned', meaning: null, strokes: null, jaWonOhaeng: null, inDatabase: false };
 }
@@ -149,7 +152,7 @@ export const LEGACY_HANJA_SELECTION_KEYS = {
   modeC: 'dlbd_mode_c_hanja',
 } as const;
 
-const MAX_SCOPES = 20;
+export const MAX_SCOPES = 20;
 const FULL_NAME = /^[가-힣]{2,5}$/;
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
@@ -269,10 +272,20 @@ export type HanjaStoreFailure =
   | 'invalid-selection' // the requested name/position/Hanja or the seed is not storable (H2)
   | 'invalid-scope'     // the scope is not the canonical scope of a valid Mode B/C input (C1)
   | 'invalid-stored-selection' // the stored record of this scope does not fit the analysis (C2; kept as is)
-  | 'invalid-output';   // the store to be written would not pass the strict reader (H1/H3)
+  | 'invalid-output'    // the store to be written would not pass the strict reader (H1/H3)
+  // R3.2 IndexedDB persistence (see docs/hanja-model.md, "R3.2 multi-tab persistence contract")
+  | 'conflict'          // the target position changed in another tab since it was shown
+  | 'reload-required'   // the shown snapshot is from another generation/retention epoch/scope incarnation
+  | 'not-ready'         // persistence is still initialising or is read-only
+  | 'unavailable'       // IndexedDB cannot be used
+  | 'blocked-upgrade'   // another tab holds or requests a different database version
+  | 'aborted'           // the transaction was aborted; nothing was committed
+  | 'unknown-outcome'   // completion was not observed; the result is unknown
+  | 'corrupt-db';       // the stored IndexedDB records are inconsistent (kept, not repaired)
 
-type HanjaReadFailure = Exclude<HanjaStoreFailure,
-  'write-error' | 'quota-exceeded' | 'invalid-selection' | 'invalid-scope' | 'invalid-stored-selection' | 'invalid-output'>;
+export type HanjaReadFailure = Exclude<HanjaStoreFailure,
+  'write-error' | 'quota-exceeded' | 'invalid-selection' | 'invalid-scope' | 'invalid-stored-selection' | 'invalid-output'
+  | 'conflict' | 'reload-required' | 'not-ready' | 'unavailable' | 'blocked-upgrade' | 'aborted' | 'unknown-outcome' | 'corrupt-db'>;
 
 export type HanjaStoreRead =
   | { ok: true; kind: 'missing' | 'empty' | 'nonempty'; store: ScopedStore }
@@ -332,7 +345,7 @@ function isQuotaError(e: unknown): boolean {
 }
 
 /** True when `sel` is exactly what the strict reader accepts for a scope's names (lossless). */
-function isStorableSelections(sel: unknown): sel is HanjaSelections {
+export function isStorableSelections(sel: unknown): sel is HanjaSelections {
   return isPlainObject(sel) && JSON.stringify(parseNames(sel)) === JSON.stringify(sel);
 }
 
@@ -400,7 +413,7 @@ export function givenLengthInScope(scope: string, fullName: unknown): number | n
 }
 
 /** Every name belongs to the analysis and uses only positions of its actual given name. */
-function positionsFit(ctx: AnalysisScopeContext, selections: HanjaSelections): boolean {
+export function positionsFit(ctx: AnalysisScopeContext, selections: HanjaSelections): boolean {
   return Object.entries(selections).every(([full, positions]) => {
     const len = givenLengthIn(ctx, full);
     return len !== null && positions.length <= len;
@@ -522,7 +535,20 @@ const FAILURE_CAUSE: Record<HanjaStoreFailure, string> = {
   'invalid-scope': '분석 입력 정보를 확인할 수 없습니다',
   'invalid-stored-selection': '이 분석에 저장된 기존 한자 선택에 이름에 없는 글자 위치나 이름이 있습니다',
   'invalid-output': '저장 결과를 검증하지 못했습니다',
+  'conflict': '다른 탭에서 같은 글자의 한자가 먼저 바뀌었습니다',
+  'reload-required': '다른 탭에서 저장 기록이 바뀌어 화면을 최신 상태로 다시 불러와야 합니다',
+  'not-ready': '저장된 한자 선택을 아직 불러오는 중이거나 저장을 사용할 수 없는 상태입니다',
+  'unavailable': '이 브라우저에서 안전한 한자 저장소(IndexedDB)를 사용할 수 없습니다',
+  'blocked-upgrade': '다른 탭이 저장소를 다른 버전으로 사용 중입니다',
+  'aborted': '저장 작업이 취소되어 아무것도 저장되지 않았습니다',
+  'unknown-outcome': '저장이 끝났는지 확인하지 못했습니다',
+  'corrupt-db': '한자 저장소의 기록이 서로 맞지 않습니다',
 };
+
+/** Short cause text for a failure reason (R3.2 messages reuse it). */
+export function hanjaFailureCause(reason: HanjaStoreFailure): string {
+  return FAILURE_CAUSE[reason];
+}
 
 /** User-facing failure text for a refused or failed save. */
 export function hanjaSaveFailureMessage(fullName: string, reason: HanjaStoreFailure): string {

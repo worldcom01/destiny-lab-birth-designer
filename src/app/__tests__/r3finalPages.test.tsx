@@ -2,10 +2,14 @@
 // R3 final patch: result pages are read-only towards stored Hanja records
 // (R36-E2), empty/non-empty legacy conflicts are never recovered (R36-E1),
 // and an oversized store is skipped without losing records (R36-L1).
+// R3.2: the page imports legacy data into the persistence backend (in-memory here)
+// and only ever ADDS the documented per-key marker (dlbd_hanja_idb_v1:<key>) to localStorage.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { HANJA_IDB_MARKER_PREFIX } from '@/lib/hanjaPersistenceCore';
+import { committedNames, installMemoryHanjaBackend } from '@/test-utils/hanjaTestBackend';
 import { ModeBInput, ModeCInput } from '@/types';
-import { HANJA_SELECTION_KEYS, analysisScope, loadHanjaSelections } from '@/lib/hanjaModel';
+import { HANJA_SELECTION_KEYS, analysisScope } from '@/lib/hanjaModel';
 import { validateModeBInput, validateModeCInput } from '@/lib/inputValidation';
 
 const push = vi.fn();
@@ -24,8 +28,16 @@ const V1_B = JSON.stringify({ version: 1, names: { 김민서: ['珉', null] } })
 const V1_C = JSON.stringify({ version: 1, names: { 김민: ['敏'] } });
 const storeOf = (scopes: Record<string, object>) =>
   JSON.stringify({ version: 2, scopes: Object.fromEntries(Object.entries(scopes).map(([s, names], i) => [s, { updatedAt: i + 1, names }])) });
-const snapshot = () => Object.fromEntries(Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)!).map(k => [k, localStorage.getItem(k)]));
-const minseoCard = async () => (await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 })).closest('div.bg-white') as HTMLElement;
+/** Every localStorage record except the new R3.2 marker keys (legacy records must be byte-identical). */
+const snapshot = () => Object.fromEntries(Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)!)
+  .filter(k => !k.startsWith(HANJA_IDB_MARKER_PREFIX)).map(k => [k, localStorage.getItem(k)]));
+const be = installMemoryHanjaBackend();
+const persistenceStatus = () => screen.queryByTestId('hanja-persistence-status')?.getAttribute('data-status') ?? 'idle';
+const minseoCard = async () => {
+  const heading = await screen.findByRole('heading', { name: '김민서' }, { timeout: 15000 });
+  await waitFor(() => expect(persistenceStatus()).not.toBe('initializing'));
+  return heading.closest('div.bg-white') as HTMLElement;
+};
 
 beforeEach(() => { localStorage.clear(); push.mockClear(); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -87,18 +99,20 @@ describe('R36-L1: oversized store on the page', () => {
     const notice = await screen.findByTestId('hanja-recovery-notice', {}, { timeout: 15000 });
     expect(notice.textContent).toContain('안전 한도');
     expect(localStorage.getItem(HANJA_SELECTION_KEYS.modeB)).toBe(big);
-    // explicit edit: choose 敏 for 민 (first given syllable)
+    // R3.2: an oversized source is never imported (no unbounded parse, no truncation); the
+    // page is read-only, so an explicit edit cannot even start and nothing is written.
     const card = await minseoCard();
+    await waitFor(() => expect(persistenceStatus()).toBe('read-only-error'));
+    expect(screen.getByTestId('hanja-persistence-status').textContent).toContain('안전 한도보다 큽니다');
     fireEvent.click(within(card).getByRole('button', { name: /세부 분석 보기/ }));
     fireEvent.click(within(card).getByRole('button', { name: /한자 분석/ }));
     const minChar = card.querySelectorAll<HTMLElement>('[data-hanja-status]')[1];
+    expect(minChar.getAttribute('aria-disabled')).toBe('true');
     fireEvent.click(minChar);
-    fireEvent.click(screen.getAllByRole('button').find(b => b.textContent?.startsWith('敏'))!);
-    // Data-safety hotfix: over the size limit the save is refused (no unbounded parse, no write);
-    // the stored 書 record is untouched and the failure is shown.
+    expect(screen.queryByRole('dialog')).toBeNull();
     expect(localStorage.getItem(HANJA_SELECTION_KEYS.modeB)).toBe(big);
-    expect(loadHanjaSelections(HANJA_SELECTION_KEYS.modeB, scope)).toEqual({ 김민서: [null, '書'] });
-    expect(screen.getByRole('alert').textContent).toContain('안전 한도보다 큽니다');
+    expect(committedNames(be(), HANJA_SELECTION_KEYS.modeB, scope)).toBeUndefined();
+    expect(be().documents.size).toBe(0);
     expect(screen.queryByTestId('hanja-save-status')).toBeNull();
     expect(localStorage.getItem('dlbd_mode_b_hanja')).toBe(V1_B);
   }, 60000);
