@@ -99,7 +99,7 @@ function ModeCForm() {
             <Calendar className="w-4 h-4 text-slate-400" /> 출생일 (확정)
           </h2>
           <input type="date" value={birthDate} onChange={e => { setBirthDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
-            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-400" />
+            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-base sm:text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-400" />
           {errors.date && <p className="text-xs text-red-500 mt-2">{errors.date}</p>}
         </section>
 
@@ -149,7 +149,7 @@ function ModeCForm() {
                   onChange={e => updateName(i, e.target.value)}
                   placeholder={`이름 ${i + 1} (예: 김민준)`}
                   maxLength={6}
-                  className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-400 placeholder:text-slate-300"
+                  className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-base sm:text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-400 placeholder:text-slate-300"
                 />
                 {names.length > 1 && (
                   <button onClick={() => removeName(i)}

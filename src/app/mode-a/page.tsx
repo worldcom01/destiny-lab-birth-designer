@@ -289,7 +289,7 @@ function ModeAForm() {
           <div className="flex items-center gap-3 mb-3">
             <input type="text" value={surname} onChange={e => { setSurname(e.target.value); setErrors(p => ({ ...p, surname: '' })); }}
               placeholder="예) 김, 이, 남궁" maxLength={3}
-              className="w-24 px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center font-bold" />
+              className="w-24 px-3 py-2.5 border border-slate-200 rounded-xl text-base sm:text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center font-bold" />
             <span className="text-xs text-slate-500">단성 또는 복성</span>
           </div>
           {errors.surname && <p className="text-xs text-red-500 mb-2">{errors.surname}</p>}

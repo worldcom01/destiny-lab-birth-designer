@@ -103,7 +103,7 @@ function ModeBForm() {
             <Calendar className="w-4 h-4 text-slate-400" /> 출생일 (확정)
           </h2>
           <input type="date" value={birthDate} onChange={e => { setBirthDate(e.target.value); setErrors(p => ({ ...p, date: '' })); }}
-            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-base sm:text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-400" />
           {errors.date && <p className="text-xs text-red-500 mt-2">{errors.date}</p>}
         </section>
 
@@ -130,7 +130,7 @@ function ModeBForm() {
           <div className="flex items-center gap-3 mb-3">
             <input type="text" value={surname} onChange={e => { setSurname(e.target.value); setErrors(p => ({ ...p, surname: '' })); }}
               placeholder="예) 김, 이, 남궁" maxLength={3}
-              className="w-24 px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-center font-bold" />
+              className="w-24 px-3 py-2.5 border border-slate-200 rounded-xl text-base sm:text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-center font-bold" />
           </div>
           {errors.surname && <p className="text-xs text-red-500 mb-2">{errors.surname}</p>}
           <div className="flex flex-wrap gap-1.5 mb-3">
