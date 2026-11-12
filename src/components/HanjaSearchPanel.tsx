@@ -106,10 +106,10 @@ export default function HanjaSearchPanel({ hangul, onChoose, onSearchingChange }
             onKeyDown={e => onListKey(e)}
             placeholder="한자·음·뜻으로 찾기 (예: 鉉, 현)"
             aria-describedby={`hanja-search-status-${hangul}`}
-            className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-base sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           />
           <select aria-label="검색 기준" value={mode} onChange={e => { setMode(e.target.value as SearchMode); setDetail(null); }}
-            className="rounded-lg border border-slate-300 px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+            className="shrink-0 rounded-lg border border-slate-300 px-2 text-base sm:text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
             {MODES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
         </div>
@@ -142,8 +142,8 @@ export default function HanjaSearchPanel({ hangul, onChoose, onSearchingChange }
               >
                 <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-3xl font-black text-slate-800">{r.char}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-mono text-slate-500">{r.codePoint} · 음 {r.readings.map(x => x.hangul).join('·') || '기록 없음'}</span>
-                  <span className="block text-sm text-slate-800 truncate">
+                  <span className="block text-xs font-mono text-slate-500 wrap-break-word">{r.codePoint} · 음 {r.readings.map(x => x.hangul).join('·') || '기록 없음'}</span>
+                  <span className="block text-sm text-slate-800 wrap-break-word" data-testid="hanja-result-meaning">
                     {r.meanings.primary ? r.meanings.primary.text : r.meanings.legacy[0] ? `${r.meanings.legacy[0].text} (${LEGACY_GLOSS_LABEL})` : '확인된 뜻 없음'}
                   </span>
                   <span className="mt-1 flex flex-wrap gap-1">
@@ -159,13 +159,13 @@ export default function HanjaSearchPanel({ hangul, onChoose, onSearchingChange }
       )}
 
       {current && dict && (
-        <section className="px-5 py-3 space-y-3" aria-labelledby={`hanja-detail-${current.codePoint}`} data-testid="hanja-search-detail" data-char={current.char}>
+        <section className="px-5 py-3 space-y-3 wrap-break-word" aria-labelledby={`hanja-detail-${current.codePoint}`} data-testid="hanja-search-detail" data-char={current.char}>
           <h4 id={`hanja-detail-${current.codePoint}`} ref={detailHeadingRef} tabIndex={-1} className="text-sm font-bold text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
             {current.char} ({current.codePoint}) 상세 정보
           </h4>
           <div className="flex items-center gap-4">
-            <span className="w-20 h-20 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-5xl font-black text-slate-900">{current.char}</span>
-            <div className="text-xs text-slate-600 space-y-0.5">
+            <span className="w-20 h-20 shrink-0 flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-5xl font-black text-slate-900">{current.char}</span>
+            <div className="min-w-0 flex-1 text-xs text-slate-600 space-y-0.5 wrap-break-word">
               <p className="font-mono">{current.codePoint}</p>
               <p>음: {current.readings.length ? current.readings.map(x => `${x.hangul}${x.legal ? '(인명용 확인)' : x.legacy && !x.unihan ? '(기존 목록만)' : ''}`).join(', ') : '기록 없음'}</p>
               {!current.inDictionary && <p className="text-amber-800">사전에 없는 글자입니다.</p>}
@@ -209,9 +209,9 @@ export default function HanjaSearchPanel({ hangul, onChoose, onSearchingChange }
           {(() => { const reason = unavailableReason(current, hangul); return reason ? <p className="text-[11px] text-slate-600" data-testid="hanja-unavailable">{reason}</p> : null; })()}
           <div className="flex gap-2">
             <button type="button" onClick={() => setDetail(null)}
-              className="flex-1 rounded-xl border border-slate-300 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">목록으로</button>
+              className="min-w-0 flex-1 rounded-xl border border-slate-300 px-2 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">목록으로</button>
             <button type="button" disabled={!current.selectable} onClick={() => onChoose(current.char, current)}
-              className="flex-1 rounded-xl bg-indigo-600 py-2 text-sm font-bold text-white disabled:bg-slate-200 disabled:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+              className="min-w-0 flex-1 rounded-xl bg-indigo-600 px-2 py-2 text-sm font-bold text-white disabled:bg-slate-200 disabled:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
               {current.selectable ? `${current.char}(으)로 선택` : '선택할 수 없음'}
             </button>
           </div>

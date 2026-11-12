@@ -208,7 +208,7 @@ export default function HanjaPicker({ hangul, selectedHanja, onSelect, onClose, 
                     {opt.hanja}
                   </div>
 
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 wrap-break-word">
                     {/* 뱃지 행 */}
                     <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
                       {isRecommended && (
