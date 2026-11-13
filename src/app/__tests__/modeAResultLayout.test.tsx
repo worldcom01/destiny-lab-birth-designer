@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { DesignerInput } from '@/types';
+import { DesignerInput, GRADE_CONFIG } from '@/types';
 import { analyzeModeA, formatKoreanDate } from '@/lib/analysis';
 import { formatTimeSlot } from '@/lib/schedule';
 
@@ -74,7 +74,16 @@ describe('Mode A result cards present one combination', () => {
       expect(within(card).getByRole('heading', { level: 3 }).textContent).toBe(r.name.full);
       expect(q('card-birth-date').textContent).toBe(formatKoreanDate(r.date));
       expect(q('card-birth-time').textContent).toBe(formatTimeSlot(r.timeSlot!));
-      expect(q('card-overall').textContent).toBe(`종합 ${r.scores.overall}점 · ${r.grade}등급`);
+      // score and unit form one element, next to "이 조합의 종합 점수", with no grade label
+      expect(q('card-overall').textContent).toBe(`${r.scores.overall}점`);
+      expect(q('card-overall').parentElement!.textContent).toBe(`이 조합의 종합 점수현재 분석 모델 기준${r.scores.overall}점`);
+      expect(classes(q('card-overall').parentElement!)).toEqual(expect.arrayContaining(['border-t', 'justify-between']));
+      // exactly one visible grade indicator: the badge in the card header
+      expect(within(card).getAllByTestId('card-grade')).toHaveLength(1);
+      expect(q('card-grade').textContent).toBe(`${r.grade}${GRADE_CONFIG[r.grade].description}`);
+      const visible = card.textContent!;
+      expect(visible).not.toMatch(/(SS|S|A|B|C)\s?등급/);
+      expect(visible.split(GRADE_CONFIG[r.grade].description)).toHaveLength(2);
       expect(q('card-meta').textContent).toContain('의료진이 허용한 범위 내 분석');
       // date and time are set large on mobile on every card, not only the first
       for (const id of ['card-birth-date', 'card-birth-time']) {
@@ -108,6 +117,25 @@ describe('Mode A result cards present one combination', () => {
     const cards = screen.getAllByRole('article');
     expect(cards.length).toBeGreaterThan(0);
     for (const c of cards) expect(within(c).getByTestId('card-combo-label').textContent).toBe('분석 조합');
+  }, 60000);
+
+  it('every grade shows exactly one grade indicator and a grade-free score row', async () => {
+    await renderPage();
+    const seen: string[] = [];
+    for (const g of ['SS', 'S', 'A', 'B', 'C'] as const) {
+      const btn = screen.getAllByRole('button').find(b => new RegExp(`^${g} (\\d+)$`).test(b.textContent ?? ''));
+      if (!btn || btn.textContent === `${g} 0`) continue;
+      fireEvent.click(btn);
+      const cards = screen.getAllByRole('article');
+      for (const c of cards) {
+        expect(within(c).getAllByTestId('card-grade')).toHaveLength(1);
+        expect(within(c).getByTestId('card-grade').textContent).toBe(`${g}${GRADE_CONFIG[g].description}`);
+        expect(within(c).getByTestId('card-overall').textContent).toMatch(/^\d+점$/);
+        expect(c.textContent).not.toMatch(/(SS|S|A|B|C)\s?등급/);
+      }
+      seen.push(g);
+    }
+    expect(seen.length).toBeGreaterThanOrEqual(3);
   }, 60000);
 
   it('long names and Hanja strings can wrap instead of overflowing', () => {

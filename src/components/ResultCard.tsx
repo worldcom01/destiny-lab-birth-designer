@@ -35,7 +35,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
 
   return (
     <article
-      aria-label={`${comboLabel}: ${result.name.full}, ${dateText} ${timeText}, 종합 ${result.scores.overall}점 ${g}등급`}
+      aria-label={`${comboLabel}: ${result.name.full}, ${dateText} ${timeText}, 이 조합의 종합 점수 ${result.scores.overall}점, ${g}등급`}
       className={`bg-white rounded-2xl overflow-hidden ${GRADE_RING[g]} transition-all`}>
       <div className="p-4 sm:p-5">
         {/* 1. 조합 순위 + 등급 */}
@@ -43,7 +43,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
           <p className={`min-w-0 break-keep text-xs font-bold ${ranked ? 'text-slate-800' : 'text-slate-500'}`} data-testid="card-combo-label">
             {comboLabel}
           </p>
-          <span className={`inline-flex shrink-0 items-baseline gap-1 rounded-lg bg-gradient-to-br ${gc.bgFrom} ${gc.bgTo} px-2.5 py-1 text-white shadow-sm`}>
+          <span data-testid="card-grade" className={`inline-flex shrink-0 items-baseline gap-1 rounded-lg bg-gradient-to-br ${gc.bgFrom} ${gc.bgTo} px-2.5 py-1 text-white shadow-sm`}>
             <span className="text-sm font-black leading-none">{g}</span>
             <span className="text-[10px] font-light leading-none text-white/85">{gc.description}</span>
           </span>
@@ -61,7 +61,7 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
         </div>
 
         {/* 3·4. 출생 날짜 · 출생 시간 + 5. 이 조합의 종합 점수 */}
-        <div className="mt-2.5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
+        <div className="mt-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
           <dl className="min-w-0 space-y-0.5">
             <div className="flex flex-wrap items-baseline gap-x-2">
               <dt className="w-[4.25rem] shrink-0 text-xs font-medium text-slate-500">출생 날짜</dt>
@@ -72,11 +72,17 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
               <dd className="min-w-0 break-keep text-lg font-bold leading-snug text-slate-900 sm:text-xl" data-testid="card-birth-time">{timeText}</dd>
             </div>
           </dl>
-          <p className="ml-auto shrink-0 whitespace-nowrap text-right" data-testid="card-overall">
-            <span className="text-xs font-medium text-slate-500">종합 </span>
-            <span className={`text-3xl font-black leading-none ${gc.textColor}`}>{result.scores.overall}</span>
-            <span className="text-sm font-bold text-slate-600">점 · {g}등급</span>
-          </p>
+          {/* The grade is shown once, in the badge above; the score row carries no grade label. */}
+          <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-2">
+            <div className="min-w-0 break-keep leading-tight">
+              <p className="text-sm font-semibold text-slate-700">이 조합의 종합 점수</p>
+              <p className="mt-0.5 text-[11px] text-slate-400">현재 분석 모델 기준</p>
+            </div>
+            <p className={`shrink-0 whitespace-nowrap leading-none ${gc.textColor}`} data-testid="card-overall">
+              <span className="text-2xl font-black tabular-nums">{result.scores.overall}</span>
+              <span className="ml-0.5 text-base font-bold">점</span>
+            </p>
+          </div>
         </div>
 
         {/* 6. 보조 정보 */}
