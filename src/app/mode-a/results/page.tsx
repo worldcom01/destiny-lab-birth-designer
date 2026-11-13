@@ -57,26 +57,31 @@ export default function ModeAResults() {
   return (
     <div className="min-h-screen bg-[#F4F6F9]">
       <div className="bg-gradient-to-r from-indigo-900 to-violet-900 sticky top-[40px] z-40">
-        <div className="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-between">
-          <button onClick={() => router.push('/mode-a')} className="flex items-center gap-1.5 text-sm text-indigo-300 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" /> 돌아가기
+        {/* Narrow screens: back + PDF on the first row, the summary on its own row below.
+            From sm: one row (back | summary | PDF) as before. */}
+        <div data-testid="mode-a-result-header" className="max-w-3xl mx-auto px-4 py-2 sm:py-3.5 flex flex-wrap items-center gap-x-3 gap-y-1 sm:flex-nowrap sm:justify-between">
+          <button onClick={() => router.push('/mode-a')}
+            className="order-1 -ml-2 inline-flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-sm text-indigo-200 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
+            <ArrowLeft className="w-4 h-4 shrink-0" aria-hidden /> 돌아가기
           </button>
-          <div className="text-center">
-            <p className="text-sm font-bold text-white flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-indigo-400" /> MODE A 결과
+          <div className="order-3 w-full min-w-0 pb-1 text-center break-keep sm:order-2 sm:w-auto sm:flex-1 sm:pb-0">
+            <p className="text-sm font-bold text-white inline-flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-indigo-400" aria-hidden /> MODE A 결과
             </p>
-            <p className="text-[11px] text-indigo-300">{results.length.toLocaleString()}가지 조합 분석 완료</p>
-            <p className="text-[10px] text-indigo-300/80">
+            <p className="text-[11px] text-indigo-200">{results.length.toLocaleString()}가지 조합 분석 완료</p>
+            <p className="text-[10px] text-indigo-200/80">
               후보 이름 {results.coverage.candidates.toLocaleString()}개 × 허용 시각 {results.coverage.slots.toLocaleString()}개 전수 평가
             </p>
           </div>
-          <PDFButton
-            results={topResults}
-            stats={{ total: results.length, grades: results.gradeCounts }}
-            surname={input?.surname ?? ''}
-            gender={input?.gender ?? ''}
-            dateRange={input ? `${input.startDate} ~ ${input.endDate}` : undefined}
-          />
+          <div className="order-2 ml-auto shrink-0 whitespace-nowrap sm:order-3 sm:ml-0">
+            <PDFButton
+              results={topResults}
+              stats={{ total: results.length, grades: results.gradeCounts }}
+              surname={input?.surname ?? ''}
+              gender={input?.gender ?? ''}
+              dateRange={input ? `${input.startDate} ~ ${input.endDate}` : undefined}
+            />
+          </div>
         </div>
       </div>
 

@@ -26,57 +26,72 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
   const g = result.grade;
   const gc = GRADE_CONFIG[g];
 
+  // The score belongs to the whole combination (name + date + time), not to any part of it.
+  const ranked = showRank && !!result.rank;
+  const comboLabel = ranked ? `종합 점수 ${result.rank}위 조합` : '분석 조합';
+  const dateText = formatKoreanDate(result.date);
+  const timeText = result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour);
+  const sijin = result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getSijinLabel(result.hour);
+
   return (
-    <div className={`bg-white rounded-2xl overflow-hidden ${GRADE_RING[g]} transition-all`}>
-      <div className="p-5">
-        <div className="flex items-start gap-4">
-          {/* 순위 */}
-          {showRank && result.rank && (
-            <div className="flex-shrink-0 text-center w-10">
-              <div className="text-2xl font-black text-slate-800 leading-none">{result.rank}</div>
-              <div className="text-[9px] text-slate-400 uppercase tracking-wide mt-0.5">위</div>
-            </div>
-          )}
-
-          {/* 등급 배지 */}
-          <div className={`flex-shrink-0 bg-gradient-to-br ${gc.bgFrom} ${gc.bgTo} rounded-xl px-3 py-2.5 text-center min-w-[54px] shadow-sm`}>
-            <div className="text-[10px] text-white/80 font-light leading-tight">{gc.description}</div>
-            <div className="text-2xl font-black text-white leading-tight">{g}</div>
-          </div>
-
-          {/* 이름 + 날짜 */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">{result.name.full}</h3>
-              <span className="text-xs font-mono text-slate-400">{result.nameAnalysis.hanja}</span>
-              {result.name.gender === '남' ? (
-                <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full">남아</span>
-              ) : (
-                <span className="text-[10px] bg-pink-50 text-pink-600 border border-pink-200 px-2 py-0.5 rounded-full">여아</span>
-              )}
-            </div>
-            <p className="text-sm text-slate-600 mt-0.5">{formatKoreanDate(result.date)}</p>
-            <p className="text-sm font-medium text-slate-700 mt-0.5">
-              {result.timeSlot ? formatTimeSlot(result.timeSlot) : getDisplayHour(result.hour)}
-              <span className="text-xs text-slate-400 ml-2">{result.timeSlot ? getHourLabel(result.hour).split('(')[0] : getSijinLabel(result.hour)}</span>
-            </p>
-            {/* 한자 의미: pre-R4 glosses without a documented source (R4 audit P1) */}
-            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed" data-testid="card-meanings">
-              {result.name.hanja.given.some(c => c.hanja && c.meaning) && (
-                <span className="mr-1 rounded bg-slate-100 px-1 text-[10px] text-slate-500">뜻 {LEGACY_GLOSS_LABEL}</span>
-              )}
-              {result.nameAnalysis.meanings.map((m, i) => (
-                <span key={i}>{m.split(' — ')[1] ?? m}{i < result.nameAnalysis.meanings.length - 1 ? ' · ' : ''}</span>
-              ))}
-            </p>
-          </div>
-
-          {/* 종합 점수 */}
-          <div className="flex-shrink-0 text-right">
-            <div className={`text-3xl font-black ${gc.textColor}`}>{result.scores.overall}</div>
-            <div className="text-[9px] text-slate-400 uppercase tracking-wide">종합</div>
-          </div>
+    <article
+      aria-label={`${comboLabel}: ${result.name.full}, ${dateText} ${timeText}, 종합 ${result.scores.overall}점 ${g}등급`}
+      className={`bg-white rounded-2xl overflow-hidden ${GRADE_RING[g]} transition-all`}>
+      <div className="p-4 sm:p-5">
+        {/* 1. 조합 순위 + 등급 */}
+        <div className="flex items-center justify-between gap-2">
+          <p className={`min-w-0 break-keep text-xs font-bold ${ranked ? 'text-slate-800' : 'text-slate-500'}`} data-testid="card-combo-label">
+            {comboLabel}
+          </p>
+          <span className={`inline-flex shrink-0 items-baseline gap-1 rounded-lg bg-gradient-to-br ${gc.bgFrom} ${gc.bgTo} px-2.5 py-1 text-white shadow-sm`}>
+            <span className="text-sm font-black leading-none">{g}</span>
+            <span className="text-[10px] font-light leading-none text-white/85">{gc.description}</span>
+          </span>
         </div>
+
+        {/* 2. 이름 + 한자 */}
+        <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <h3 className="min-w-0 text-2xl font-black tracking-tight text-slate-900 [overflow-wrap:anywhere] sm:text-3xl">{result.name.full}</h3>
+          <span className="min-w-0 text-base font-medium text-slate-500 break-all">{result.nameAnalysis.hanja}</span>
+          {result.name.gender === '남' ? (
+            <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full">남아</span>
+          ) : (
+            <span className="text-[10px] bg-pink-50 text-pink-600 border border-pink-200 px-2 py-0.5 rounded-full">여아</span>
+          )}
+        </div>
+
+        {/* 3·4. 출생 날짜 · 출생 시간 + 5. 이 조합의 종합 점수 */}
+        <div className="mt-2.5 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
+          <dl className="min-w-0 space-y-0.5">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="w-[4.25rem] shrink-0 text-xs font-medium text-slate-500">출생 날짜</dt>
+              <dd className="min-w-0 break-keep text-lg font-bold leading-snug text-slate-900 sm:text-xl" data-testid="card-birth-date">{dateText}</dd>
+            </div>
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="w-[4.25rem] shrink-0 text-xs font-medium text-slate-500">출생 시간</dt>
+              <dd className="min-w-0 break-keep text-lg font-bold leading-snug text-slate-900 sm:text-xl" data-testid="card-birth-time">{timeText}</dd>
+            </div>
+          </dl>
+          <p className="ml-auto shrink-0 whitespace-nowrap text-right" data-testid="card-overall">
+            <span className="text-xs font-medium text-slate-500">종합 </span>
+            <span className={`text-3xl font-black leading-none ${gc.textColor}`}>{result.scores.overall}</span>
+            <span className="text-sm font-bold text-slate-600">점 · {g}등급</span>
+          </p>
+        </div>
+
+        {/* 6. 보조 정보 */}
+        <p className="mt-1.5 break-keep text-xs text-slate-500" data-testid="card-meta">
+          {sijin}{result.timeSlot ? ' · 의료진이 허용한 범위 내 분석' : ''}
+        </p>
+        {/* 한자 의미: pre-R4 glosses without a documented source (R4 audit P1) */}
+        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed" data-testid="card-meanings">
+          {result.name.hanja.given.some(c => c.hanja && c.meaning) && (
+            <span className="mr-1 rounded bg-slate-100 px-1 text-[10px] text-slate-500">뜻 {LEGACY_GLOSS_LABEL}</span>
+          )}
+          {result.nameAnalysis.meanings.map((m, i) => (
+            <span key={i}>{m.split(' — ')[1] ?? m}{i < result.nameAnalysis.meanings.length - 1 ? ' · ' : ''}</span>
+          ))}
+        </p>
 
         {/* 특징 태그 */}
         <div className="flex flex-wrap gap-1.5 mt-3">
@@ -119,9 +134,10 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
       {/* 펼치기 */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center gap-1.5 py-2 border-t border-slate-100 text-[11px] text-slate-500 hover:bg-slate-50 transition-colors"
+        aria-expanded={expanded}
+        className="w-full min-h-[44px] flex items-center justify-center gap-1.5 py-2 border-t border-slate-100 text-xs text-slate-500 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-400"
       >
-        <BookOpen className="w-3 h-3" />
+        <BookOpen className="w-3 h-3" aria-hidden />
         {expanded ? '닫기' : '상세 분석 보기'}
         {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
       </button>
@@ -152,6 +168,6 @@ export default function ResultCard({ result, showRank = true }: { result: Analys
           </div>
         </div>
       )}
-    </div>
+    </article>
   );
 }
