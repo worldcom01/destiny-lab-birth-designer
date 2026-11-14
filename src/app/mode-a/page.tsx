@@ -134,7 +134,7 @@ function ModeAForm() {
     <div className="min-h-screen bg-[#F4F6F9]">
       <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-violet-900">
         <div className="max-w-2xl mx-auto px-4 py-8">
-          <button onClick={() => router.push('/')} className="flex items-center gap-1.5 text-indigo-300 hover:text-white text-sm mb-5 transition-colors">
+          <button onClick={() => router.push('/start')} className="flex items-center gap-1.5 text-indigo-300 hover:text-white text-sm mb-5 transition-colors">
             <ArrowLeft className="w-4 h-4" /> 모드 선택으로
           </button>
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 text-xs text-indigo-200 mb-3">

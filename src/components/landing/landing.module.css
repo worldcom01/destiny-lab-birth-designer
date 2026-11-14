@@ -1,0 +1,105 @@
+/* R5.10 landing — scoped styles that Tailwind utilities do not express well. */
+
+.page {
+  --ivory: #faf8f3;
+  --paper: #ffffff;
+  --ink: #17171c;
+  --body: #46464f;
+  --muted: #64646e;
+  --line: #e6e1d6;
+  --accent: #4f43c9;
+  --accent-soft: #eeecfb;
+  background: var(--ivory);
+  color: var(--body);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  font-feature-settings: "palt" 0;
+}
+
+.title {
+  color: var(--ink);
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.sectionTitle {
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.lead {
+  text-wrap: pretty;
+}
+
+/* entrance: one short fade on first paint, CSS only */
+.reveal {
+  animation: reveal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.revealLate {
+  animation: reveal 0.9s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* the time dial turns very slowly */
+.dial {
+  transform-origin: 200px 200px;
+  animation: turn 160s linear infinite;
+}
+@keyframes turn {
+  to { transform: rotate(360deg); }
+}
+
+.lens {
+  animation: breathe 7s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.focusRing:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+.faq .chevron {
+  transition: transform 0.2s ease;
+}
+.faq[open] .chevron {
+  transform: rotate(45deg);
+}
+
+.meter {
+  background: linear-gradient(to right, var(--accent) var(--v), #e9e6f7 var(--v));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .revealLate,
+  .dial,
+  .lens {
+    animation: none;
+  }
+  .faq .chevron {
+    transition: none;
+  }
+}
