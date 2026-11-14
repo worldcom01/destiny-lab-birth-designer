@@ -34,7 +34,7 @@ export default function ResultPreview({ candidates, inputText }: { candidates: P
               <p className="mt-4 text-sm text-[#46464f]">{top.dateText} · {top.timeText}</p>
               <p className="mt-0.5 text-xs text-[#64646e]">의료진이 허용한 범위 내 분석</p>
             </div>
-            <div className="flex shrink-0 items-center gap-4 rounded-2xl bg-[#f6f4ee] px-5 py-4">
+            <div className="flex w-full shrink-0 items-center justify-center gap-6 rounded-2xl bg-[#f6f4ee] px-5 py-4 sm:w-auto sm:justify-start sm:gap-4">
               <div className="text-center">
                 <p className="text-[11px] text-[#64646e]">이 조합의 종합 점수</p>
                 <p className="text-3xl font-bold tabular-nums text-[#17171c]">{top.overall}<span className="ml-0.5 text-base font-medium text-[#64646e]">점</span></p>

@@ -16,6 +16,12 @@
   font-feature-settings: "palt" 0;
 }
 
+/* the landing page has a white footer: keep iOS overscroll (rubber-band) areas white, not the app grey */
+:global(html):has(.page),
+:global(body):has(.page) {
+  background: #ffffff;
+}
+
 .title {
   color: var(--ink);
   letter-spacing: -0.035em;
